@@ -1,0 +1,40 @@
+plugins {
+  id 'java-library'
+  id "io.freefair.lombok" version "6.0.0-m2"
+}
+
+group 'team.dotspace'
+version '1.0-SNAPSHOT'
+
+allprojects {
+  apply plugin: 'java-library'
+  apply plugin: 'io.freefair.lombok'
+
+  ext {
+    jetbrainsAnnotationVersion = '16.0.2'
+    guavaVersion = '31.1-jre'
+  }
+
+  configurations {
+    compileOnly {
+      extendsFrom annotationProcessor
+    }
+  }
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    api "org.jetbrains:annotations:${jetbrainsAnnotationVersion}"
+
+    implementation("com.google.guava:guava:${guavaVersion}")
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+  }
+
+  test {
+    useJUnitPlatform()
+  }
+}
