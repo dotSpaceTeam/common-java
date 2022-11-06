@@ -28,12 +28,12 @@ public final class SpaceCollections {
    * -> Optional is empty if {@link Collection} is null or empty
    */
   @SuppressWarnings("unchecked")
-  public static <T> @NotNull Optional<T> random(final Collection<T> collection) {
+  public static <T> @NotNull Optional<@NotNull T> random(@Nullable final Collection<T> collection) {
     if (collection == null || collection.isEmpty()) {
       return Optional.empty(); //Return empty Optional to safe performance
     }
     final int index = collection.size() > 1 ? (int) (ThreadLocalRandom.current().nextDouble() * collection.size()) : 0; //Calculate random index to get from collection
-    return (Optional<T>) Optional.of(collection.toArray()[index]); //Return random object of list
+    return (Optional<T>) Optional.ofNullable(collection.toArray()[index]); //Return random object of list
   }
 
   /**
@@ -42,11 +42,12 @@ public final class SpaceCollections {
    *
    * @param collection to get random object from
    * @param <T>        generic type of {@link Collection}
-   * @return completableFuture with will be filled with the random object
+   * @return completableFuture with will be filled with the random object. Object could be null if collection is null
+   * or empty or if the given object is null in list.
    */
-  public static <T> @NotNull CompletableFuture<@NotNull T> asyncRandom(final Collection<T> collection) {
-    final CompletableFuture<@NotNull T> completableFuture = new CompletableFuture<>(); //Create new completableFuture
-    SERVICE.execute(() -> completableFuture.complete(SpaceCollections.random(collection).orElseThrow())); //Complete the future in a separate thread
+  public static <T> @NotNull CompletableFuture<@Nullable T> asyncRandom(final Collection<T> collection) {
+    final CompletableFuture<@Nullable T> completableFuture = new CompletableFuture<>(); //Create new completableFuture
+    SERVICE.execute(() -> completableFuture.complete(SpaceCollections.random(collection).orElse(null))); //Complete the future in a separate thread
     return completableFuture;
   }
 }
