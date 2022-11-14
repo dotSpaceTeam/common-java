@@ -1,6 +1,5 @@
 package dev.dotspace.common.test.list;
 
-import dev.dotspace.common.SpaceCollections;
 import dev.dotspace.common.list.BasicPagination;
 
 import org.jetbrains.annotations.NotNull;

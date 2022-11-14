@@ -17,7 +17,9 @@ public interface Pagination<T> {
   int pagesQuantity();
 
   /**
-   * @param collection
+   * Update content of this object -> set elements to be used for the pages
+   *
+   * @param collection to update elements with
    */
   void content(@NotNull final Collection<T> collection);
 
@@ -27,10 +29,4 @@ public interface Pagination<T> {
    * @throws IndexOutOfBoundsException if index is not present in current list
    */
   @NotNull List<T> elements(final int index) throws IndexOutOfBoundsException;
-
-  /**
-   * @param index starts at 0 [index: 0 -> means page 1]
-   * @return
-   */
-  @NotNull List<T> elementsChecked(final int index);
 }
