@@ -3,17 +3,12 @@ plugins {
   id "io.freefair.lombok" version "6.0.0-m2"
 }
 
-group 'team.dotspace'
-version '1.0-SNAPSHOT'
+group 'dev.dotspace'
+version '1.0.1'
 
 allprojects {
   apply plugin: 'java-library'
   apply plugin: 'io.freefair.lombok'
-
-  ext {
-    jetbrainsAnnotationVersion = '16.0.2'
-    guavaVersion = '31.1-jre'
-  }
 
   configurations {
     compileOnly {
@@ -26,9 +21,7 @@ allprojects {
   }
 
   dependencies {
-    api "org.jetbrains:annotations:${jetbrainsAnnotationVersion}"
-
-    implementation("com.google.guava:guava:${guavaVersion}")
+    api 'org.jetbrains:annotations:23.0.0'
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
   }
