@@ -47,6 +47,17 @@ public record SimpleColor(short red,
     return new Color(this.red, this.green, this.blue);
   }
 
+  /**
+   * Map color into another color
+   *
+   * @param function to convert local color values to another {@link Color}
+   * @param <COLOR>  generic type of color
+   * @return converted COLOR
+   */
+  public <COLOR> @NotNull COLOR map(@NotNull final ColorFunction<COLOR> function) {
+    return function.apply(this.red, this.green, this.blue);
+  }
+
   //static
 
   /**
@@ -77,5 +88,16 @@ public record SimpleColor(short red,
       throw new IllegalStateException("Value for one color can be between " + MIN_VALUE + " and " + MAX_VALUE + ". Set: " + value);
     }
     return value;
+  }
+
+  /**
+   * Consumer map red, green and blue to color
+   *
+   * @param <COLOR> generic type of color to map values to
+   */
+  interface ColorFunction<COLOR> {
+    @NotNull COLOR apply(final int red,
+                         final int green,
+                         final int blue);
   }
 }
