@@ -8,8 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -17,8 +15,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SpaceCollections {
-  private final static ExecutorService SERVICE = Executors.newCachedThreadPool();
-
   /**
    * Get a random object of collection. Object wrapped in {@link Optional}
    *
@@ -46,8 +42,7 @@ public final class SpaceCollections {
    * or empty or if the given object is null in list.
    */
   public static <T> @NotNull CompletableFuture<@Nullable T> asyncRandom(final Collection<T> collection) {
-    final CompletableFuture<@Nullable T> completableFuture = new CompletableFuture<>(); //Create new completableFuture
-    SERVICE.execute(() -> completableFuture.complete(SpaceCollections.random(collection).orElse(null))); //Complete the future in a separate thread
-    return completableFuture;
+    return new CompletableFuture<@Nullable T>()
+      .completeAsync(() -> SpaceCollections.random(collection).orElse(null)); //Complete the future in a separate thread
   }
 }
