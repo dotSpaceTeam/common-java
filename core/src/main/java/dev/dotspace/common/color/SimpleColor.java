@@ -12,8 +12,8 @@ import java.awt.*;
 public record SimpleColor(short red,
                           short green,
                           short blue) {
-  private final static int MIN_VALUE;
-  private final static int MAX_VALUE;
+  public final static int MIN_VALUE;
+  public final static int MAX_VALUE;
 
   static {
     MIN_VALUE = 0x0;
@@ -59,7 +59,6 @@ public record SimpleColor(short red,
   }
 
   //static
-
   /**
    * Create new color
    *
