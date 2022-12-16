@@ -50,24 +50,48 @@ public class Vector {
     return new Vector(this.x, this.y, z);
   }
 
+  /**
+   * Add another {@link Vector} from this instance.
+   *
+   * @param vector to add.
+   * @return new Vector instance.
+   */
   public @NotNull Vector add(@NotNull final Vector vector) {
     return new Vector(this.x + vector.x(), this.y + vector.y(), this.z + vector.z());
   }
 
+  /**
+   * Subtract another {@link Vector} from this instance.
+   *
+   * @param vector to subtract.
+   * @return new Vector instance.
+   */
   public @NotNull Vector subtract(@NotNull final Vector vector) {
     return new Vector(this.x - vector.x(), this.y - vector.y(), this.z - vector.z());
   }
 
+  /**
+   * Multiply another {@link Vector} from this instance.
+   *
+   * @param vector to multiply.
+   * @return new Vector instance.
+   */
   public @NotNull Vector multiply(@NotNull final Vector vector) {
     return new Vector(this.x * vector.x(), this.y * vector.y(), this.z * vector.z());
   }
 
-  public @NotNull Vector divide(@NotNull Vector vector) {
+  /**
+   * Divide another {@link Vector} from this instance.
+   *
+   * @param vector to divide.
+   * @return new Vector instance.
+   */
+  public @NotNull Vector divide(@NotNull final Vector vector) {
     return new Vector(this.x / vector.x(), this.y / vector.y(), this.z / vector.z());
   }
 
   /**
-   * Multiply this vector.
+   * Multiply this {@link Vector}.
    *
    * @param multiply double value to multiply this vector with.
    * @return new Vector instance with changed multiplier.
@@ -77,7 +101,7 @@ public class Vector {
   }
 
   /**
-   * Multiply this vector.
+   * Multiply this {@link Vector}.
    *
    * @param multiply int value to multiply this vector with.
    * @return new Vector instance with changed multiplier.
@@ -103,14 +127,18 @@ public class Vector {
   }
 
   /**
-   * @return
+   * Calculates the length. [{@link Math#sqrt(double)} applied]
+   *
+   * @return value as double.
    */
   public double length() {
     return Math.sqrt(lengthSquared());
   }
 
   /**
-   * @return
+   * Calculates the length.
+   *
+   * @return value as double
    */
   public double lengthSquared() {
     return (this.x * this.x) + (this.y * this.y) + (this.z * this.z);
