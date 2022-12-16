@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Test class {@link SpaceCollections}.
+ */
 public class SpaceCollectionsTest {
   private final static @NotNull Set<Integer> NUMBERS_LIST = new HashSet<>();
 
