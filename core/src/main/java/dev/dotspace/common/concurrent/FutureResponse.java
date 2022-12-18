@@ -7,6 +7,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -92,6 +94,17 @@ public class FutureResponse<TYPE> {
     this.completableFuture.completeAsync(() -> function.apply(this));
     return this;
   }
+
+  public @NotNull FutureResponse<TYPE> completeAsync(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    this.completableFuture.completeAsync(() -> {
+      final ResponseContent<TYPE> responseContent = new ResponseContent<>();
+      consumer.accept(responseContent);
+      Optional.ofNullable(responseContent.throwable()).ifPresent(this::completeExceptionally); //Complete with throwable if ResponseContent has throwable.
+      return responseContent.content();
+    });
+    return this;
+  }
+
 
   /**
    * Complete {@link CompletableFuture} with throwable.
