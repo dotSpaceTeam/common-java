@@ -65,7 +65,7 @@ public class FutureResponse<TYPE> {
    * @param type to complete future with.
    * @return class instance.
    */
-  public @NotNull FutureResponse<TYPE> completable(@Nullable final TYPE type) {
+  public @NotNull FutureResponse<TYPE> complete(@Nullable final TYPE type) {
     this.completableFuture.complete(type);
     return this;
   }
@@ -76,7 +76,7 @@ public class FutureResponse<TYPE> {
    * @param typeSupplier to complete future with.
    * @return class instance.
    */
-  public @NotNull FutureResponse<TYPE> completableAsync(@Nullable final Supplier<TYPE> typeSupplier) {
+  public @NotNull FutureResponse<TYPE> completeAsync(@Nullable final Supplier<TYPE> typeSupplier) {
     this.completableFuture.completeAsync(typeSupplier);
     return this;
   }
@@ -87,7 +87,7 @@ public class FutureResponse<TYPE> {
    * @param throwable to complete future with.
    * @return class instance.
    */
-  public @NotNull FutureResponse<TYPE> completableExceptionally(@NotNull final Throwable throwable) {
+  public @NotNull FutureResponse<TYPE> completeExceptionally(@NotNull final Throwable throwable) {
     this.completableFuture.completeExceptionally(throwable);
     return this;
   }
