@@ -76,8 +76,20 @@ public class FutureResponse<TYPE> {
    * @param typeSupplier to complete future with.
    * @return class instance.
    */
-  public @NotNull FutureResponse<TYPE> completeAsync(@Nullable final Supplier<TYPE> typeSupplier) {
+  public @NotNull FutureResponse<TYPE> completeAsync(@NotNull final Supplier<TYPE> typeSupplier) {
     this.completableFuture.completeAsync(typeSupplier);
+    return this;
+  }
+
+  /**
+   * Complete {@link CompletableFuture} of this instance async. This method give also the response instance itself,
+   * so the response could be {@link FutureResponse#completeExceptionally(Throwable)}.
+   *
+   * @param function to complete future with.
+   * @return class instance.
+   */
+  public @NotNull FutureResponse<TYPE> completeAsync(@NotNull final Function<FutureResponse<TYPE>, TYPE> function) {
+    this.completableFuture.completeAsync(() -> function.apply(this));
     return this;
   }
 
