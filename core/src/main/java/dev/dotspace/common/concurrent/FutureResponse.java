@@ -60,6 +60,39 @@ public class FutureResponse<TYPE> {
   }
 
   /**
+   * Complete {@link CompletableFuture} of this instance.
+   *
+   * @param type to complete future with.
+   * @return class instance.
+   */
+  public @NotNull FutureResponse<TYPE> completable(@Nullable final TYPE type) {
+    this.completableFuture.complete(type);
+    return this;
+  }
+
+  /**
+   * Complete {@link CompletableFuture} of this instance async.
+   *
+   * @param typeSupplier to complete future with.
+   * @return class instance.
+   */
+  public @NotNull FutureResponse<TYPE> completableAsync(@Nullable final Supplier<TYPE> typeSupplier) {
+    this.completableFuture.completeAsync(typeSupplier);
+    return this;
+  }
+
+  /**
+   * Complete {@link CompletableFuture} with throwable.
+   *
+   * @param throwable to complete future with.
+   * @return class instance.
+   */
+  public @NotNull FutureResponse<TYPE> completableExceptionally(@NotNull final Throwable throwable) {
+    this.completableFuture.completeExceptionally(throwable);
+    return this;
+  }
+
+  /**
    * Get the Response of the {@link CompletableFuture}.
    * Further information about the {@link ExecutionException} and {@link InterruptedException} see {@link CompletableFuture#get()}.
    */
