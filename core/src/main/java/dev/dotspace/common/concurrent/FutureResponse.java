@@ -7,8 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -95,16 +93,48 @@ public class FutureResponse<TYPE> {
     return this;
   }
 
-  public @NotNull FutureResponse<TYPE> completeAsync(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
-    this.completableFuture.completeAsync(() -> {
-      final ResponseContent<TYPE> responseContent = new ResponseContent<>();
-      consumer.accept(responseContent);
-      Optional.ofNullable(responseContent.throwable()).ifPresent(this::completeExceptionally); //Complete with throwable if ResponseContent has throwable.
-      return responseContent.content();
-    });
+  /**
+   * Construct {@link CompletableFuture#complete(Object)}.
+   *
+   * @param consumer to apply {@link ResponseContent}.
+   * @return class instance.
+   */
+  public @NotNull FutureResponse<TYPE> contentComplete(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    this.completableFuture.complete(this.contentImplementation(consumer));
     return this;
   }
 
+  /**
+   * Construct {@link CompletableFuture#completeAsync(Supplier)}.
+   *
+   * @param consumer to apply {@link ResponseContent}.
+   * @return class instance.
+   */
+  public @NotNull FutureResponse<TYPE> contentCompleteAsync(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    this.completableFuture.completeAsync(() -> this.contentImplementation(consumer));
+    return this;
+  }
+
+  /**
+   * Implementation for {@link FutureResponse#contentComplete(Consumer)} and {@link FutureResponse#contentCompleteAsync(Consumer)}.
+   *
+   * @param consumer to apply {@link ResponseContent}.
+   * @return response after {@link Consumer}.
+   */
+  private @Nullable TYPE contentImplementation(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    final ResponseContent<TYPE> responseContent = new ResponseContent<>();
+    consumer.accept(responseContent);
+    Optional.ofNullable(responseContent.throwable()).ifPresent(this::completeExceptionally); //Complete with throwable if ResponseContent has throwable.
+    return responseContent.content();
+  }
+
+  /**
+   * Do not use!
+   */
+  @Deprecated
+  public @NotNull FutureResponse<TYPE> completeAsync(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    return this.contentCompleteAsync(consumer);
+  }
 
   /**
    * Complete {@link CompletableFuture} with throwable.
