@@ -123,7 +123,9 @@ public class FutureResponse<TYPE> {
    */
   private @Nullable TYPE completeContentImplementation(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
     final ResponseContent<TYPE> responseContent = new ResponseContent<>();
-    consumer.accept(responseContent);
+    if (consumer != null) {
+      consumer.accept(responseContent);
+    }
     Optional.ofNullable(responseContent.throwable()).ifPresent(this::completeExceptionally); //Complete with throwable if ResponseContent has throwable.
     return responseContent.content();
   }
@@ -194,7 +196,9 @@ public class FutureResponse<TYPE> {
    */
   private void presentImplementation(@Nullable final TYPE type,
                                      @NotNull final Consumer<TYPE> consumer) {
-    Optional.ofNullable(type).ifPresent(consumer);
+    if (type != null && consumer != null) {
+      consumer.accept(type);
+    }
   }
 
   /**
@@ -251,8 +255,9 @@ public class FutureResponse<TYPE> {
    */
   private void absentImplementation(@Nullable final TYPE type,
                                     @NotNull final Runnable runnable) {
-    if (type != null) return;
-    runnable.run();
+    if (type == null && runnable != null) {
+      runnable.run();
+    }
   }
 
   /**
@@ -291,8 +296,9 @@ public class FutureResponse<TYPE> {
    */
   private void exceptionallyImplementation(@Nullable final Throwable throwable,
                                            @NotNull final Consumer<Throwable> throwableConsumer) {
-    if (throwable == null) return;
-    throwableConsumer.accept(throwable);
+    if (throwable != null && throwableConsumer != null) {
+      throwableConsumer.accept(throwable);
+    }
   }
 
   /**
@@ -341,10 +347,10 @@ public class FutureResponse<TYPE> {
                                                    @Nullable final Throwable throwable,
                                                    @NotNull final Runnable runnable,
                                                    @NotNull final Consumer<Throwable> throwableConsumer) {
-    if (type == null) {
+    if (type == null && runnable != null) {
       runnable.run();
     }
-    if (throwable != null) {
+    if (throwable != null && throwableConsumer != null) {
       throwableConsumer.accept(throwable);
     }
   }
