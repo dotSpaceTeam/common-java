@@ -99,8 +99,8 @@ public class FutureResponse<TYPE> {
    * @param consumer to apply {@link ResponseContent}.
    * @return class instance.
    */
-  public @NotNull FutureResponse<TYPE> contentComplete(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
-    this.completableFuture.complete(this.contentImplementation(consumer));
+  public @NotNull FutureResponse<TYPE> completeContent(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    this.completableFuture.complete(this.completeContentImplementation(consumer));
     return this;
   }
 
@@ -110,18 +110,18 @@ public class FutureResponse<TYPE> {
    * @param consumer to apply {@link ResponseContent}.
    * @return class instance.
    */
-  public @NotNull FutureResponse<TYPE> contentCompleteAsync(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
-    this.completableFuture.completeAsync(() -> this.contentImplementation(consumer));
+  public @NotNull FutureResponse<TYPE> completeContentAsync(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    this.completableFuture.completeAsync(() -> this.completeContentImplementation(consumer));
     return this;
   }
 
   /**
-   * Implementation for {@link FutureResponse#contentComplete(Consumer)} and {@link FutureResponse#contentCompleteAsync(Consumer)}.
+   * Implementation for {@link FutureResponse#completeContent(Consumer)} and {@link FutureResponse#completeContentAsync(Consumer)}.
    *
    * @param consumer to apply {@link ResponseContent}.
    * @return response after {@link Consumer}.
    */
-  private @Nullable TYPE contentImplementation(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+  private @Nullable TYPE completeContentImplementation(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
     final ResponseContent<TYPE> responseContent = new ResponseContent<>();
     consumer.accept(responseContent);
     Optional.ofNullable(responseContent.throwable()).ifPresent(this::completeExceptionally); //Complete with throwable if ResponseContent has throwable.
@@ -133,7 +133,7 @@ public class FutureResponse<TYPE> {
    */
   @Deprecated
   public @NotNull FutureResponse<TYPE> completeAsync(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
-    return this.contentCompleteAsync(consumer);
+    return this.completeContentAsync(consumer);
   }
 
   /**
