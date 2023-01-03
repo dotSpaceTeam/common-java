@@ -21,7 +21,7 @@ public final class SpaceObjects {
    * @throws NullPointerException when object or absentSupplier(also the supplied object) is null.
    */
   public static <T> @NotNull T ifAbsentUse(@Nullable final T object,
-                                           @Nullable final Supplier<T> absentSupplier) {
+                                           @Nullable final Supplier<@Nullable T> absentSupplier) {
     if (object != null) { //Return object if present.
       return object;
     }
