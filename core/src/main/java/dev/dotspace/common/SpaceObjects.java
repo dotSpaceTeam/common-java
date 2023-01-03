@@ -41,7 +41,7 @@ public final class SpaceObjects {
    * @throws NullPointerException if object is null
    */
   public static <T> @NotNull T throwIfNull(@Nullable final T object,
-                                           @Nullable final Supplier<NullPointerException> exceptionSupplier) {
+                                           @Nullable final Supplier<NullPointerException> exceptionSupplier) throws NullPointerException {
     if (object != null) { //Return object if not null
       return object;
     }
@@ -61,7 +61,7 @@ public final class SpaceObjects {
    * @throws NullPointerException if object is null
    */
   public static <T> @NotNull T throwIfNull(@Nullable final T object,
-                                           @Nullable final String message) {
+                                           @Nullable final String message) throws NullPointerException {
     return SpaceObjects.throwIfNull(object, message == null ? null : () -> new NullPointerException(message));
   }
 
