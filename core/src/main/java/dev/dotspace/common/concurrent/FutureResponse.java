@@ -94,13 +94,38 @@ public class FutureResponse<TYPE> {
   }
 
   /**
+   * Compose response.
+   *
+   * @param startValue to start composition.
+   * @param consumer   consumer to edit composition.
+   * @return class instance.
+   */
+  public @NotNull FutureResponse<TYPE> composeContent(@Nullable final TYPE startValue,
+                                                      @NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    this.completableFuture.complete(this.composeContentImplementation(startValue, consumer));
+    return this;
+  }
+
+  /**
    * Construct {@link CompletableFuture#complete(Object)}.
    *
    * @param consumer to apply {@link ResponseContent}.
    * @return class instance.
    */
-  public @NotNull FutureResponse<TYPE> completeContent(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
-    this.completableFuture.complete(this.completeContentImplementation(consumer));
+  public @NotNull FutureResponse<TYPE> composeContent(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    return this.composeContent(null, consumer);
+  }
+
+  /**
+   * Compose resonse asnyc.
+   *
+   * @param startValue to start composition.
+   * @param consumer   consumer to edit composition.
+   * @return class instance.
+   */
+  public @NotNull FutureResponse<TYPE> composeContentAsync(@Nullable final TYPE startValue,
+                                                           @NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    this.completableFuture.completeAsync(() -> this.composeContentImplementation(startValue, consumer));
     return this;
   }
 
@@ -110,19 +135,19 @@ public class FutureResponse<TYPE> {
    * @param consumer to apply {@link ResponseContent}.
    * @return class instance.
    */
-  public @NotNull FutureResponse<TYPE> completeContentAsync(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
-    this.completableFuture.completeAsync(() -> this.completeContentImplementation(consumer));
-    return this;
+  public @NotNull FutureResponse<TYPE> composeContentAsync(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    return this.composeContentAsync(null, consumer);
   }
 
   /**
-   * Implementation for {@link FutureResponse#completeContent(Consumer)} and {@link FutureResponse#completeContentAsync(Consumer)}.
+   * Implementation for {@link FutureResponse#composeContent(Consumer)} and {@link FutureResponse#composeContentAsync(Consumer)}.
    *
    * @param consumer to apply {@link ResponseContent}.
    * @return response after {@link Consumer}.
    */
-  private @Nullable TYPE completeContentImplementation(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
-    final ResponseContent<TYPE> responseContent = new ResponseContent<>();
+  private @Nullable TYPE composeContentImplementation(@Nullable final TYPE startValue,
+                                                      @NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    final ResponseContent<TYPE> responseContent = new ResponseContent<>(startValue);
     if (consumer != null) {
       consumer.accept(responseContent);
     }
@@ -135,7 +160,7 @@ public class FutureResponse<TYPE> {
    */
   @Deprecated
   public @NotNull FutureResponse<TYPE> completeAsync(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
-    return this.completeContentAsync(consumer);
+    return this.composeContentAsync(consumer);
   }
 
   /**
