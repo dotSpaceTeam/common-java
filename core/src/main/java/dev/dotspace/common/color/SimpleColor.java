@@ -9,6 +9,7 @@ import java.awt.*;
  * @param green value of green
  * @param blue  value of blue
  */
+@Deprecated
 public record SimpleColor(short red,
                           short green,
                           short blue) {
@@ -59,6 +60,7 @@ public record SimpleColor(short red,
   }
 
   //static
+
   /**
    * Create new color
    *

@@ -54,7 +54,7 @@ public class SpaceCollectionsTest {
    */
   @Test
   public void testAsyncRandom() {
-    SpaceCollections.asyncRandom(NUMBERS_LIST).thenAccept(Assertions::assertNotNull);
+    SpaceCollections.randomAsync(NUMBERS_LIST).ifPresent(Assertions::assertNotNull);
   }
 
   /**
@@ -62,7 +62,7 @@ public class SpaceCollectionsTest {
    */
   @Test
   public void testAsyncRandomEmpty() {
-    SpaceCollections.asyncRandom(new ArrayList<>()).thenAccept(Assertions::assertNull);
+    SpaceCollections.randomAsync(new ArrayList<>()).ifPresent(Assertions::assertNull);
   }
 
   /**
@@ -70,6 +70,6 @@ public class SpaceCollectionsTest {
    */
   @Test
   public void testAsyncRandomNull() {
-    SpaceCollections.asyncRandom(null).thenAccept(Assertions::assertNull);
+    SpaceCollections.randomAsync(null).ifPresent(Assertions::assertNull);
   }
 }

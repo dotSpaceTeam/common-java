@@ -45,7 +45,6 @@ public final class SpaceTime {
   }
 
   //records
-
   /**
    * Class to store a long for a timestamp and calculate with it.
    * <p>
@@ -56,8 +55,8 @@ public final class SpaceTime {
    *
    * //Do stuff here
    *
-   * System.out.println("Process took: " + timestamp.pastTime() + " ms.");
-   * System.out.println("Process took: " + timestamp.pastTimeFormatted(TimeUnit.SECONDS) + " seconds.");
+   * System.out.format("Process took: %d ms.", timestamp.pastTime());
+   * System.out.format("Process took: %d  seconds.", timestamp.pastTimeFormatted(TimeUnit.SECONDS));
    * </code></pre>
    *
    * @param timestamp used as reference for the stamp

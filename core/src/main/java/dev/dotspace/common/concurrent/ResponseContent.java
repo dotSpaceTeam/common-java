@@ -8,6 +8,15 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Hold an object or throw an {@link Exception} on get.
+ * <p>
+ * A throwable always has a higher priority than a content.
+ * For example:
+ * A response is created with a start value of 5[Integer]:
+ * <pre><code>ResponseContent<Integer> content = new ResponseContent(5);</code></pre>
+ * <p>
+ * If somewhere in the process:
+ * <pre><code>content.throwable([instance of {@link Throwable} -> not null]);</code></pre>
+ * has higher priority.
  */
 @Setter
 @Getter

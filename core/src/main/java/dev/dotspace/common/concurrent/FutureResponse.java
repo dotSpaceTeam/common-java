@@ -7,8 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -95,16 +93,75 @@ public class FutureResponse<TYPE> {
     return this;
   }
 
-  public @NotNull FutureResponse<TYPE> completeAsync(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
-    this.completableFuture.completeAsync(() -> {
-      final ResponseContent<TYPE> responseContent = new ResponseContent<>();
-      consumer.accept(responseContent);
-      Optional.ofNullable(responseContent.throwable()).ifPresent(this::completeExceptionally); //Complete with throwable if ResponseContent has throwable.
-      return responseContent.content();
-    });
+  /**
+   * Compose response.
+   *
+   * @param startValue to start composition.
+   * @param consumer   consumer to edit composition.
+   * @return class instance.
+   */
+  public @NotNull FutureResponse<TYPE> composeContent(@Nullable final TYPE startValue,
+                                                      @NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    this.completableFuture.complete(this.composeContentImplementation(startValue, consumer));
     return this;
   }
 
+  /**
+   * Construct {@link CompletableFuture#complete(Object)}.
+   *
+   * @param consumer to apply {@link ResponseContent}.
+   * @return class instance.
+   */
+  public @NotNull FutureResponse<TYPE> composeContent(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    return this.composeContent(null, consumer);
+  }
+
+  /**
+   * Compose resonse asnyc.
+   *
+   * @param startValue to start composition.
+   * @param consumer   consumer to edit composition.
+   * @return class instance.
+   */
+  public @NotNull FutureResponse<TYPE> composeContentAsync(@Nullable final TYPE startValue,
+                                                           @NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    this.completableFuture.completeAsync(() -> this.composeContentImplementation(startValue, consumer));
+    return this;
+  }
+
+  /**
+   * Construct {@link CompletableFuture#completeAsync(Supplier)}.
+   *
+   * @param consumer to apply {@link ResponseContent}.
+   * @return class instance.
+   */
+  public @NotNull FutureResponse<TYPE> composeContentAsync(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    return this.composeContentAsync(null, consumer);
+  }
+
+  /**
+   * Implementation for {@link FutureResponse#composeContent(Consumer)} and {@link FutureResponse#composeContentAsync(Consumer)}.
+   *
+   * @param consumer to apply {@link ResponseContent}.
+   * @return response after {@link Consumer}.
+   */
+  private @Nullable TYPE composeContentImplementation(@Nullable final TYPE startValue,
+                                                      @NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    final ResponseContent<TYPE> responseContent = new ResponseContent<>(startValue);
+    if (consumer != null) {
+      consumer.accept(responseContent);
+    }
+    Optional.ofNullable(responseContent.throwable()).ifPresent(this::completeExceptionally); //Complete with throwable if ResponseContent has throwable.
+    return responseContent.content();
+  }
+
+  /**
+   * Do not use!
+   */
+  @Deprecated
+  public @NotNull FutureResponse<TYPE> completeAsync(@NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+    return this.composeContentAsync(consumer);
+  }
 
   /**
    * Complete {@link CompletableFuture} with throwable.
@@ -164,7 +221,9 @@ public class FutureResponse<TYPE> {
    */
   private void presentImplementation(@Nullable final TYPE type,
                                      @NotNull final Consumer<TYPE> consumer) {
-    Optional.ofNullable(type).ifPresent(consumer);
+    if (type != null && consumer != null) {
+      consumer.accept(type);
+    }
   }
 
   /**
@@ -221,8 +280,9 @@ public class FutureResponse<TYPE> {
    */
   private void absentImplementation(@Nullable final TYPE type,
                                     @NotNull final Runnable runnable) {
-    if (type != null) return;
-    runnable.run();
+    if (type == null && runnable != null) {
+      runnable.run();
+    }
   }
 
   /**
@@ -261,8 +321,9 @@ public class FutureResponse<TYPE> {
    */
   private void exceptionallyImplementation(@Nullable final Throwable throwable,
                                            @NotNull final Consumer<Throwable> throwableConsumer) {
-    if (throwable == null) return;
-    throwableConsumer.accept(throwable);
+    if (throwable != null && throwableConsumer != null) {
+      throwableConsumer.accept(throwable);
+    }
   }
 
   /**
@@ -311,10 +372,10 @@ public class FutureResponse<TYPE> {
                                                    @Nullable final Throwable throwable,
                                                    @NotNull final Runnable runnable,
                                                    @NotNull final Consumer<Throwable> throwableConsumer) {
-    if (type == null) {
+    if (type == null && runnable != null) {
       runnable.run();
     }
-    if (throwable != null) {
+    if (throwable != null && throwableConsumer != null) {
       throwableConsumer.accept(throwable);
     }
   }

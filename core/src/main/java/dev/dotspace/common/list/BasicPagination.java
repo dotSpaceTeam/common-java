@@ -28,7 +28,8 @@ public class BasicPagination<T> implements Pagination<T> {
    */
   public BasicPagination(final int elementsPerPage) {
     if (elementsPerPage <= 0) {
-      throw new IllegalArgumentException("Can't build a BasicPagination with this elementsPerPage int{" + elementsPerPage + "}.");
+      throw new IllegalArgumentException(
+        String.format("Can't build a BasicPagination with this elementsPerPage int{%d}.", elementsPerPage));
     }
     this.elementsPerPage = elementsPerPage;
   }

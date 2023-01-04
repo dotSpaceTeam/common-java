@@ -12,6 +12,26 @@ import java.util.function.Supplier;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SpaceObjects {
   /**
+   * Check object if present. If object is absent try to get alternate object trough absentSupplier.
+   *
+   * @param object         to get if present.
+   * @param absentSupplier to use as supplier if object is null.
+   * @param <T>            generic type of object and absentSupplier.
+   * @return present object.
+   * @throws NullPointerException when object or absentSupplier(also the supplied object) is null.
+   */
+  public static <T> @NotNull T ifAbsentUse(@Nullable final T object,
+                                           @Nullable final Supplier<@Nullable T> absentSupplier) {
+    if (object != null) { //Return object if present.
+      return object;
+    }
+
+    return Optional.ofNullable(absentSupplier)
+      .map(Supplier::get)
+      .orElseThrow(() -> new NullPointerException("Absent supplier or supplied object null!"));
+  }
+
+  /**
    * Throw a supplied {@link NullPointerException} if object is null.
    *
    * @param object            to check if it is null
@@ -21,7 +41,7 @@ public final class SpaceObjects {
    * @throws NullPointerException if object is null
    */
   public static <T> @NotNull T throwIfNull(@Nullable final T object,
-                                           @Nullable Supplier<NullPointerException> exceptionSupplier) {
+                                           @Nullable final Supplier<NullPointerException> exceptionSupplier) throws NullPointerException {
     if (object != null) { //Return object if not null
       return object;
     }
@@ -41,7 +61,7 @@ public final class SpaceObjects {
    * @throws NullPointerException if object is null
    */
   public static <T> @NotNull T throwIfNull(@Nullable final T object,
-                                           @Nullable String message) {
+                                           @Nullable final String message) throws NullPointerException {
     return SpaceObjects.throwIfNull(object, message == null ? null : () -> new NullPointerException(message));
   }
 
