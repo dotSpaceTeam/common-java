@@ -8,32 +8,38 @@ import dev.dotspace.data.wrapper.instance.WrapperType;
 import dev.dotspace.data.wrapper.method.WrapperInstanceMethod;
 import dev.dotspace.data.wrapper.method.WrapperMethod;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class WrapperManager<WRAPPER extends Wrapper> {
+  private final Logger logger;
   private final Class<WRAPPER> wrapperClass;
   private final List<WrapperInstance<WRAPPER>> wrappers = new ArrayList<>();
   private boolean active = true;
 
-  public WrapperManager(Class<WRAPPER> wrapperClass) {
+  public WrapperManager(@NotNull final String name,
+                        @NotNull final Class<WRAPPER> wrapperClass) {
+    this.logger = LoggerFactory.getLogger("WrapperManager(%s)".formatted(name));
     this.wrapperClass = wrapperClass;
   }
 
-  public boolean implementWrapper(final WRAPPER wrapper) {
+  public boolean implementWrapper(@NotNull final WRAPPER wrapper) {
     this.checkIfDeactivated();
     final WrapperData wrapperInfo = wrapper.getClass().getAnnotation(WrapperData.class);
 
     if (!this.wrapperClass.isInstance(wrapper)) {
-      // LOGGER.error("Given wrapper is not instance of {}.", this.wrapperClass);
+      this.logger.error("Given wrapper is not instance of {}.", this.wrapperClass);
       return false;
     }
 
     if (wrapperInfo == null) {
-      // LOGGER.error("Given wrapper has no @DataWrapperInfo annotation is null.");
+      this.logger.error("Given wrapper has no @DataWrapperInfo annotation is null.");
       return false;
     }
 
@@ -46,7 +52,7 @@ public final class WrapperManager<WRAPPER extends Wrapper> {
       }
 
       if (!method.getGenericReturnType().getTypeName().startsWith("dev.dotspace.common.concurrent.FutureResponse")) {
-        // LOGGER.error("Method is not FutureResponse<?>");
+        this.logger.error("Method is not FutureResponse<?>");
         continue;
       }
 
@@ -57,8 +63,7 @@ public final class WrapperManager<WRAPPER extends Wrapper> {
         method);
 
       methods.add(wrapperInstanceMethod);
-
-      //   LOGGER.info("{}", wrapperInstanceMethod);
+      this.logger.info("{}", wrapperInstanceMethod);
     }
 
     if (!this.wrappers.isEmpty()) {
@@ -73,9 +78,9 @@ public final class WrapperManager<WRAPPER extends Wrapper> {
     }
 
     this.wrappers.add(new WrapperInstance<>(wrapper, wrapperInfo.name(), wrapperInfo.wrapperType(), wrapperInfo.priority(), methods));
-    // LOGGER.info("Successfully added wrapper[{}] to manager methods=[{}].",
-    //  wrapperInfo.name(),
-    //  methods.stream().map(WrapperInstanceMethod::name).collect(Collectors.joining(", ")));
+    this.logger.info("Successfully added wrapper[{}] to manager methods=[{}].",
+      wrapperInfo.name(),
+      methods.stream().map(WrapperInstanceMethod::name).collect(Collectors.joining(", ")));
     return true;
   }
 
@@ -94,14 +99,14 @@ public final class WrapperManager<WRAPPER extends Wrapper> {
           typeFutureResponse.complete(type);
         })
         .ifExceptionally(throwable -> {
-          //   LOGGER.warn("Wrapper answered with error: {}", throwable.getMessage());
+          this.logger.warn("Wrapper answered with error: {}", throwable.getMessage());
         });
     }
 
     return typeFutureResponse;
   }
 
-  public <TYPE> FutureResponse<TYPE> useCacheIfPresent(final Function<WRAPPER, FutureResponse<TYPE>> function,
+  public <TYPE> FutureResponse<TYPE> useCacheIfPresent(@NotNull final Function<WRAPPER, FutureResponse<TYPE>> function,
                                                        @NotNull final ManagerOptions... managerOptions) {
     this.checkIfDeactivated();
     return new FutureResponse<TYPE>().composeContentAsync(typeResponseContent -> {
@@ -112,6 +117,8 @@ public final class WrapperManager<WRAPPER extends Wrapper> {
         if (responseCount.size() != cacheInstances.size()) {
           return;
         }
+
+        this.logger.info("Value not present in cache wrappers, pull from storage.");
 
         this.query(WrapperType.STORAGE, function).ifPresent(typeResponseContent::content);
       };
@@ -131,25 +138,25 @@ public final class WrapperManager<WRAPPER extends Wrapper> {
     });
   }
 
-  public @NotNull Optional<WRAPPER> query(final WrapperType wrapperType) {
+  public @NotNull Optional<WRAPPER> query(@NotNull final WrapperType wrapperType) {
     this.checkIfDeactivated();
     return this.filteredAndOrdered(wrapperType)
       .findFirst()
       .map(WrapperInstance::wrapper);
   }
 
-  public @NotNull WRAPPER queryElseTrow(final WrapperType wrapperType) {
+  public @NotNull WRAPPER queryElseTrow(@NotNull final WrapperType wrapperType) {
     return this.query(wrapperType).orElseThrow();
   }
 
-  public <TYPE> FutureResponse<TYPE> query(final WrapperType wrapperType,
-                                           final Function<WRAPPER, FutureResponse<TYPE>> function,
+  public <TYPE> FutureResponse<TYPE> query(@NotNull final WrapperType wrapperType,
+                                           @NotNull final Function<WRAPPER, FutureResponse<TYPE>> function,
                                            @NotNull final ManagerOptions... managerOptions) {
     final WRAPPER wrapper = this.queryElseTrow(wrapperType);
     final FutureResponse<TYPE> type = function.apply(wrapper);
     type
       .ifExceptionallyAsync(throwable -> {
-        //   LOGGER.error("Completed with error. " + throwable.getMessage());
+        this.logger.error("Completed with error. " + throwable.getMessage());
       })
       .ifPresentAsync(presentType -> {
         if (wrapperType == WrapperType.CACHE) {
@@ -161,7 +168,7 @@ public final class WrapperManager<WRAPPER extends Wrapper> {
           }
           try {
             wrapperWrapperInstance.wrapper().latestProcessedObject(presentType);
-            //  LOGGER.info("Cached value: {} in wrapper {}.", presentType, wrapperWrapperInstance.name());
+            this.logger.info("Cached value: {} in wrapper {}.", presentType, wrapperWrapperInstance.name());
           } catch (final Throwable throwable) {
             throwable.printStackTrace();
           }
@@ -170,7 +177,7 @@ public final class WrapperManager<WRAPPER extends Wrapper> {
     return type;
   }
 
-  private @NotNull Stream<WrapperInstance<WRAPPER>> filteredAndOrdered(final WrapperType wrapperType) {
+  private @NotNull Stream<WrapperInstance<WRAPPER>> filteredAndOrdered(@NotNull final WrapperType wrapperType) {
     return this.wrappers
       .stream()
       .filter(wrapperWrapperR -> wrapperWrapperR.wrapperType() == wrapperType)
@@ -185,7 +192,7 @@ public final class WrapperManager<WRAPPER extends Wrapper> {
   }
 
   private void checkIfDeactivated() {
-    if (!active) {
+    if (!this.active) {
       throw new RuntimeException("Manager already deactivated.");
     }
   }
