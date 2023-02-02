@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 
 public class FutureResponseTest {
-
   private final static int INTEGER_TO_COMPLETE = 5;
 
   /**
