@@ -60,6 +60,24 @@ public class FutureResponse<TYPE> {
   }
 
   /**
+   * Returns true if: normally(Object), exceptionally(Error) or cancellation.
+   *
+   * @return true if description above matches.
+   */
+  public boolean done() {
+    return this.completableFuture.isDone();
+  }
+
+  /**
+   * Returns true if this was cancelled.
+   *
+   * @return true if description above matches.
+   */
+  public boolean cancelled() {
+    return this.completableFuture.isCancelled();
+  }
+
+  /**
    * Complete {@link CompletableFuture} of this instance.
    *
    * @param type to complete future with.
@@ -117,7 +135,7 @@ public class FutureResponse<TYPE> {
   }
 
   /**
-   * Compose resonse asnyc.
+   * Compose response async.
    *
    * @param startValue to start composition.
    * @param consumer   consumer to edit composition.
@@ -146,7 +164,7 @@ public class FutureResponse<TYPE> {
    * @return response after {@link Consumer}.
    */
   private @Nullable TYPE composeContentImplementation(@Nullable final TYPE startValue,
-                                                      @NotNull final Consumer<ResponseContent<TYPE>> consumer) {
+                                                      @Nullable final Consumer<ResponseContent<TYPE>> consumer) {
     final ResponseContent<TYPE> responseContent = new ResponseContent<>(startValue);
     if (consumer != null) {
       consumer.accept(responseContent);
