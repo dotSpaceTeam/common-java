@@ -16,7 +16,6 @@ public class SpaceTimeTest {
   public void testTime() {
     final long systemCurrentMills = System.currentTimeMillis();
     final long timeAsSeconds = SpaceTime.currentTimeAs(TimeUnit.SECONDS);
-
     Assertions.assertEquals(systemCurrentMills / 1000, timeAsSeconds);
   }
 
