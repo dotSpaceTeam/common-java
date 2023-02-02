@@ -6,10 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Test class {@link SpaceCollections}.
@@ -29,7 +26,7 @@ public class SpaceCollectionsTest {
    */
   @Test
   public void testRandom() {
-    Assertions.assertNotNull(SpaceCollections.random(NUMBERS_LIST).orElse(null));
+    Assertions.assertNotNull(SpaceCollections.random(NUMBERS_LIST));
   }
 
   /**
@@ -37,7 +34,7 @@ public class SpaceCollectionsTest {
    */
   @Test
   public void testRandomEmpty() {
-    Assertions.assertNull(SpaceCollections.random(new ArrayList<>()).orElse(null));
+    Assertions.assertNull(SpaceCollections.random(new ArrayList<>()));
   }
 
   /**
@@ -45,7 +42,7 @@ public class SpaceCollectionsTest {
    */
   @Test
   public void testRandomNull() {
-    Assertions.assertNull(SpaceCollections.random(null).orElse(null));
+    Assertions.assertNull(SpaceCollections.random((Collection<Object>) null));
   }
 
 
@@ -70,6 +67,6 @@ public class SpaceCollectionsTest {
    */
   @Test
   public void testAsyncRandomNull() {
-    SpaceCollections.randomAsync(null).ifPresent(Assertions::assertNull);
+    SpaceCollections.randomAsync((Collection<Object>) null).ifPresent(Assertions::assertNull);
   }
 }
