@@ -1,5 +1,6 @@
 package dev.dotspace.common.concurrent;
 
+import dev.dotspace.common.SpaceObjects;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,6 +14,7 @@ import java.util.function.Supplier;
 
 /**
  * This class depends on an instance of an {@link CompletableFuture}.
+ * Use {@link dev.dotspace.common.concurrent.v2.implementation.CompletableResponse} instead.
  *
  * @param <TYPE> generic type of response object.
  */
@@ -169,7 +171,9 @@ public class FutureResponse<TYPE> {
     if (consumer != null) {
       consumer.accept(responseContent);
     }
-    Optional.ofNullable(responseContent.throwable()).ifPresent(this::completeExceptionally); //Complete with throwable if ResponseContent has throwable.
+    Optional
+      .ofNullable(responseContent.throwable())
+      .ifPresent(this::completeExceptionally); //Complete with throwable if ResponseContent has throwable.
     return responseContent.content();
   }
 
@@ -396,5 +400,43 @@ public class FutureResponse<TYPE> {
     if (throwable != null && throwableConsumer != null) {
       throwableConsumer.accept(throwable);
     }
+  }
+
+  public @NotNull FutureResponse<TYPE> ifAbsentOrExceptionally(@Nullable final Runnable runnable) {
+    this.completableFuture.handle((type, throwable) -> {
+      this.absentOrExceptionallyImplementation(runnable);
+      return null;
+    });
+    return this;
+  }
+
+  public @NotNull FutureResponse<TYPE> ifAbsentOrExceptionallyAsync(@Nullable final Runnable runnable) {
+    this.completableFuture.handleAsync((type, throwable) -> {
+      this.absentOrExceptionallyImplementation(runnable);
+      return null;
+    });
+    return this;
+  }
+
+  private void absentOrExceptionallyImplementation(@Nullable final Runnable runnable) {
+    if (runnable != null) {
+      runnable.run();
+    }
+  }
+
+  /*
+   * Static factory
+   */
+
+  /**
+   * Create a {@link FutureResponse} with a completed error response.
+   *
+   * @param throwable to directly complete this future.
+   * @param <TYPE>    generic type of {@link FutureResponse}.
+   * @return created instance of {@link FutureResponse}.
+   * @throws NullPointerException if given throwable is null.
+   */
+  public static <TYPE> @NotNull FutureResponse<TYPE> exception(@NotNull final Throwable throwable) {
+    return new FutureResponse<TYPE>().completeExceptionally(SpaceObjects.throwIfNull(throwable) /*Check if present.*/);
   }
 }
