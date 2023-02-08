@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -90,72 +91,110 @@ public interface Response<TYPE> {
   /**
    * Complete the response with an error in another thread to relieve the computational capacity of the main thread.
    *
-   * @param throwableSupplier
+   * @param throwableSupplier requests the error (Child of {@link Throwable}).
    * @return instance of this response.
    * @throws NullPointerException if throwableSupplier is null.
    */
   @NotNull Response<TYPE> completeExceptionally(@Nullable final Supplier<Throwable> throwableSupplier);
 
   /**
-   * @param responseConsumer
+   * With this method, information can be tapped.
+   * The {@link ResponseConsumer} of this method is also filled during completion.
+   * This method does not affect the parameters of the response.
+   *
+   * @param responseConsumer is filled with the information and values when completing.
    * @return instance of this response.
    * @throws NullPointerException if responseConsumer is null.
    */
-  @NotNull Response<TYPE> peak(@Nullable final ResponseConsumer<TYPE> responseConsumer);
+  @NotNull Response<TYPE> sniff(@Nullable final ResponseConsumer<TYPE> responseConsumer);
 
   /**
-   * @param responseConsumer
+   * This method can be used to retrieve information asynchronously.
+   * The {@link ResponseConsumer} of this method is also filled during completion.
+   * This method does not affect the parameters of the response.
+   *
+   * @param responseConsumer is filled with the information and values when completing.
    * @return instance of this response.
    * @throws NullPointerException if responseConsumer is null.
    */
-  @NotNull Response<TYPE> peakAsync(@Nullable final ResponseConsumer<TYPE> responseConsumer);
+  @NotNull Response<TYPE> sniffAsync(@Nullable final ResponseConsumer<TYPE> responseConsumer);
 
   /**
-   * @param runnable
+   * Executes the {@link Runnable} if the answer is completed in any way.
+   *
+   * @param runnable which is to be executed.
    * @return instance of this response.
    */
   @NotNull Response<TYPE> run(@Nullable final Runnable runnable);
 
   /**
-   * @param runnable
+   * Executes the {@link Runnable} asynchronously if the answer is completed in any way.
+   *
+   * @param runnable which is to be executed asynchronously.
    * @return instance of this response.
    */
   @NotNull Response<TYPE> runAsync(@Nullable final Runnable runnable);
 
   /**
-   * @param consumer
+   * Passes the response in the {@link Consumer} if it exists and is not null.
+   *
+   * @param consumer is filled with the response.
    * @return instance of this response.
    */
   @NotNull Response<TYPE> ifPresent(@Nullable final Consumer<@NotNull TYPE> consumer);
 
   /**
-   * @param consumer
+   * Passes the response asynchronously in the {@link Consumer} if it is present and not null.
+   *
+   * @param consumer is filled with the response.
    * @return instance of this response.
    */
   @NotNull Response<TYPE> ifPresentAsync(@Nullable final Consumer<@NotNull TYPE> consumer);
 
   /**
    * @param function
-   * @param <MAP_TYPE>
+   * @param <MAP>    the type into which the response should be converted.
    * @return new instance created by the map method.
    */
-  @NotNull <MAP_TYPE> Response<MAP_TYPE> ifPresentMap(@Nullable final Function<TYPE, MAP_TYPE> function);
+  @NotNull <MAP> Response<MAP> map(@Nullable final Function<TYPE, MAP> function);
 
   /**
    * @param function
-   * @param <MAP_TYPE>
+   * @param <MAP>    the type into which the response should be converted.
    * @return new instance created by the map method.
    */
-  @NotNull <MAP_TYPE> Response<MAP_TYPE> ifPresentMapAsync(@Nullable final Function<TYPE, MAP_TYPE> function);
+  @NotNull <MAP> Response<MAP> mapAsync(@Nullable final Function<TYPE, MAP> function);
 
   /**
-   * @param runnable
+   * This method creates a new instance in response.
+   * Since asynchronous methods are also used, the application on this instance is not possible.
+   *
+   * @param typePredicate
+   * @return new instance of {@link Response} created with the filtered value.
+   */
+  @NotNull Response<TYPE> filter(@Nullable final Predicate<TYPE> typePredicate);
+
+  /**
+   * This method creates a new instance in response.
+   * Since asynchronous methods are also used, the application on this instance is not possible.
+   *
+   * @param typePredicate
+   * @return new instance of {@link Response} created with the filtered value.
+   */
+  @NotNull Response<TYPE> filterAsync(@Nullable final Predicate<TYPE> typePredicate);
+
+  /**
+   * Executes the {@link Runnable} if the answer is completed with null.
+   *
+   * @param runnable which is to be executed.
    * @return instance of this response.
    */
   @NotNull Response<TYPE> ifAbsent(@Nullable final Runnable runnable);
 
   /**
-   * @param runnable
+   * Executes the {@link Runnable} asynchronously if the answer is completed with null.
+   *
+   * @param runnable which is to be executed.
    * @return instance of this response.
    */
   @NotNull Response<TYPE> ifAbsentAsync(@Nullable final Runnable runnable);
@@ -177,7 +216,7 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
-  @NotNull Response<TYPE> ifAbsentUse(@Nullable final Supplier<TYPE> typeSupplier);
+  @NotNull Response<TYPE> useIfAbsent(@Nullable final Supplier<TYPE> typeSupplier);
 
 
   /**
@@ -185,35 +224,35 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
-  @NotNull Response<TYPE> ifAbsentUseAsync(@Nullable final Supplier<TYPE> typeSupplier);
+  @NotNull Response<TYPE> useIfAbsentAsync(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
    * @param typeSupplier
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
-  @NotNull Response<TYPE> ifExceptionallyUse(@Nullable final Supplier<TYPE> typeSupplier);
+  @NotNull Response<TYPE> useIfExceptionally(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
    * @param typeSupplier
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
-  @NotNull Response<TYPE> ifExceptionallyUseAsync(@Nullable final Supplier<TYPE> typeSupplier);
+  @NotNull Response<TYPE> useIfExceptionallyAsync(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
    * @param typeSupplier
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
-  @NotNull Response<TYPE> ifNotPresentUse(@Nullable final Supplier<TYPE> typeSupplier);
+  @NotNull Response<TYPE> elseUse(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
    * @param typeSupplier
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
-  @NotNull Response<TYPE> ifNotPresentUseAsync(@Nullable final Supplier<TYPE> typeSupplier);
+  @NotNull Response<TYPE> elseUseAsync(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
    * @return
