@@ -1,4 +1,4 @@
-package dev.dotspace.common.concurrent.v2.implementation;
+package dev.dotspace.common.concurrent.v2;
 
 import dev.dotspace.common.concurrent.v2.Response;
 
