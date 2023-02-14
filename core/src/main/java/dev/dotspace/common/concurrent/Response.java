@@ -1,4 +1,4 @@
-package dev.dotspace.common.concurrent.v2;
+package dev.dotspace.common.concurrent;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -95,7 +95,7 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if throwableSupplier is null.
    */
-  @NotNull Response<TYPE> completeExceptionally(@Nullable final Supplier<Throwable> throwableSupplier);
+  @NotNull Response<TYPE> completeExceptionallyAsync(@Nullable final Supplier<Throwable> throwableSupplier);
 
   /**
    * With this method, information can be tapped.
@@ -152,33 +152,51 @@ public interface Response<TYPE> {
   @NotNull Response<TYPE> ifPresentAsync(@Nullable final Consumer<@NotNull TYPE> consumer);
 
   /**
-   * @param function
+   * <br>
+   * <b>This method creates a new instance in response.
+   * Since asynchronous methods are also used, the application on this instance is not possible.</b>
+   * <br>
+   *
+   * @param function is invoked to transform the response.
    * @param <MAP>    the type into which the response should be converted.
    * @return new instance created by the map method.
    */
   @NotNull <MAP> Response<MAP> map(@Nullable final Function<TYPE, MAP> function);
 
   /**
-   * @param function
+   * <br>
+   * <b>This method creates a new instance in response.
+   * Since asynchronous methods are also used, the application on this instance is not possible.</b>
+   * <br>
+   *
+   * @param function is invoked to transform the response.
    * @param <MAP>    the type into which the response should be converted.
    * @return new instance created by the map method.
    */
   @NotNull <MAP> Response<MAP> mapAsync(@Nullable final Function<TYPE, MAP> function);
 
   /**
-   * This method creates a new instance in response.
-   * Since asynchronous methods are also used, the application on this instance is not possible.
+   * Filter the {@link Response} if it is present and not null.
+   * If typePredict is null, the new {@link Response} is completed with an error.
+   * <br>
+   * <b>This method creates a new instance in response.
+   * Since asynchronous methods are also used, the application on this instance is not possible.</b>
+   * <br>
    *
-   * @param typePredicate
+   * @param typePredicate checks if the answer is kept ({@link Predicate#test(Object)} -> true).
    * @return new instance of {@link Response} created with the filtered value.
    */
   @NotNull Response<TYPE> filter(@Nullable final Predicate<TYPE> typePredicate);
 
   /**
-   * This method creates a new instance in response.
-   * Since asynchronous methods are also used, the application on this instance is not possible.
+   * Filter the {@link Response} asynchronously if it is present and not null.
+   * If typePredict is null, the new {@link Response} is completed with an error.
+   * <br>
+   * <b>This method creates a new instance in response.
+   * Since asynchronous methods are also used, the application on this instance is not possible.</b>
+   * <br>
    *
-   * @param typePredicate
+   * @param typePredicate checks if the answer is kept ({@link Predicate#test(Object)} -> true).
    * @return new instance of {@link Response} created with the filtered value.
    */
   @NotNull Response<TYPE> filterAsync(@Nullable final Predicate<TYPE> typePredicate);
@@ -200,19 +218,29 @@ public interface Response<TYPE> {
   @NotNull Response<TYPE> ifAbsentAsync(@Nullable final Runnable runnable);
 
   /**
-   * @param consumer
+   * Gives the {@link Throwable} that completed the answer. The {@link Throwable} can also be null.
+   *
+   * @param consumer will be completed with the error.
    * @return instance of this response.
    */
   @NotNull Response<TYPE> ifExceptionally(@Nullable final Consumer<@Nullable Throwable> consumer);
 
   /**
-   * @param consumer
+   * Returns the {@link Throwable} asynchronously that completed the answer. The {@link Throwable} can also be null.
+   *
+   * @param consumer will be completed with the error.
    * @return instance of this response.
    */
   @NotNull Response<TYPE> ifExceptionallyAsync(@Nullable final Consumer<@Nullable Throwable> consumer);
 
   /**
-   * @param typeSupplier
+   * Use the {@link Supplier}'s object if the {@link Response} was completed with null.
+   * <br>
+   * <b>This method creates a new instance in response.
+   * Since asynchronous methods are also used, the application on this instance is not possible.</b>
+   * <br>
+   *
+   * @param typeSupplier response to use if completed with null.
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
@@ -220,52 +248,83 @@ public interface Response<TYPE> {
 
 
   /**
-   * @param typeSupplier
+   * <br>
+   * <b>This method creates a new instance in response.
+   * Since asynchronous methods are also used, the application on this instance is not possible.</b>
+   * <br>
+   *
+   * @param typeSupplier response to use if completed with null.
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
   @NotNull Response<TYPE> useIfAbsentAsync(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
-   * @param typeSupplier
+   * <br>
+   * <b>This method creates a new instance in response.
+   * Since asynchronous methods are also used, the application on this instance is not possible.</b>
+   * <br>
+   *
+   * @param typeSupplier response to use if completed with an error.
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
   @NotNull Response<TYPE> useIfExceptionally(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
-   * @param typeSupplier
+   * <br>
+   * <b>This method creates a new instance in response.
+   * Since asynchronous methods are also used, the application on this instance is not possible.</b>
+   * <br>
+   *
+   * @param typeSupplier response to use if completed with an error.
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
   @NotNull Response<TYPE> useIfExceptionallyAsync(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
-   * @param typeSupplier
+   * <br>
+   * <b>This method creates a new instance in response.
+   * Since asynchronous methods are also used, the application on this instance is not possible.</b>
+   * <br>
+   *
+   * @param typeSupplier response to use if completed with null or an error.
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
   @NotNull Response<TYPE> elseUse(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
-   * @param typeSupplier
+   * <br>
+   * <b>This method creates a new instance in response.
+   * Since asynchronous methods are also used, the application on this instance is not possible.</b>
+   * <br>
+   *
+   * @param typeSupplier response to use if completed with null or an error.
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
   @NotNull Response<TYPE> elseUseAsync(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
-   * @return
+   * Check if the {@link Response} has been completed in any way.
+   *
+   * @return true, if completed. ({@link State} is not {@link State#UNCOMPLETED})
    */
   boolean done();
 
   /**
-   * @return
+   * Check if the {@link Response} has canceled.
+   *
+   * @return true, if cancelled. ({@link State} is {@link State#CANCELLED})
    */
   boolean canceled();
 
   /**
-   * @return
+   * Check if the {@link Response} has been completed exceptionally.
+   *
+   * @return true if, exceptionally. ({@link State} is {@link State#COMPLETED_EXCEPTIONALLY})
    */
   boolean exceptionally();
 }

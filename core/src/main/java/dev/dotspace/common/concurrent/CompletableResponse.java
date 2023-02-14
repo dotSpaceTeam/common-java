@@ -1,7 +1,6 @@
-package dev.dotspace.common.concurrent.v2.implementation;
+package dev.dotspace.common.concurrent;
 
 import dev.dotspace.common.SpaceObjects;
-import dev.dotspace.common.concurrent.v2.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -21,28 +21,55 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   private volatile @NotNull State state;
   private volatile @Nullable TYPE response;
   private volatile @Nullable Throwable throwable;
-  private volatile Executor<?>[] executors;
+  private volatile ResponseFunction<?>[] executors;
 
+  /**
+   * Public constructor to create instance.
+   */
   public CompletableResponse() {
     this(State.UNCOMPLETED);
   }
 
+  /**
+   * This constructor can be used to create an instance without explicitly defining a generic type.
+   * This method is a gimmick, the class is not saved, it is only used to set the type.
+   *
+   * @param typeClass defines the TYPE of the instance.
+   */
+  public CompletableResponse(@NotNull final Class<TYPE> typeClass) {
+    this();
+  }
+
+  /**
+   * Create instance with defined state.
+   *
+   * @param state to set as start {@link State}.
+   */
   private CompletableResponse(@NotNull final State state) {
     this.executorService = Executors.newCachedThreadPool();
     this.state = state;
-    this.executors = new Executor[0];
+    this.executors = new ResponseFunction[0];
   }
 
+  /**
+   * @see Response#get()
+   */
   @Override
   public @Nullable TYPE get() throws InterruptedException {
     return this.getImplementation(-1);
   }
 
+  /**
+   * @see Response#get(long)
+   */
   @Override
   public @Nullable TYPE get(long nanos) throws InterruptedException {
     return this.getImplementation(nanos);
   }
 
+  /**
+   * @see Response#get(long, TimeUnit)
+   */
   @Override
   public @Nullable TYPE get(long duration, @Nullable TimeUnit timeUnit) throws InterruptedException {
     return this.getImplementation(SpaceObjects.throwIfNull(timeUnit).toNanos(duration));
@@ -71,25 +98,31 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return this.response; //Returns the value of the class.
   }
 
+  /**
+   * @see Response#getNow(Supplier)
+   */
   @Override
-  public @Nullable TYPE getNow(@Nullable Supplier<TYPE> alternativeValue) {
-    if (this.response != null) {
-      return this.response;
+  public synchronized @Nullable TYPE getNow(@Nullable Supplier<TYPE> alternativeValue) {
+    if (this.response != null) { //Response is completed.
+      return this.response; //Response.
     }
 
-    TYPE alternative = null;
+    TYPE alternative = null; //Create variable.
 
-    if (alternativeValue != null) {
+    if (alternativeValue != null) { //If supplier is present get value.
       alternative = alternativeValue.get();
     }
 
-    if (alternative != null) {
-      this.completeImplementation(alternative);
+    if (alternative != null) { //If supplier was not null and value is also present.
+      this.completeImplementation(alternative); //Complete this response with supplied value.
     }
 
     return alternative;
   }
 
+  /**
+   * @see Response#cancel()
+   */
   @Override
   public synchronized boolean cancel() {
     if (this.state.done()) {
@@ -100,12 +133,18 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return true;
   }
 
+  /**
+   * @see Response#complete(Object)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> complete(@Nullable TYPE type) {
     this.completeImplementation(type);
     return this;
   }
 
+  /**
+   * @see Response#completeAsync(Supplier)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> completeAsync(@Nullable Supplier<TYPE> typeSupplier) {
     this.executorService.execute(() -> {
@@ -118,15 +157,27 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return this;
   }
 
+  /**
+   * @see Response#completeExceptionally(Throwable)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> completeExceptionally(@Nullable Throwable throwable) {
     this.completeExceptionallyImplementation(throwable);
     return this;
   }
 
+  /**
+   * @see Response#completeExceptionallyAsync(Supplier)
+   */
   @Override
-  public @NotNull CompletableResponse<TYPE> completeExceptionally(@Nullable Supplier<Throwable> throwableSupplier) {
-    this.executorService.execute(() -> this.completeExceptionallyImplementation(SpaceObjects.throwIfNull(throwableSupplier).get()));
+  public @NotNull CompletableResponse<TYPE> completeExceptionallyAsync(@Nullable Supplier<Throwable> throwableSupplier) {
+    this.executorService.execute(() -> {
+      try {
+        this.completeExceptionallyImplementation(SpaceObjects.throwIfNull(throwableSupplier).get());
+      } catch (final NullPointerException nullPointerException) {
+        this.completeExceptionally(nullPointerException);
+      }
+    });
     return this;
   }
 
@@ -149,17 +200,23 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   private void markAsCompleted(@NotNull final State state) {
     this.state = state;
 
-    for (final Executor<?> executor : this.executors) {
+    for (final ResponseFunction<?> executor : this.executors) {
       executor.run(this.executorService);
     }
   }
 
+  /**
+   * @see Response#sniff(ResponseConsumer)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> sniff(@Nullable ResponseConsumer<TYPE> responseConsumer) {
     this.sniffImplementation(responseConsumer, false);
     return this;
   }
 
+  /**
+   * @see Response#sniffAsync(ResponseConsumer)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> sniffAsync(@Nullable ResponseConsumer<TYPE> responseConsumer) {
     this.sniffImplementation(responseConsumer, true);
@@ -175,25 +232,27 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * </dl>
    *
    * @param responseConsumer
-   * @param async
+   * @param async            true, if the runnable is to be executed asynchronously.
    */
   private void sniffImplementation(@Nullable final ResponseConsumer<TYPE> responseConsumer,
                                    final boolean async) {
     if (responseConsumer == null) {
-      return;
+      return; //Return if null. Ignore request
     }
 
-    this.implementExecutor(new ResponseExecutor<>(() -> true, () -> {
-      try {
-        responseConsumer.accept(this.state, this.response, this.throwable);
-      } catch (final Throwable throwable) {
-        throwable.printStackTrace();
-      }
-    }, async));
+    this.implementExecutor(new ResponseFunctionExecutor<>(
+      () -> true, //Run in any condition
+      () -> {
+        try { //Catch possible errors from runnable.
+          responseConsumer.accept(this.state, this.response, this.throwable);
+        } catch (final Throwable throwable) {
+          throwable.printStackTrace(); //Print errors.
+        }
+      }, async));
   }
 
   /**
-   * See {@link Response#run(Runnable)}.
+   * @see Response#run(Runnable)
    */
   @Override
   public @NotNull Response<TYPE> run(@Nullable Runnable runnable) {
@@ -201,6 +260,9 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return this;
   }
 
+  /**
+   * @see Response#runAsync(Runnable)
+   */
   @Override
   public @NotNull Response<TYPE> runAsync(@Nullable Runnable runnable) {
     this.runImplementation(runnable, true); //Run implementation.
@@ -227,7 +289,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
       return; //Return, runnable is null means there is no function to run.
     }
 
-    this.implementExecutor(new ResponseExecutor<>( //Create new executor instance.
+    this.implementExecutor(new ResponseFunctionExecutor<>( //Create new executor instance.
       () -> true, //Run in any condition
       () -> {
         try { //Catch possible errors from runnable.
@@ -239,7 +301,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * See {@link Response#ifPresent(Consumer)}.
+   * @see Response#ifPresent(Consumer)
    */
   @Override
   public @NotNull CompletableResponse<TYPE> ifPresent(@Nullable Consumer<@NotNull TYPE> consumer) {
@@ -248,7 +310,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * See {@link Response#ifPresentAsync(Consumer)}.
+   * @see Response#ifPresentAsync(Consumer)
    */
   @Override
   public @NotNull CompletableResponse<TYPE> ifPresentAsync(@Nullable Consumer<@NotNull TYPE> consumer) {
@@ -273,7 +335,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
       return;
     }
 
-    this.implementExecutor(new ResponseExecutor<>(() -> this.response != null && this.state == State.COMPLETED_DEFAULT,
+    this.implementExecutor(new ResponseFunctionExecutor<>(() -> this.response != null && this.state == State.COMPLETED_DEFAULT,
       () -> {
         try {
           final TYPE threadResponse = this.response;
@@ -287,11 +349,17 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
       }, async));
   }
 
+  /**
+   * @see Response#map(Function)
+   */
   @Override
   public @NotNull <MAP> CompletableResponse<MAP> map(@Nullable Function<TYPE, MAP> function) {
     return this.mapImplementation(function, false);
   }
 
+  /**
+   * @see Response#mapAsync(Function)
+   */
   @Override
   public @NotNull <MAP> CompletableResponse<MAP> mapAsync(@Nullable Function<TYPE, MAP> function) {
     return this.mapImplementation(function, true);
@@ -313,7 +381,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   private <MAP> CompletableResponse<MAP> mapImplementation(@Nullable final Function<TYPE, MAP> function,
                                                            final boolean async) {
     final CompletableResponse<MAP> completableResponse = new CompletableResponse<>();
-    this.implementExecutor(new ResponseExecutor<>(() -> this.response != null && this.state == State.COMPLETED_DEFAULT, () -> {
+    this.implementExecutor(new ResponseFunctionExecutor<>(() -> this.response != null && this.state == State.COMPLETED_DEFAULT, () -> {
       try {
         completableResponse.complete(SpaceObjects.throwIfNull(function).apply(this.response));
       } catch (final Throwable throwable) {
@@ -342,7 +410,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   private @NotNull CompletableResponse<TYPE> filterImplementation(@Nullable final Predicate<TYPE> typePredicate,
                                                                   final boolean async) {
     final CompletableResponse<TYPE> completableResponse = new CompletableResponse<>();
-    this.implementExecutor(new ResponseExecutor<>(
+    this.implementExecutor(new ResponseFunctionExecutor<>(
       () -> this.response != null && this.state == State.COMPLETED_DEFAULT,
       () -> {
         try {
@@ -355,12 +423,18 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return completableResponse;
   }
 
+  /**
+   * @see Response#ifAbsent(Runnable)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> ifAbsent(@Nullable Runnable runnable) {
     this.ifAbsentImplementation(runnable, false);
     return this;
   }
 
+  /**
+   * @see Response#ifAbsentAsync(Runnable)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> ifAbsentAsync(@Nullable Runnable runnable) {
     this.ifAbsentImplementation(runnable, true);
@@ -384,7 +458,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
       return;
     }
 
-    this.implementExecutor(new ResponseExecutor<>(() -> this.state == State.COMPLETED_NULL, () -> {
+    this.implementExecutor(new ResponseFunctionExecutor<>(() -> this.state == State.COMPLETED_NULL, () -> {
       try {
         runnable.run();
       } catch (final Throwable throwable) {
@@ -393,26 +467,41 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     }, async));
   }
 
+  /**
+   * @see Response#useIfAbsent(Supplier)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> useIfAbsent(@Nullable Supplier<TYPE> typeSupplier) {
     return this.useImplementation(typeSupplier, () -> this.state == State.COMPLETED_NULL, false);
   }
 
+  /**
+   * @see Response#useIfAbsentAsync(Supplier)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> useIfAbsentAsync(@Nullable Supplier<TYPE> typeSupplier) {
     return this.useImplementation(typeSupplier, () -> this.state == State.COMPLETED_NULL, true);
   }
 
+  /**
+   * @see Response#useIfExceptionally(Supplier)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> useIfExceptionally(@Nullable Supplier<TYPE> typeSupplier) {
     return this.useImplementation(typeSupplier, () -> this.state == State.COMPLETED_EXCEPTIONALLY, false);
   }
 
+  /**
+   * @see Response#useIfExceptionallyAsync(Supplier)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> useIfExceptionallyAsync(@Nullable Supplier<TYPE> typeSupplier) {
     return this.useImplementation(typeSupplier, () -> this.state == State.COMPLETED_EXCEPTIONALLY, true);
   }
 
+  /**
+   * @see Response#elseUse(Supplier)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> elseUse(@Nullable Supplier<TYPE> typeSupplier) {
     return this.useImplementation(
@@ -421,6 +510,9 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
       false);
   }
 
+  /**
+   * @see Response#elseUseAsync(Supplier)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> elseUseAsync(@Nullable Supplier<TYPE> typeSupplier) {
     return this.useImplementation(
@@ -450,7 +542,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
                                                                @NotNull final Supplier<Boolean> checkIfExecutable,
                                                                final boolean async) {
     final CompletableResponse<TYPE> completableResponse = new CompletableResponse<>();
-    this.implementExecutor(new ResponseExecutor<>(checkIfExecutable,
+    this.implementExecutor(new ResponseFunctionExecutor<>(checkIfExecutable,
       () -> {
         if (this.response != null) {
           return;
@@ -465,12 +557,18 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return completableResponse;
   }
 
+  /**
+   * @see Response#ifExceptionally(Consumer)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> ifExceptionally(@Nullable Consumer<@Nullable Throwable> consumer) {
     this.ifExceptionallyImplementation(consumer, false);
     return this;
   }
 
+  /**
+   * @see Response#ifExceptionallyAsync(Consumer)
+   */
   @Override
   public @NotNull CompletableResponse<TYPE> ifExceptionallyAsync(@Nullable Consumer<@Nullable Throwable> consumer) {
     this.ifExceptionallyImplementation(consumer, true);
@@ -494,7 +592,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
       return;
     }
 
-    this.implementExecutor(new ResponseExecutor<>(
+    this.implementExecutor(new ResponseFunctionExecutor<>(
       () -> this.state == State.COMPLETED_EXCEPTIONALLY, //Only run if response was completed with error.
       () -> {
         try {
@@ -506,7 +604,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * See {@link Response#done()}.
+   * @see Response#done()
    */
   @Override
   public boolean done() {
@@ -514,25 +612,32 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * See {@link Response#canceled()}.
+   * @see Response#canceled()
    */
   @Override
   public boolean canceled() {
     return this.state == State.CANCELLED;
   }
 
+  /**
+   * @see Response#exceptionally()
+   */
   @Override
   public boolean exceptionally() {
     return this.state == State.COMPLETED_EXCEPTIONALLY;
   }
 
-  private synchronized void implementExecutor(@NotNull final Executor<?> executor) {
+  private synchronized void implementExecutor(@NotNull final ResponseFunction<?> executor) {
     if (this.done()) { //Directly run executor if already finished.
       executor.run(this.executorService);
     } else { //Add to run later if response is completed.
       this.executors = Arrays.copyOf(this.executors, this.executors.length + 1);
       this.executors[this.executors.length - 1] = executor;
     }
+  }
+
+  private @NotNull ExecutorService service() {
+    return this.executorService;
   }
 
   /**
@@ -542,7 +647,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return new CompletableResponse<TYPE>().completeExceptionally(throwable);
   }
 
-  public static @NotNull <TYPE> CompletableResponse<MultiResponse<TYPE>> combined(@NotNull final List<CompletableResponse<TYPE>> list) {
+  public static @NotNull <TYPE> CompletableResponse<MultiResponse<TYPE>> collect(@NotNull final List<CompletableResponse<TYPE>> list) {
     final List<CompletableResponse<TYPE>> listClone = new ArrayList<>(list);
     final CompletableResponse<MultiResponse<TYPE>> multiResponseCompletableResponse = new CompletableResponse<>();
 
@@ -551,7 +656,6 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
 
       for (final CompletableResponse<TYPE> typeCompletableResponse : listClone) {
         typeCompletableResponse.sniff((state, type, throwable) -> {
-          System.out.println(state);
           if (state == State.COMPLETED_DEFAULT && type != null) {
             typeMultiResponse.responseList().add(type);
           } else {
@@ -574,7 +678,39 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return multiResponseCompletableResponse;
   }
 
-  public static @NotNull <TYPE> CompletableResponse<TYPE> equalResponse(@NotNull final List<CompletableResponse<TYPE>> list) {
+  public static @NotNull <TYPE> CompletableResponse<TYPE> first(@NotNull final List<CompletableResponse<TYPE>> list) {
+    final List<CompletableResponse<TYPE>> listClone = new ArrayList<>(list);
+    final CompletableResponse<TYPE> firstResponse = new CompletableResponse<>();
+
+    firstResponse.service().execute(() -> {
+      final AtomicInteger atomicInteger = new AtomicInteger();
+
+      for (final CompletableResponse<TYPE> typeCompletableResponse : list) {
+        typeCompletableResponse
+          .ifPresentAsync(firstResponse::complete)
+          .ifExceptionallyAsync(throwable -> {
+            if (throwable != null) {
+              throwable.printStackTrace();
+            }
+          })
+          .runAsync(atomicInteger::incrementAndGet);
+      }
+
+      while (atomicInteger.get() < listClone.size()) {
+        if (firstResponse.canceled()) {
+          firstResponse.completeExceptionally(new InterruptedException("Already interrupted."));
+          return;
+        }
+      }
+
+      firstResponse.completeExceptionally(new NullPointerException("No response present."));
+    });
+
+    return firstResponse;
+  }
+
+
+  public static @NotNull <TYPE> CompletableResponse<TYPE> equal(@Nullable final List<CompletableResponse<TYPE>> list) {
     return null;
   }
 
