@@ -1,4 +1,4 @@
-package dev.dotspace.data.wrapper.instance;
+package dev.dotspace.common.wrapper.instance;
 
 /**
  * Define type of wrapper.

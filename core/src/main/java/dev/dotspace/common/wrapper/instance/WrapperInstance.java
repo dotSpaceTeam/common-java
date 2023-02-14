@@ -1,6 +1,6 @@
-package dev.dotspace.data.wrapper.instance;
+package dev.dotspace.common.wrapper.instance;
 
-import dev.dotspace.data.wrapper.method.WrapperInstanceMethod;
+import dev.dotspace.common.wrapper.method.WrapperInstanceMethod;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

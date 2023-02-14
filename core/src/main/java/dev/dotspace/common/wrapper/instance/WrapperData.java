@@ -1,4 +1,4 @@
-package dev.dotspace.data.wrapper.instance;
+package dev.dotspace.common.wrapper.instance;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -25,7 +25,7 @@ public @interface WrapperData {
    * Range of priority os byte range (-128...127).
    * -> 127 will go first.
    *
-   * @return priority of datawrapper.
+   * @return priority of {@link Wrapper}.
    */
   byte priority() default 0;
 }

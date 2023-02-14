@@ -1,4 +1,4 @@
-package dev.dotspace.data.wrapper.method;
+package dev.dotspace.common.wrapper.method;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -10,12 +10,11 @@ import java.util.Objects;
 public record WrapperInstanceMethod(@NotNull Type returnType,
                                     @NotNull Type[] arguments,
                                     @NotNull String name,
-                                    @NotNull MethodType methodType,
                                     @NotNull Method javaMethod) {
 
   @Override
   public String toString() {
-    return "MethodR{" +
+    return "WrapperInstanceMethod{" +
       "returnType=" + returnType +
       ", arguments=" + Arrays.toString(arguments) +
       ", name='" + name + '\'' +

@@ -1,4 +1,4 @@
-package dev.dotspace.data.wrapper.method;
+package dev.dotspace.common.wrapper.method;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,7 +8,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WrapperMethod {
-
-  MethodType methodType();
-
 }

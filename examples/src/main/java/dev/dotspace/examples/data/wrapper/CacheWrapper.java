@@ -1,12 +1,13 @@
 package dev.dotspace.examples.data.wrapper;
 
 import dev.dotspace.common.concurrent.FutureResponse;
-import dev.dotspace.data.wrapper.instance.WrapperData;
-import dev.dotspace.data.wrapper.instance.WrapperType;
-import dev.dotspace.data.wrapper.method.MethodType;
-import dev.dotspace.data.wrapper.method.WrapperMethod;
-import org.jetbrains.annotations.NotNull;
+import dev.dotspace.common.wrapper.instance.WrapperData;
+import dev.dotspace.common.wrapper.instance.WrapperType;
+import dev.dotspace.common.wrapper.method.WrapperMethod;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -15,7 +16,7 @@ import java.util.concurrent.ConcurrentMap;
 public class CacheWrapper implements ExampleWrapper {
   private final ConcurrentMap<String, NameValue> simulatedRedisCache = new ConcurrentHashMap<>();
 
-  @WrapperMethod(methodType = MethodType.READ)
+  @WrapperMethod
   @Override
   public FutureResponse<NameValue> getName(String key) {
     return new FutureResponse<NameValue>().composeContentAsync(objectResponseContent -> {
@@ -28,21 +29,24 @@ public class CacheWrapper implements ExampleWrapper {
     });
   }
 
-  @WrapperMethod(methodType = MethodType.MODIFY)
+  @WrapperMethod
+  @Override
+  public FutureResponse<List<NameValue>> getNames() {
+    return new FutureResponse<List<NameValue>>().complete(new ArrayList<>(this.simulatedRedisCache.values()));
+  }
+
+  @WrapperMethod
   @Override
   public FutureResponse<NameValue> setName(String key, String value) {
-    return new FutureResponse<NameValue>().composeContentAsync(objectResponseContent -> {
-      final NameValue nameValue = new NameValue(key, value);
-      this.simulatedRedisCache.put(key, nameValue);
-      objectResponseContent.content(nameValue);
-    });
+    return FutureResponse.exception(new NullPointerException("Cache can't change values."));
   }
 
   @Override
-  public void latestProcessedObject(@NotNull Object object) {
+  public boolean latestProcessedObject(@Nullable Object object) {
     if (!(object instanceof NameValue nameValue)) {
-      return;
+      return false;
     }
     this.simulatedRedisCache.put(nameValue.key(), nameValue);
+    return true;
   }
 }

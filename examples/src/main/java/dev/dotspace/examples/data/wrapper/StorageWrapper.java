@@ -2,11 +2,12 @@ package dev.dotspace.examples.data.wrapper;
 
 import dev.dotspace.common.concurrent.FutureResponse;
 
-import dev.dotspace.data.wrapper.instance.WrapperData;
-import dev.dotspace.data.wrapper.instance.WrapperType;
-import dev.dotspace.data.wrapper.method.MethodType;
-import dev.dotspace.data.wrapper.method.WrapperMethod;
+import dev.dotspace.common.wrapper.instance.WrapperData;
+import dev.dotspace.common.wrapper.instance.WrapperType;
+import dev.dotspace.common.wrapper.method.WrapperMethod;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -15,7 +16,7 @@ import java.util.concurrent.ConcurrentMap;
 public class StorageWrapper implements ExampleWrapper {
   private final ConcurrentMap<String, NameValue> simulatedDatabase = new ConcurrentHashMap<>();
 
-  @WrapperMethod(methodType = MethodType.READ)
+  @WrapperMethod
   @Override
   public FutureResponse<NameValue> getName(String key) {
     return new FutureResponse<NameValue>().composeContentAsync(objectResponseContent -> {
@@ -26,7 +27,13 @@ public class StorageWrapper implements ExampleWrapper {
     });
   }
 
-  @WrapperMethod(methodType = MethodType.MODIFY)
+  @WrapperMethod
+  @Override
+  public FutureResponse<List<NameValue>> getNames() {
+    return new FutureResponse<List<NameValue>>().complete(new ArrayList<>(this.simulatedDatabase.values()));
+  }
+
+  @WrapperMethod
   @Override
   public FutureResponse<NameValue> setName(String key, String value) {
     return new FutureResponse<NameValue>().composeContentAsync(objectResponseContent -> {
