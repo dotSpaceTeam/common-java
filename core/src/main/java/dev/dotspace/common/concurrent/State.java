@@ -1,6 +1,4 @@
-package dev.dotspace.common.concurrent.v2;
-
-import dev.dotspace.common.concurrent.v2.Response;
+package dev.dotspace.common.concurrent;
 
 /**
  * This enum can be used to express the status of a {@link Response}.
