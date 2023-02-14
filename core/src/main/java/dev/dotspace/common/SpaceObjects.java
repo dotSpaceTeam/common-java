@@ -74,7 +74,10 @@ public final class SpaceObjects {
    * @throws NullPointerException if object is null
    */
   public static <T> @NotNull T throwIfNull(@Nullable final T object) throws NullPointerException {
-    return SpaceObjects.throwIfNull(object, "Object is null!");
+    if (object == null) { //Trow error if null.
+      throw new NullPointerException();
+    }
+    return object;
   }
 
   /**
