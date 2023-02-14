@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 /**
  * This class depends on an instance of an {@link CompletableFuture}.
- * Use {@link dev.dotspace.common.concurrent.v2.implementation.CompletableResponse} instead.
+ * Use {@link CompletableResponse} instead.
  *
  * @param <TYPE> generic type of response object.
  */
