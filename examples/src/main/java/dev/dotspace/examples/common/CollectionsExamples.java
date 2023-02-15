@@ -2,17 +2,21 @@ package dev.dotspace.examples.common;
 
 import dev.dotspace.common.SpaceCollections;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CollectionsExamples {
 
   public void example() {
-    final String[] array = {"This", "is", "a", "test!"};
+    final List<String> names = new ArrayList<>();
 
-    String value = SpaceCollections.random(array); //Get random directly.
+    names.add("Joe");
+    names.add("Jeff");
 
-    SpaceCollections.randomAsync(array).ifPresent(s -> {
+    String value = SpaceCollections.random(names); //Get random directly.
+
+    SpaceCollections.randomAsync(names).ifPresent(s -> {
       //Get random using FutureResponse implementation.
     });
-
   }
-
 }
