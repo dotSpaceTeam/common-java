@@ -6,11 +6,16 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.UUID;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WrapperData {
-
+  /**
+   * Name of the specific wrapper.
+   *
+   * @return name of the wrapper.
+   */
   @NotNull String name();
 
   /**
