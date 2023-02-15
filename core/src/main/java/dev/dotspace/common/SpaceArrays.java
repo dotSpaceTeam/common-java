@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SpaceArrays {
   /**
