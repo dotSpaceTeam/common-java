@@ -6,6 +6,11 @@ import org.jetbrains.annotations.Nullable;
  * This Exception is a {@link RuntimeException}.
  * <br>
  * The {@link EmptyArrayException} is used when an array is empty but an operation is still to be conducted.
+ * Use cases:
+ * <ul>
+ *   <li>Process an array with no values but methods needs a response.</li>
+ * </ul>
+ *
  */
 public class EmptyArrayException extends RuntimeException {
   /**
