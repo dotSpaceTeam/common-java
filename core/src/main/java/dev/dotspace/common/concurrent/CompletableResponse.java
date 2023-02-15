@@ -36,7 +36,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @param typeClass defines the TYPE of the instance.
    */
-  public CompletableResponse(@NotNull final Class<TYPE> typeClass) {
+  public CompletableResponse(@Nullable final Class<TYPE> typeClass) {
     this();
   }
 
