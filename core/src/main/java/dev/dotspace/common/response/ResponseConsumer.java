@@ -1,4 +1,4 @@
-package dev.dotspace.common.concurrent;
+package dev.dotspace.common.response;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <TYPE> defines the type of {@link Response} type.
  */
+@FunctionalInterface
 public interface ResponseConsumer<TYPE> {
   /**
    * This method is filled in by the {@link Response}.

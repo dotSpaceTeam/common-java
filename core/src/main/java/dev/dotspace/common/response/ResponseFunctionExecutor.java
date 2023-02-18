@@ -1,7 +1,6 @@
-package dev.dotspace.common.concurrent;
+package dev.dotspace.common.response;
 
 import dev.dotspace.common.SpaceObjects;
-import dev.dotspace.common.concurrent.ResponseFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -1,6 +1,6 @@
 package dev.dotspace.common.test.concurrent;
 
-import dev.dotspace.common.concurrent.CompletableResponse;
+import dev.dotspace.common.response.CompletableResponse;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

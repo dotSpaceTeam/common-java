@@ -1,13 +1,11 @@
 package dev.dotspace.common;
 
-import dev.dotspace.common.concurrent.CompletableResponse;
+import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.common.exception.EmptyArrayException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SpaceArrays {

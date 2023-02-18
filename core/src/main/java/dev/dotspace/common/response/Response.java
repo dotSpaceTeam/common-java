@@ -1,4 +1,4 @@
-package dev.dotspace.common.concurrent;
+package dev.dotspace.common.response;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

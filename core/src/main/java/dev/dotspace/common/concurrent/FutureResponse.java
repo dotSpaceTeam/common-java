@@ -1,6 +1,7 @@
 package dev.dotspace.common.concurrent;
 
 import dev.dotspace.common.SpaceObjects;
+import dev.dotspace.common.response.CompletableResponse;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

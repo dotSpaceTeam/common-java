@@ -1,6 +1,6 @@
 package dev.dotspace.common;
 
-import dev.dotspace.common.concurrent.CompletableResponse;
+import dev.dotspace.common.response.CompletableResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;

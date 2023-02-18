@@ -1,7 +1,6 @@
 package dev.dotspace.common.test.concurrent;
 
 import dev.dotspace.common.concurrent.FutureResponse;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
