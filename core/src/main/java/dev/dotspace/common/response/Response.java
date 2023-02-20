@@ -16,6 +16,13 @@ import java.util.function.Supplier;
  */
 public interface Response<TYPE> {
   /**
+   * Creates a new uncompleted {@link Response} with the same type.
+   *
+   * @return the newly created {@link Response}.
+   */
+  @NotNull Response<TYPE> newUncompleted();
+
+  /**
    * Waits for the response. Interrupts the thread in which this method is executed until the response or an error.
    *
    * @return if available the response otherwise null.
