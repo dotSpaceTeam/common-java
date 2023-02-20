@@ -21,7 +21,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   private volatile @NotNull State state;
   private volatile @Nullable TYPE response;
   private volatile @Nullable Throwable throwable;
-  private volatile ResponseFunction<?>[] executors;
+  private volatile @NotNull ResponseFunction<?>[] responseFunctions;
 
   /**
    * Public constructor to create instance.
@@ -48,7 +48,15 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   private CompletableResponse(@NotNull final State state) {
     this.executorService = Executors.newCachedThreadPool();
     this.state = state;
-    this.executors = new ResponseFunction[0];
+    this.responseFunctions = new ResponseFunction[0];
+  }
+
+  /**
+   * @see Response#newUncompleted()
+   */
+  @Override
+  public @NotNull CompletableResponse<TYPE> newUncompleted() {
+    return new CompletableResponse<TYPE>();
   }
 
   /**
@@ -200,7 +208,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   private void markAsCompleted(@NotNull final State state) {
     this.state = state;
 
-    for (final ResponseFunction<?> executor : this.executors) {
+    for (final ResponseFunction<?> executor : this.responseFunctions) {
       executor.run(this.executorService);
     }
   }
@@ -335,7 +343,8 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
       return;
     }
 
-    this.implementExecutor(new ResponseFunctionExecutor<>(() -> this.response != null && this.state == State.COMPLETED_DEFAULT,
+    this.implementExecutor(new ResponseFunctionExecutor<>(
+      () -> this.response != null && this.state == State.COMPLETED_DEFAULT,
       () -> {
         try {
           final TYPE threadResponse = this.response;
@@ -631,8 +640,8 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     if (this.done()) { //Directly run executor if already finished.
       executor.run(this.executorService);
     } else { //Add to run later if response is completed.
-      this.executors = Arrays.copyOf(this.executors, this.executors.length + 1);
-      this.executors[this.executors.length - 1] = executor;
+      this.responseFunctions = Arrays.copyOf(this.responseFunctions, this.responseFunctions.length + 1);
+      this.responseFunctions[this.responseFunctions.length - 1] = executor;
     }
   }
 
@@ -678,6 +687,13 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return multiResponseCompletableResponse;
   }
 
+  /**
+   * Use answer which is available first.
+   *
+   * @param list
+   * @param <TYPE>
+   * @return
+   */
   public static @NotNull <TYPE> CompletableResponse<TYPE> first(@NotNull final List<CompletableResponse<TYPE>> list) {
     final List<CompletableResponse<TYPE>> listClone = new ArrayList<>(list);
     final CompletableResponse<TYPE> firstResponse = new CompletableResponse<>();
@@ -687,13 +703,13 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
 
       for (final CompletableResponse<TYPE> typeCompletableResponse : list) {
         typeCompletableResponse
-          .ifPresentAsync(firstResponse::complete)
-          .ifExceptionallyAsync(throwable -> {
-            if (throwable != null) {
+          .ifPresent(firstResponse::complete)
+          .ifExceptionally(throwable -> {
+            if (throwable != null) { //Print error if thrown from specific response.
               throwable.printStackTrace();
             }
           })
-          .runAsync(atomicInteger::incrementAndGet);
+          .run(atomicInteger::incrementAndGet);
       }
 
       while (atomicInteger.get() < listClone.size()) {
