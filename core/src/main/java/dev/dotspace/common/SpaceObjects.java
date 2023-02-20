@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -26,29 +25,47 @@ public final class SpaceObjects {
       return object;
     }
 
-    return Optional.ofNullable(absentSupplier)
-      .map(Supplier::get)
-      .orElseThrow(() -> new NullPointerException("Absent supplier or supplied object null!"));
+    if (absentSupplier == null) {
+      throw new NullPointerException("Given absent supplier is null!");
+    }
+
+    @Nullable final T absentObject = absentSupplier.get();
+
+    if (absentObject == null) {
+      throw new NullPointerException("Supplied object for absent value is null.");
+    }
+
+    return absentObject;
   }
 
   /**
-   * Throw a supplied {@link NullPointerException} if object is null.
+   * Throw any bug that inherits from class {@link Throwable}.
    *
-   * @param object            to check if it is null
-   * @param exceptionSupplier supply {@link NullPointerException} used if absent
-   * @param <T>               generic type of object, needed for return parameter
-   * @return object if present and not null
-   * @throws NullPointerException if object is null
+   * @param object            to check if it is null.
+   * @param throwableSupplier supply {@link Throwable} used if absent.
+   * @param <T>               generic type of object, needed for return parameter.
+   * @param <THROWABLE>       type of error.
+   * @return object if present and not null.
+   * @throws NullPointerException if object is null and throwableSupplier or it's response is null.
+   * @throws THROWABLE            if object is null and error supplier is present.
    */
-  public static <T> @NotNull T throwIfNull(@Nullable final T object,
-                                           @Nullable final Supplier<NullPointerException> exceptionSupplier) throws NullPointerException {
+  public static <T, THROWABLE extends Throwable> @NotNull T throwIfNull(@Nullable final T object,
+                                                                        @Nullable final Supplier<@Nullable THROWABLE> throwableSupplier) throws THROWABLE {
     if (object != null) { //Return object if not null
       return object;
     }
-    throw Optional
-      .ofNullable(exceptionSupplier)
-      .map(Supplier::get)
-      .orElseGet(NullPointerException::new); //Throw exception
+
+    if (throwableSupplier == null) { //Throw NullPointerException if throwableSupplier is null.
+      throw new NullPointerException("Object is null but also the given supplier.");
+    }
+
+    @Nullable THROWABLE throwable = throwableSupplier.get(); //Get throwable from supplier.
+
+    if (throwable == null) { //Throw error if supplied throwable of throwableSupplier is null.
+      throw new NullPointerException("Throwable is null.");
+    }
+
+    throw throwable; //Throwable error of throwableSupplier.
   }
 
   /**
@@ -62,7 +79,10 @@ public final class SpaceObjects {
    */
   public static <T> @NotNull T throwIfNull(@Nullable final T object,
                                            @Nullable final String message) throws NullPointerException {
-    return SpaceObjects.throwIfNull(object, message == null ? null : () -> new NullPointerException(message));
+    if (object == null) { //Trow error if null.
+      throw new NullPointerException(message);
+    }
+    return object;
   }
 
   /**
@@ -74,10 +94,7 @@ public final class SpaceObjects {
    * @throws NullPointerException if object is null
    */
   public static <T> @NotNull T throwIfNull(@Nullable final T object) throws NullPointerException {
-    if (object == null) { //Trow error if null.
-      throw new NullPointerException();
-    }
-    return object;
+    return SpaceObjects.throwIfNull(object, (String) null);
   }
 
   /**
