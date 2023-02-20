@@ -15,12 +15,12 @@ public final class SpaceObjects {
    *
    * @param object         to get if present.
    * @param absentSupplier to use as supplier if object is null.
-   * @param <T>            generic type of object and absentSupplier.
+   * @param <TYPE>         generic type of object and absentSupplier.
    * @return present object.
    * @throws NullPointerException when object or absentSupplier(also the supplied object) is null.
    */
-  public static <T> @NotNull T ifAbsentUse(@Nullable final T object,
-                                           @Nullable final Supplier<@Nullable T> absentSupplier) {
+  public static <TYPE> @NotNull TYPE ifAbsentUse(@Nullable final TYPE object,
+                                                 @Nullable final Supplier<@Nullable TYPE> absentSupplier) {
     if (object != null) { //Return object if present.
       return object;
     }
@@ -29,7 +29,7 @@ public final class SpaceObjects {
       throw new NullPointerException("Given absent supplier is null!");
     }
 
-    @Nullable final T absentObject = absentSupplier.get();
+    @Nullable final TYPE absentObject = absentSupplier.get();
 
     if (absentObject == null) {
       throw new NullPointerException("Supplied object for absent value is null.");
@@ -43,14 +43,14 @@ public final class SpaceObjects {
    *
    * @param object            to check if it is null.
    * @param throwableSupplier supply {@link Throwable} used if absent.
-   * @param <T>               generic type of object, needed for return parameter.
+   * @param <TYPE>            generic type of object, needed for return parameter.
    * @param <THROWABLE>       type of error.
    * @return object if present and not null.
    * @throws NullPointerException if object is null and throwableSupplier or it's response is null.
    * @throws THROWABLE            if object is null and error supplier is present.
    */
-  public static <T, THROWABLE extends Throwable> @NotNull T throwIfNull(@Nullable final T object,
-                                                                        @Nullable final Supplier<@Nullable THROWABLE> throwableSupplier) throws THROWABLE {
+  public static <TYPE, THROWABLE extends Throwable> @NotNull TYPE throwIfNull(@Nullable final TYPE object,
+                                                                              @Nullable final Supplier<@Nullable THROWABLE> throwableSupplier) throws THROWABLE {
     if (object != null) { //Return object if not null
       return object;
     }
@@ -73,12 +73,12 @@ public final class SpaceObjects {
    *
    * @param object  to check if it is null
    * @param message to throw as error.
-   * @param <T>     generic type of object, needed for return parameter
+   * @param <TYPE>  generic type of object, needed for return parameter
    * @return object if present and not null
    * @throws NullPointerException if object is null
    */
-  public static <T> @NotNull T throwIfNull(@Nullable final T object,
-                                           @Nullable final String message) throws NullPointerException {
+  public static <TYPE> @NotNull TYPE throwIfNull(@Nullable final TYPE object,
+                                                 @Nullable final String message) throws NullPointerException {
     if (object == null) { //Trow error if null.
       throw new NullPointerException(message);
     }
@@ -89,25 +89,25 @@ public final class SpaceObjects {
    * Throw {@link NullPointerException} if object is null.
    *
    * @param object to check if it is null
-   * @param <T>    generic type of object, needed for return parameter
+   * @param <TYPE> generic type of object, needed for return parameter
    * @return object if present and not null
    * @throws NullPointerException if object is null
    */
-  public static <T> @NotNull T throwIfNull(@Nullable final T object) throws NullPointerException {
+  public static <TYPE> @NotNull TYPE throwIfNull(@Nullable final TYPE object) throws NullPointerException {
     return SpaceObjects.throwIfNull(object, (String) null);
   }
 
   /**
    * Consume object if not null
    *
-   * @param t        object to consume
+   * @param object   object to consume
    * @param consumer consumer of object
-   * @param <T>      generic type of object
+   * @param <TYPE>   generic type of object
    */
-  public static <T> void acceptIfPresent(@Nullable final T t,
-                                         @Nullable final Consumer<T> consumer) {
-    if (t != null && consumer != null) {
-      consumer.accept(t);
+  public static <TYPE> void acceptIfPresent(@Nullable final TYPE object,
+                                            @Nullable final Consumer<@NotNull TYPE> consumer) {
+    if (object != null && consumer != null) {
+      consumer.accept(object);
     }
   }
 }
