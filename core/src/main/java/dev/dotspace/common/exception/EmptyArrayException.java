@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
  * <ul>
  *   <li>Process an array with no values but methods needs a response.</li>
  * </ul>
- *
  */
 public class EmptyArrayException extends RuntimeException {
   /**
