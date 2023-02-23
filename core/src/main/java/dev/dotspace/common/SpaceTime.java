@@ -3,6 +3,7 @@ package dev.dotspace.common;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.DateTimeException;
 import java.time.Duration;
@@ -24,14 +25,14 @@ public final class SpaceTime {
   }
 
   /**
-   * Create a new {@link Timestamp} with a set time as reference
+   * Create a new {@link Timestamp} with a set time as reference.
    *
-   * @param timeMills create a timestamp with another time than {@link System#currentTimeMillis()}.
-   *                  This value should be supplied as milliseconds
+   * @param timeNanos create a timestamp with another time than {@link System#nanoTime()}.
+   *                  This value should be supplied as nanoseconds.
    * @return created {@link Timestamp} object
    */
-  public static @NotNull Timestamp timestamp(final long timeMills) {
-    return new Timestamp(timeMills);
+  public static @NotNull Timestamp timestamp(final long timeNanos) {
+    return new Timestamp(timeNanos);
   }
 
   /**
@@ -41,10 +42,11 @@ public final class SpaceTime {
    * @return created {@link Timestamp} object
    */
   public static @NotNull Timestamp timestampNow() {
-    return SpaceTime.timestamp(System.currentTimeMillis());
+    return SpaceTime.timestamp(System.nanoTime());
   }
 
   //records
+
   /**
    * Class to store a long for a timestamp and calculate with it.
    * <p>
@@ -59,7 +61,7 @@ public final class SpaceTime {
    * System.out.format("Process took: %d  seconds.", timestamp.pastTimeFormatted(TimeUnit.SECONDS));
    * </code></pre>
    *
-   * @param timestamp used as reference for the stamp
+   * @param timestamp used as reference for the stamp in ns.
    */
   public record Timestamp(long timestamp) {
     /**
@@ -69,7 +71,7 @@ public final class SpaceTime {
      * @throws DateTimeException if the difference is negative.
      */
     public long pastTime() {
-      final long diff = System.currentTimeMillis() - this.timestamp; //Return different between then and now
+      final long diff = System.nanoTime() - this.timestamp; //Return different between then and now
       if (diff < 0) {
         throw new DateTimeException("Difference between times is negative!"); //Error if negative -> can't calculate the past
       }
@@ -81,10 +83,11 @@ public final class SpaceTime {
      *
      * @param timeUnit to format the pastime to
      * @return the difference formatted with {@link TimeUnit}
-     * @throws DateTimeException if the difference is negative.
+     * @throws NullPointerException if timeUnit is null.
+     * @throws DateTimeException    if the difference is negative.
      */
-    public long pastTimeFormatted(@NotNull final TimeUnit timeUnit) {
-      return timeUnit.convert(Duration.ofMillis(this.pastTime()));
+    public long pastTimeFormatted(@Nullable final TimeUnit timeUnit) {
+      return SpaceObjects.throwIfNull(timeUnit).convert(Duration.ofMillis(this.pastTime()));
     }
   }
 }
