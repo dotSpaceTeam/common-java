@@ -1,12 +1,13 @@
 package dev.dotspace.common.response;
 
 import dev.dotspace.common.SpaceObjects;
+import dev.dotspace.common.SpaceThrowable;
+import dev.dotspace.common.exception.MismatchException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -136,7 +137,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     if (this.state.done()) {
       return false;
     }
-    this.throwable = new InterruptedException("Response canceled.");
+    //this.throwable = new InterruptedException("Response canceled.");
     this.markAsCompleted(State.CANCELLED);
     return true;
   }
@@ -645,89 +646,291 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     }
   }
 
-  private @NotNull ExecutorService service() {
-    return this.executorService;
+  /**
+   * Execute a {@link Runnable} using the local {@link ExecutorService}.
+   *
+   * @param runnable to execute.
+   */
+  private void execute(@NotNull final Runnable runnable) {
+    this.executorService.execute(runnable);
+  }
+
+  /*
+   * --------------------------- Methods and classes --------------------------------
+   */
+
+  /**
+   * This record will be filled with a state and information from a {@link CompletableResponse}.
+   *
+   * @param state     complete {@link State} of response.
+   * @param type      if response was completed with a present object. Could be null if state is not {@link State#COMPLETED_DEFAULT}.
+   * @param throwable if response was completed exceptionally, present. Null if no error given.
+   * @param <TYPE>
+   */
+  public record Result<TYPE>(@NotNull State state,
+                             @Nullable TYPE type,
+                             @Nullable Throwable throwable) {
   }
 
   /**
-   * static
+   * Thread save wrap.
+   *
+   * @param <TYPE>
    */
-  public static @NotNull <TYPE> CompletableResponse<TYPE> exceptionally(@NotNull final Throwable throwable) {
+  public static class ResultCollection<TYPE> {
+    /**
+     * Array to hold results.
+     */
+    private volatile @NotNull Result<TYPE>[] results;
+
+    /**
+     * Standard constructor to set results array.
+     */
+    @SuppressWarnings("unchecked")
+    public ResultCollection() {
+      this.results = (Result<TYPE>[]) new Result[0];
+    }
+
+    /**
+     * Get array.
+     *
+     * @return the value of {@link CompletableResponse#response}
+     */
+    public Result<TYPE>[] results() {
+      return this.results;
+    }
+
+    /**
+     * Add generic {@link Result} to array, use values of {@link CompletableResponse}.
+     *
+     * @param state     linked to {@link CompletableResponse#state}.
+     * @param type      linked to {@link CompletableResponse#response}.
+     * @param throwable linked to {@link CompletableResponse#throwable}.
+     */
+    private synchronized void append(@NotNull State state,
+                                     @Nullable TYPE type,
+                                     @Nullable Throwable throwable) {
+      this.results = Arrays.copyOf(this.results, this.results.length + 1); //Create new array with more space.
+      this.results[this.results.length - 1] = new Result<>(state, type, throwable); //Add new Response with new states.
+    }
+
+    /**
+     * Append any object type to {@link ResultCollection}.
+     *
+     * @throws ClassCastException if given type is not valid to cast to TYPE.
+     * @see ResultCollection#append(State, Object, Throwable)
+     */
+    @SuppressWarnings("unchecked")
+    private synchronized void appendObject(@NotNull State state,
+                                           @Nullable Object type,
+                                           @Nullable Throwable throwable) {
+      this.append(state, (TYPE) type, throwable); //Call append method with generic type.
+    }
+  }
+
+  /**
+   *
+   */
+  @FunctionalInterface
+  public interface EqualFunction {
+    /**
+     * Method to compare if two objects are the same using {@link Object#equals(Object)}.
+     */
+    @NotNull EqualFunction EQUALS = (o, obj) -> o != null /*Check if first object is present.*/ && o.equals(obj);
+    /**
+     * Method to compare the hashCode of the given objects.
+     */
+    @NotNull EqualFunction HASHCODE = (o, obj) -> o != null && obj != null && o.hashCode() == obj.hashCode();
+
+    /**
+     * Method to compare to objects with each-other.
+     *
+     * @param object1 first object to compare.
+     * @param object2 second object to compare with object1.
+     * @return true, if both objects are the same.
+     */
+    boolean equals(@Nullable final Object object1,
+                   @Nullable final Object object2);
+  }
+
+  /*
+   * --------------------------- static methods --------------------------------
+   */
+
+  /**
+   * Complete a new {@link CompletableResponse} instance with an {@link Throwable}.
+   *
+   * @param throwable to complete instance with. Also, null possible, if no throwable is given.
+   * @param <TYPE>    type of response.
+   * @return created {@link CompletableResponse} instance with completed throwable.
+   */
+  public static @NotNull <TYPE> CompletableResponse<TYPE> exceptionally(@Nullable final Throwable throwable) {
     return new CompletableResponse<TYPE>().completeExceptionally(throwable);
   }
 
-  public static @NotNull <TYPE> CompletableResponse<MultiResponse<TYPE>> collect(@NotNull final List<CompletableResponse<TYPE>> list) {
-    final List<CompletableResponse<TYPE>> listClone = new ArrayList<>(list);
-    final CompletableResponse<MultiResponse<TYPE>> multiResponseCompletableResponse = new CompletableResponse<>();
+  /**
+   * @param responseArray
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public static @NotNull CompletableResponse<ResultCollection<Object>> collect(@Nullable final CompletableResponse<?>... responseArray) {
+    final CompletableResponse<Object>[] objectArray = (CompletableResponse<Object>[])
+      new CompletableResponse[SpaceObjects.throwIfNull(responseArray) /*Check if responseArray is present and not null*/.length]; //Create new array with object responses.
+    for (int i = 0; i < responseArray.length; i++) { //Loop trough every index of responseArray
+      objectArray[i] = (CompletableResponse<Object>) responseArray[i]; //Add every response from responseArray to new created array.
+    }
+    return collectImplementation(objectArray);
+  }
 
-    multiResponseCompletableResponse.completeAsync(() -> {
-      final MultiResponse<TYPE> typeMultiResponse = new MultiResponse<>(new ArrayList<>(), new ArrayList<>());
+  /**
+   * @param responseArray
+   * @param <TYPE>
+   * @return
+   */
+  @SafeVarargs
+  public static @NotNull <TYPE> CompletableResponse<ResultCollection<TYPE>> collectType(@Nullable final CompletableResponse<TYPE>... responseArray) {
+    return collectImplementation(responseArray);
+  }
 
-      for (final CompletableResponse<TYPE> typeCompletableResponse : listClone) {
-        typeCompletableResponse.sniff((state, type, throwable) -> {
-          if (state == State.COMPLETED_DEFAULT && type != null) {
-            typeMultiResponse.responseList().add(type);
-          } else {
-            typeMultiResponse.throwableList().add(throwable != null ? throwable : new NullPointerException("Value is absent."));
-          }
-        });
+  /**
+   * @param responseCollection
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public static @NotNull CompletableResponse<ResultCollection<Object>> collect(@Nullable final Collection<CompletableResponse<?>> responseCollection) {
+    return collectImplementation(SpaceObjects.throwIfNull(responseCollection) //Check if collection is present.
+      .toArray(new CompletableResponse[0])); //Convert to array for thread safe.
+  }
+
+  /**
+   * @param responseCollection
+   * @param <TYPE>
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public static @NotNull <TYPE> CompletableResponse<ResultCollection<TYPE>> collectType(@Nullable final Collection<CompletableResponse<TYPE>> responseCollection) {
+    return collectImplementation(SpaceObjects.throwIfNull(responseCollection) //Check if collection is present.
+      .toArray((CompletableResponse<TYPE>[]) new CompletableResponse[0]) /*If present map collection to array.*/); //Convert to array for thread safe.
+  }
+
+  /**
+   * Implementation for:
+   * <ul>
+   *   <li>{@link CompletableResponse#collect(CompletableResponse[])}</li>
+   *   <li>{@link CompletableResponse#collect(Collection)}</li>
+   *   <li>{@link CompletableResponse#collectType(CompletableResponse[])} </li>
+   *   <li>{@link CompletableResponse#collectType(Collection)} </li>
+   * </ul>
+   *
+   * @param responseArray to collect responses from and combine into {@link ResultCollection}.
+   * @param <TYPE>        type of result to process.
+   * @return new instance of {@link CompletableResponse} that will be completed with the {@link ResultCollection} once finished.
+   */
+  private static @NotNull <TYPE> CompletableResponse<ResultCollection<TYPE>> collectImplementation(@Nullable final CompletableResponse<TYPE>[] responseArray) {
+    SpaceObjects.throwIfNull(responseArray); //Throw error if responseArray is null.
+
+    final CompletableResponse<ResultCollection<TYPE>> completableResponse = new CompletableResponse<>(); //Create new Response.
+
+    completableResponse.execute(() -> { //Run in of thread.
+      final ResultCollection<TYPE> resultCollection = new ResultCollection<>(); //Create resultCollection.
+
+      for (final CompletableResponse<TYPE> response : responseArray) { //Loop trough every response.
+        if (response == null) { //Complete with nullPointerException if response is null.
+          resultCollection.appendObject(State.UNCOMPLETED, null, new NullPointerException("Response is null!"));
+          continue; //Goto next response of array.
+        }
+        response.sniff(resultCollection::appendObject); //sniff into response and append response to resultCollection.
       }
 
-      while (typeMultiResponse.values() < listClone.size()) {
-        if (multiResponseCompletableResponse.canceled()) {
-          multiResponseCompletableResponse.completeExceptionally(new InterruptedException("Already interrupted."));
-          return null;
+      while (resultCollection.results.length < responseArray.length) { //Interrupt thread until a response is given.
+        if (completableResponse.done()) { //If this response is canceled, interrupt thread.
+          return;
         }
       }
 
-      System.out.println("Done");
-
-      return typeMultiResponse;
+      completableResponse.complete(resultCollection); //Complete response with collection if all responses where made.
     });
-    return multiResponseCompletableResponse;
+
+    return completableResponse;
+  }
+
+  public static @NotNull CompletableResponse<?> equal(@Nullable EqualFunction equalFunction,
+                                                      @Nullable final CompletableResponse<?>... responseArray) {
+    final EqualFunction finalFunction = equalFunction == null ? EqualFunction.EQUALS : equalFunction; //Define function to compare objects.
+    final CompletableResponse<Object> completableResponse = new CompletableResponse<>(); //Return value of method
+
+    collect(responseArray).ifPresentAsync(resultCollection -> { //Execute if present.
+        if (resultCollection.results.length == 0) { //Return if empty
+          completableResponse.completeExceptionally(new NullPointerException("No response."));
+          return;
+        }
+
+        final Object latest = resultCollection.results[0].type; //Get first object to compare with next
+
+        for (int i = 1; i < resultCollection.results.length; i++) {
+          if (!finalFunction.equals(latest, resultCollection.results[i].type)) {
+            completableResponse.completeExceptionally(new MismatchException());
+            return;
+          }
+        }
+
+        completableResponse.complete(latest);
+      })
+      .ifAbsent(() -> //Complete response with NullPointerException -> No collected response present.
+        completableResponse.completeExceptionally(new NullPointerException("Response results are empty.")))
+      .ifExceptionally(completableResponse::completeExceptionally /*Complete with error.*/);
+
+    return completableResponse;
+  }
+
+  public static @NotNull CompletableResponse<?> equal(@Nullable final CompletableResponse<?>... responseArray) {
+    return equal(null, responseArray);
+  }
+
+  /**
+   * @param responseArray to race each others.
+   * @return
+   * @throws NullPointerException if responses is null.
+   */
+  public static @NotNull CompletableResponse<?> first(@Nullable final CompletableResponse<?>... responseArray) {
+    SpaceObjects.throwIfNull(responseArray, "Given array is null."); //Throw error if responses is null.
+
+    final CompletableResponse<Object> completableResponse = new CompletableResponse<>(); //Create new response -> return value of this method.
+
+    completableResponse.execute(() -> {
+      final AtomicInteger atomicInteger = new AtomicInteger(); //Count completed requests.
+
+      for (final CompletableResponse<?> response : responseArray) { //Loop trough every component of list.
+        if (response == null) { //Ignore response if null.
+          atomicInteger.incrementAndGet(); //Null responses also count as response done.
+          continue;
+        }
+
+        response
+          .ifPresent(completableResponse::complete /*Complete response with supplied response.*/)
+          .ifExceptionally(SpaceThrowable::printStackTrace /*Print throwable stacktrace if present.*/)
+          .run(atomicInteger::incrementAndGet /*Increment counter to validate given responses.*/);
+      }
+
+      while (atomicInteger.get() < responseArray.length) { //Interrupt thread until a response is given.
+        if (completableResponse.done()) { //If response is done or canceled.
+          return;
+        }
+      }
+
+      completableResponse.completeExceptionally(new NullPointerException("No valid response present.")); //Complete with error, no present response was given.
+    });
+    return completableResponse;
   }
 
   /**
    * Use answer which is available first.
    *
-   * @param list
-   * @param <TYPE>
+   * @param responseCollection
    * @return
+   * @throws NullPointerException if collection is null.
    */
-  public static @NotNull <TYPE> CompletableResponse<TYPE> first(@NotNull final List<CompletableResponse<TYPE>> list) {
-    final List<CompletableResponse<TYPE>> listClone = new ArrayList<>(list);
-    final CompletableResponse<TYPE> firstResponse = new CompletableResponse<>();
-
-    firstResponse.service().execute(() -> {
-      final AtomicInteger atomicInteger = new AtomicInteger();
-
-      for (final CompletableResponse<TYPE> typeCompletableResponse : list) {
-        typeCompletableResponse
-          .ifPresent(firstResponse::complete)
-          .ifExceptionally(throwable -> {
-            if (throwable != null) { //Print error if thrown from specific response.
-              throwable.printStackTrace();
-            }
-          })
-          .run(atomicInteger::incrementAndGet);
-      }
-
-      while (atomicInteger.get() < listClone.size()) {
-        if (firstResponse.canceled()) {
-          firstResponse.completeExceptionally(new InterruptedException("Already interrupted."));
-          return;
-        }
-      }
-
-      firstResponse.completeExceptionally(new NullPointerException("No response present."));
-    });
-
-    return firstResponse;
+  public static @NotNull CompletableResponse<?> first(@Nullable final Collection<CompletableResponse<?>> responseCollection) {
+    return first(SpaceObjects.throwIfNull(responseCollection).toArray(new CompletableResponse[0])); //Convert to array for thread safe.
   }
-
-
-  public static @NotNull <TYPE> CompletableResponse<TYPE> equal(@Nullable final List<CompletableResponse<TYPE>> list) {
-    return null;
-  }
-
 }
