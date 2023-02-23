@@ -7,24 +7,26 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SpaceArrays {
   /**
    * Get a random element of array of any type.
    *
-   * @param array     to get random element of.
-   * @param <ELEMENT> generic type of element to get random.
+   * @param array  to get random element of.
+   * @param <TYPE> generic type of element to get random.
    * @return random drawn element or null if array is null or empty.
    */
-  public static <ELEMENT> @Nullable ELEMENT random(@Nullable final ELEMENT[] array) {
+  public static <TYPE> @Nullable TYPE random(@Nullable final TYPE[] array) {
     if (SpaceObjects.throwIfNull(array).length == 0) {
       throw new EmptyArrayException("Given object array is null.");
     }
     return array[LibraryCommonUtils.calculateRandomIndex(array.length)];
   }
 
-  public static <ELEMENT> @NotNull CompletableResponse<ELEMENT> randomAsync(@Nullable final ELEMENT[] array) {
-    return new CompletableResponse<ELEMENT>().completeAsync(() -> SpaceArrays.random(array)); //Complete the future in a separate thread
+  public static <TYPE> @NotNull CompletableResponse<TYPE> randomAsync(@Nullable final TYPE[] array) {
+    return new CompletableResponse<TYPE>().completeAsync(() -> SpaceArrays.random(array)); //Complete the future in a separate thread
   }
 
   /**
@@ -144,5 +146,17 @@ public final class SpaceArrays {
 
   public static @NotNull CompletableResponse<Double> randomAsync(final double[] doubles) {
     return new CompletableResponse<Double>().completeAsync(() -> SpaceArrays.random(doubles));
+  }
+
+  @SafeVarargs
+  public static <TYPE> @NotNull TYPE[] append(@Nullable final TYPE[] typeArray,
+                                              @Nullable final TYPE... typesToAppend) {
+    if (typeArray == null || typesToAppend == null) {
+      throw new NullPointerException("");
+    }
+
+    final TYPE[] newArray = Arrays.copyOf(typeArray, typeArray.length + typesToAppend.length);
+    System.arraycopy(typesToAppend, 0, newArray, typeArray.length, typesToAppend.length);
+    return newArray;
   }
 }
