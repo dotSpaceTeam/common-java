@@ -250,7 +250,6 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     }
 
     this.implementExecutor(new ResponseFunctionExecutor<>(
-      () -> true, //Run in any condition
       () -> {
         try { //Catch possible errors from runnable.
           responseConsumer.accept(this.state, this.response, this.throwable);
@@ -299,7 +298,6 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     }
 
     this.implementExecutor(new ResponseFunctionExecutor<>( //Create new executor instance.
-      () -> true, //Run in any condition
       () -> {
         try { //Catch possible errors from runnable.
           runnable.run(); //Execute runnable.
@@ -552,7 +550,8 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
                                                                @NotNull final Supplier<Boolean> checkIfExecutable,
                                                                final boolean async) {
     final CompletableResponse<TYPE> completableResponse = new CompletableResponse<>();
-    this.implementExecutor(new ResponseFunctionExecutor<>(checkIfExecutable,
+    this.implementExecutor(new ResponseFunctionExecutor<>(
+      checkIfExecutable,
       () -> {
         if (this.response != null) {
           return;
@@ -637,12 +636,17 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return this.state == State.COMPLETED_EXCEPTIONALLY;
   }
 
-  private synchronized void implementExecutor(@NotNull final ResponseFunction<?> executor) {
+  /**
+   * Update responseFunctions array.
+   *
+   * @param responseFunction to add to array.
+   */
+  private synchronized void implementExecutor(@NotNull final ResponseFunction<?> responseFunction) {
     if (this.done()) { //Directly run executor if already finished.
-      executor.run(this.executorService);
+      responseFunction.run(this.executorService);
     } else { //Add to run later if response is completed.
       this.responseFunctions = Arrays.copyOf(this.responseFunctions, this.responseFunctions.length + 1);
-      this.responseFunctions[this.responseFunctions.length - 1] = executor;
+      this.responseFunctions[this.responseFunctions.length - 1] = responseFunction;
     }
   }
 
