@@ -1,5 +1,6 @@
 package dev.dotspace.common;
 
+import dev.dotspace.annotation.SpaceApi;
 import dev.dotspace.common.response.CompletableResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
  * Class with {@link Collection} operations.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE) //Block class construction.
+@SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
 public final class SpaceCollections {
   /**
    * Get a random object of collection.

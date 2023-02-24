@@ -1,5 +1,6 @@
 package dev.dotspace.common;
 
+import dev.dotspace.annotation.SpaceApi;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +14,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings("unused") //Some methods are meant to be for the library -> Suppress idea warnings.
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
 public final class SpaceObjects {
   /**
    * Throw {@link NullPointerException} if object is null with given message.

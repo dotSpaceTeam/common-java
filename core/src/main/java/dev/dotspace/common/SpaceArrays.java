@@ -1,5 +1,6 @@
 package dev.dotspace.common;
 
+import dev.dotspace.annotation.SpaceApi;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.common.exception.EmptyArrayException;
 import lombok.AccessLevel;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
 public final class SpaceArrays {
   /**
    * Get a random element of array of any type.
