@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 /**
  * Methods to make life with objects easier.
  */
+@SuppressWarnings("unused") //Some methods are meant to be for the library -> Suppress idea warnings.
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SpaceObjects {
   /**
