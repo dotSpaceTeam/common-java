@@ -933,6 +933,18 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * Implementation for:
+   * <ul>
+   *   <li>{@link CompletableResponse#equal(CompletableResponse[])}</li>
+   *   <li>{@link CompletableResponse#equal(Collection)}</li>
+   *   <li>{@link CompletableResponse#equal(EqualFunction, CompletableResponse[])}</li>
+   *   <li>{@link CompletableResponse#equal(EqualFunction, Collection)}</li>
+   *   <li>{@link CompletableResponse#equalType(CompletableResponse[])} </li>
+   *   <li>{@link CompletableResponse#equalType(Collection)} </li>
+   *   <li>{@link CompletableResponse#equalType(EqualFunction, CompletableResponse[])}</li>
+   *   <li>{@link CompletableResponse#equalType(EqualFunction, Collection)}</li>
+   * </ul>
+   *
    * @param equalFunction
    * @param responseArray
    * @param <TYPE>
@@ -1010,6 +1022,14 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * Implementation for:
+   * <ul>
+   *   <li>{@link CompletableResponse#first(CompletableResponse[])}</li>
+   *   <li>{@link CompletableResponse#first(Collection)}</li>
+   *   <li>{@link CompletableResponse#firstType(CompletableResponse[])} </li>
+   *   <li>{@link CompletableResponse#firstType(Collection)} </li>
+   * </ul>
+   *
    * @param responseArray
    * @param <TYPE>
    * @return
