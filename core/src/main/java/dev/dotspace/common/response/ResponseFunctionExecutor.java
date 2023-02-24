@@ -1,5 +1,6 @@
 package dev.dotspace.common.response;
 
+import dev.dotspace.annotation.SpaceApi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,6 +12,7 @@ import java.util.function.Supplier;
  *
  * @see ResponseFunction
  */
+@SpaceApi(state = SpaceApi.State.STABLE, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
 final class ResponseFunctionExecutor<TYPE> implements ResponseFunction<TYPE> {
   private final @Nullable Supplier<Boolean> checkIfExecutable;
   private final @NotNull Runnable runnable;

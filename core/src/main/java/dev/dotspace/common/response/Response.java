@@ -1,5 +1,6 @@
 package dev.dotspace.common.response;
 
+import dev.dotspace.annotation.SpaceApi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +21,7 @@ public interface Response<TYPE> {
    *
    * @return the newly created {@link Response}.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> newUncompleted();
 
   /**
@@ -28,6 +30,7 @@ public interface Response<TYPE> {
    * @return if available the response otherwise null.
    * @throws InterruptedException if the process is interrupted.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @Nullable TYPE get() throws InterruptedException;
 
   /**
@@ -38,6 +41,7 @@ public interface Response<TYPE> {
    * @return if available the response otherwise null.
    * @throws InterruptedException if the process is interrupted.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @Nullable TYPE get(final long nanos) throws InterruptedException;
 
   /**
@@ -50,6 +54,7 @@ public interface Response<TYPE> {
    * @throws InterruptedException if the process is interrupted.
    * @throws NullPointerException if timeUnit is null.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @Nullable TYPE get(final long duration,
                      @Nullable final TimeUnit timeUnit) throws InterruptedException;
 
@@ -61,6 +66,7 @@ public interface Response<TYPE> {
    * @param alternativeValue contains the alternative value.
    * @return if available the response otherwise zero or the response of the alternative.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @Nullable TYPE getNow(@Nullable Supplier<TYPE> alternativeValue);
 
   /**
@@ -68,6 +74,7 @@ public interface Response<TYPE> {
    *
    * @return true if the process was successfully aborted.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   boolean cancel();
 
   /**
@@ -76,6 +83,7 @@ public interface Response<TYPE> {
    * @param type with which the response is to be completed.
    * @return instance of this response.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> complete(@Nullable final TYPE type);
 
   /**
@@ -85,6 +93,7 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> completeAsync(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
@@ -93,6 +102,7 @@ public interface Response<TYPE> {
    * @param throwable specifies the error to be used for completion.
    * @return instance of this response.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> completeExceptionally(@Nullable final Throwable throwable);
 
   /**
@@ -102,6 +112,7 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if throwableSupplier is null.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> completeExceptionallyAsync(@Nullable final Supplier<Throwable> throwableSupplier);
 
   /**
@@ -113,6 +124,7 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if responseConsumer is null.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> sniff(@Nullable final ResponseConsumer<TYPE> responseConsumer);
 
   /**
@@ -124,6 +136,7 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if responseConsumer is null.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> sniffAsync(@Nullable final ResponseConsumer<TYPE> responseConsumer);
 
   /**
@@ -132,6 +145,7 @@ public interface Response<TYPE> {
    * @param runnable which is to be executed.
    * @return instance of this response.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> run(@Nullable final Runnable runnable);
 
   /**
@@ -140,6 +154,7 @@ public interface Response<TYPE> {
    * @param runnable which is to be executed asynchronously.
    * @return instance of this response.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> runAsync(@Nullable final Runnable runnable);
 
   /**
@@ -148,6 +163,7 @@ public interface Response<TYPE> {
    * @param consumer is filled with the response.
    * @return instance of this response.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> ifPresent(@Nullable final Consumer<@NotNull TYPE> consumer);
 
   /**
@@ -156,6 +172,7 @@ public interface Response<TYPE> {
    * @param consumer is filled with the response.
    * @return instance of this response.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> ifPresentAsync(@Nullable final Consumer<@NotNull TYPE> consumer);
 
   /**
@@ -168,6 +185,7 @@ public interface Response<TYPE> {
    * @param <MAP>    the type into which the response should be converted.
    * @return new instance created by the map method.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull <MAP> Response<MAP> map(@Nullable final Function<TYPE, MAP> function);
 
   /**
@@ -180,6 +198,7 @@ public interface Response<TYPE> {
    * @param <MAP>    the type into which the response should be converted.
    * @return new instance created by the map method.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull <MAP> Response<MAP> mapAsync(@Nullable final Function<TYPE, MAP> function);
 
   /**
@@ -193,6 +212,7 @@ public interface Response<TYPE> {
    * @param typePredicate checks if the answer is kept ({@link Predicate#test(Object)} -> true).
    * @return new instance of {@link Response} created with the filtered value.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> filter(@Nullable final Predicate<TYPE> typePredicate);
 
   /**
@@ -206,6 +226,7 @@ public interface Response<TYPE> {
    * @param typePredicate checks if the answer is kept ({@link Predicate#test(Object)} -> true).
    * @return new instance of {@link Response} created with the filtered value.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> filterAsync(@Nullable final Predicate<TYPE> typePredicate);
 
   /**
@@ -214,6 +235,7 @@ public interface Response<TYPE> {
    * @param runnable which is to be executed.
    * @return instance of this response.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> ifAbsent(@Nullable final Runnable runnable);
 
   /**
@@ -222,6 +244,7 @@ public interface Response<TYPE> {
    * @param runnable which is to be executed.
    * @return instance of this response.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> ifAbsentAsync(@Nullable final Runnable runnable);
 
   /**
@@ -230,6 +253,7 @@ public interface Response<TYPE> {
    * @param consumer will be completed with the error.
    * @return instance of this response.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> ifExceptionally(@Nullable final Consumer<@Nullable Throwable> consumer);
 
   /**
@@ -238,6 +262,7 @@ public interface Response<TYPE> {
    * @param consumer will be completed with the error.
    * @return instance of this response.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> ifExceptionallyAsync(@Nullable final Consumer<@Nullable Throwable> consumer);
 
   /**
@@ -251,6 +276,7 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> useIfAbsent(@Nullable final Supplier<TYPE> typeSupplier);
 
 
@@ -264,6 +290,7 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> useIfAbsentAsync(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
@@ -276,6 +303,7 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> useIfExceptionally(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
@@ -288,6 +316,7 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> useIfExceptionallyAsync(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
@@ -300,6 +329,7 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> elseUse(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
@@ -312,6 +342,7 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   @NotNull Response<TYPE> elseUseAsync(@Nullable final Supplier<TYPE> typeSupplier);
 
   /**
@@ -319,6 +350,7 @@ public interface Response<TYPE> {
    *
    * @return true, if completed. ({@link State} is not {@link State#UNCOMPLETED})
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   boolean done();
 
   /**
@@ -326,6 +358,7 @@ public interface Response<TYPE> {
    *
    * @return true, if cancelled. ({@link State} is {@link State#CANCELLED})
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   boolean canceled();
 
   /**
@@ -333,5 +366,6 @@ public interface Response<TYPE> {
    *
    * @return true if, exceptionally. ({@link State} is {@link State#COMPLETED_EXCEPTIONALLY})
    */
+  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
   boolean exceptionally();
 }

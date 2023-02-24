@@ -1,4 +1,5 @@
 rootProject.name = 'space-common'
 include 'core'
 include 'examples'
+include 'base'
 
