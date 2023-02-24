@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  * Class with time and duration operations
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+@LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
 public final class SpaceTime {
   /**
    * Get the current system time in other time format
@@ -22,6 +22,7 @@ public final class SpaceTime {
    * @param timeUnit to convert to get currentTimeMillis in
    * @return currentTime from {@link System#currentTimeMillis()} converted with timeUnit
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static long currentTimeAs(@NotNull final TimeUnit timeUnit) {
     return timeUnit.convert(Duration.ofMillis(System.currentTimeMillis()));
   }
@@ -33,6 +34,7 @@ public final class SpaceTime {
    *                  This value should be supplied as nanoseconds.
    * @return created {@link Timestamp} object
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull Timestamp timestamp(final long timeNanos) {
     return new Timestamp(timeNanos);
   }
@@ -43,6 +45,7 @@ public final class SpaceTime {
    *
    * @return created {@link Timestamp} object
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull Timestamp timestampNow() {
     return SpaceTime.timestamp(System.nanoTime());
   }
@@ -65,7 +68,7 @@ public final class SpaceTime {
    *
    * @param timestamp used as reference for the stamp in ns.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public record Timestamp(long timestamp) {
     /**
      * Get the pastTime since the {@link Timestamp} was created and now
@@ -73,6 +76,7 @@ public final class SpaceTime {
      * @return the difference as milliseconds
      * @throws DateTimeException if the difference is negative.
      */
+    @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.6")
     public long pastTime() {
       final long diff = System.nanoTime() - this.timestamp; //Return different between then and now
       if (diff < 0) {
@@ -89,6 +93,7 @@ public final class SpaceTime {
      * @throws NullPointerException if timeUnit is null.
      * @throws DateTimeException    if the difference is negative.
      */
+    @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.6")
     public long pastTimeFormatted(@Nullable final TimeUnit timeUnit) {
       return SpaceObjects.throwIfNull(timeUnit).convert(Duration.ofMillis(this.pastTime()));
     }
