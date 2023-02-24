@@ -5,7 +5,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.ExecutorService;
 
 /**
- * @param <TYPE>
+ * Function to execute Function if {@link Response} is completed.
+ *
+ * @param <TYPE> type of response. (Also the same type as the Response)
  */
 @FunctionalInterface
 public interface ResponseFunction<TYPE> {
