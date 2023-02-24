@@ -27,7 +27,7 @@ final class ResponseFunctionExecutor<TYPE> implements ResponseFunction<TYPE> {
   ResponseFunctionExecutor(@Nullable final Supplier<Boolean> checkIfExecutable,
                            @NotNull Runnable runnable,
                            final boolean async) {
-    this.checkIfExecutable = SpaceObjects.throwIfNull(checkIfExecutable);
+    this.checkIfExecutable = checkIfExecutable;
     this.runnable = runnable;
     this.async = async;
   }
