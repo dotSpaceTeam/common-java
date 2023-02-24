@@ -8,21 +8,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.PACKAGE, ElementType.ANNOTATION_TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface SpaceApi {
+@Retention(RetentionPolicy.SOURCE)
+public @interface LibraryInformation {
   /**
    * Implemented since.
    *
    * @return
    */
-  @NotNull String since();
+  @NotNull String since() default "_NA_";
 
   /**
    * Latest update
    *
    * @return
    */
-  @NotNull String updated();
+  @NotNull String updated() default "_NA_";
 
   /**
    * @return
@@ -30,7 +30,6 @@ public @interface SpaceApi {
   @NotNull Access access() default Access.PUBLIC;
 
   /**
-   *
    * @return
    */
   @NotNull State state() default State.DEPRECATED;
