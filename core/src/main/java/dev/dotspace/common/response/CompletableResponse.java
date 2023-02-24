@@ -233,6 +233,8 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * Implementation for sniffing methods.
+   *
    * <dl>
    *   <dt>Execute in main thread:</dt>
    *   <dd>{@link CompletableResponse#sniff(ResponseConsumer)}</dd>
@@ -240,8 +242,9 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *   <dd>{@link CompletableResponse#sniffAsync(ResponseConsumer)}</dd>
    * </dl>
    *
-   * @param responseConsumer
+   * @param responseConsumer to inform if response is completed.
    * @param async            true, if the runnable is to be executed asynchronously.
+   * @see ResponseConsumer
    */
   private void sniffImplementation(@Nullable final ResponseConsumer<TYPE> responseConsumer,
                                    final boolean async) {
@@ -326,6 +329,8 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * Present consumer implementation.
+   *
    * <dl>
    *   <dt>Execute in main thread:</dt>
    *   <dd>{@link CompletableResponse#ifPresent(Consumer)}</dd>
@@ -333,25 +338,25 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *   <dd>{@link CompletableResponse#ifPresentAsync(Consumer)}</dd>
    * </dl>
    *
-   * @param consumer
-   * @param async
+   * @param consumer to inform if response is completed {@link State#COMPLETED_DEFAULT} with present object.
+   * @param async    true, if the runnable is to be executed asynchronously.
    */
   private void ifPresentImplementation(@Nullable final Consumer<@NotNull TYPE> consumer,
                                        final boolean async) {
-    if (consumer == null) {
+    if (consumer == null) { //If no consumer given, nothing left to do here.
       return;
     }
 
     this.implementExecutor(new ResponseFunctionExecutor<>(
-      () -> this.response != null && this.state == State.COMPLETED_DEFAULT,
+      () -> this.response != null && this.state == State.COMPLETED_DEFAULT, //Only run if response is not null and state is COMPLETED_DEFAULT.
       () -> {
         try {
-          final TYPE threadResponse = this.response;
-          if (threadResponse == null) {
+          final TYPE threadResponse = this.response; //Create local variable for thread.
+          if (threadResponse == null) { //Check for thread safety.
             return;
           }
-          consumer.accept(threadResponse);
-        } catch (final Throwable throwable) {
+          consumer.accept(threadResponse); //Fill in consumer.
+        } catch (final Throwable throwable) { //Catch errors in consumer and print them into console.
           throwable.printStackTrace();
         }
       }, async));
@@ -660,7 +665,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /*
-   * --------------------------- Methods and classes --------------------------------
+   * --------------------------- Methods and classes for CompletableResponse instance --------------------------------
    */
 
   /**
@@ -681,7 +686,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @param <TYPE>
    */
-  public static class ResultCollection<TYPE> {
+  private static class ResultCollection<TYPE> {
     /**
      * Array to hold results.
      */
@@ -693,15 +698,6 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     @SuppressWarnings("unchecked")
     public ResultCollection() {
       this.results = (Result<TYPE>[]) new Result[0];
-    }
-
-    /**
-     * Get array.
-     *
-     * @return the value of {@link CompletableResponse#response}
-     */
-    public Result<TYPE>[] results() {
-      return this.results;
     }
 
     /**
@@ -773,17 +769,25 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @param responseArray
+   * Collect all responses of the specified {@link CompletableResponse} instances.
+   * If an answer is null, a null pointer is given as an answer at that position.
+   * The type of each instance does not matter in this method.
+   *
+   * @param responseArray of which the responses are to be collected.
+   * @return a new {@link CompletableResponse} instance with {@link ResultCollection} which collects the responses.
+   */
+  public static @NotNull CompletableResponse<Result<Object>[]> collect(@Nullable final CompletableResponse<?>... responseArray) {
+    return collectImplementation(toObjectArray(responseArray));
+  }
+
+  /**
+   * @param responseCollection
    * @return
    */
   @SuppressWarnings("unchecked")
-  public static @NotNull CompletableResponse<ResultCollection<Object>> collect(@Nullable final CompletableResponse<?>... responseArray) {
-    final CompletableResponse<Object>[] objectArray = (CompletableResponse<Object>[])
-      new CompletableResponse[SpaceObjects.throwIfNull(responseArray) /*Check if responseArray is present and not null*/.length]; //Create new array with object responses.
-    for (int i = 0; i < responseArray.length; i++) { //Loop trough every index of responseArray
-      objectArray[i] = (CompletableResponse<Object>) responseArray[i]; //Add every response from responseArray to new created array.
-    }
-    return collectImplementation(objectArray);
+  public static @NotNull CompletableResponse<Result<Object>[]> collect(@Nullable final Collection<CompletableResponse<?>> responseCollection) {
+    return collectImplementation(SpaceObjects.throwIfNull(responseCollection) //Check if collection is present.
+      .toArray(new CompletableResponse[0])); //Convert to array for thread safe.
   }
 
   /**
@@ -792,18 +796,8 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return
    */
   @SafeVarargs
-  public static @NotNull <TYPE> CompletableResponse<ResultCollection<TYPE>> collectType(@Nullable final CompletableResponse<TYPE>... responseArray) {
+  public static @NotNull <TYPE> CompletableResponse<Result<TYPE>[]> collectType(@Nullable final CompletableResponse<TYPE>... responseArray) {
     return collectImplementation(responseArray);
-  }
-
-  /**
-   * @param responseCollection
-   * @return
-   */
-  @SuppressWarnings("unchecked")
-  public static @NotNull CompletableResponse<ResultCollection<Object>> collect(@Nullable final Collection<CompletableResponse<?>> responseCollection) {
-    return collectImplementation(SpaceObjects.throwIfNull(responseCollection) //Check if collection is present.
-      .toArray(new CompletableResponse[0])); //Convert to array for thread safe.
   }
 
   /**
@@ -811,10 +805,8 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param <TYPE>
    * @return
    */
-  @SuppressWarnings("unchecked")
-  public static @NotNull <TYPE> CompletableResponse<ResultCollection<TYPE>> collectType(@Nullable final Collection<CompletableResponse<TYPE>> responseCollection) {
-    return collectImplementation(SpaceObjects.throwIfNull(responseCollection) //Check if collection is present.
-      .toArray((CompletableResponse<TYPE>[]) new CompletableResponse[0]) /*If present map collection to array.*/); //Convert to array for thread safe.
+  public static @NotNull <TYPE> CompletableResponse<Result<TYPE>[]> collectType(@Nullable final Collection<CompletableResponse<TYPE>> responseCollection) {
+    return collectImplementation(collectionToArray(responseCollection));
   }
 
   /**
@@ -830,10 +822,10 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param <TYPE>        type of result to process.
    * @return new instance of {@link CompletableResponse} that will be completed with the {@link ResultCollection} once finished.
    */
-  private static @NotNull <TYPE> CompletableResponse<ResultCollection<TYPE>> collectImplementation(@Nullable final CompletableResponse<TYPE>[] responseArray) {
+  private static @NotNull <TYPE> CompletableResponse<Result<TYPE>[]> collectImplementation(@Nullable final CompletableResponse<TYPE>[] responseArray) {
     SpaceObjects.throwIfNull(responseArray); //Throw error if responseArray is null.
 
-    final CompletableResponse<ResultCollection<TYPE>> completableResponse = new CompletableResponse<>(); //Create new Response.
+    final CompletableResponse<Result<TYPE>[]> completableResponse = new CompletableResponse<>(); //Create new Response.
 
     completableResponse.execute(() -> { //Run in of thread.
       final ResultCollection<TYPE> resultCollection = new ResultCollection<>(); //Create resultCollection.
@@ -852,33 +844,123 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
         }
       }
 
-      completableResponse.complete(resultCollection); //Complete response with collection if all responses where made.
+      completableResponse.complete(resultCollection.results); //Complete response with collection if all responses where made.
     });
 
     return completableResponse;
   }
 
-  public static @NotNull CompletableResponse<?> equal(@Nullable EqualFunction equalFunction,
-                                                      @Nullable final CompletableResponse<?>... responseArray) {
-    final EqualFunction finalFunction = equalFunction == null ? EqualFunction.EQUALS : equalFunction; //Define function to compare objects.
-    final CompletableResponse<Object> completableResponse = new CompletableResponse<>(); //Return value of method
+  /**
+   * @param responseArray
+   * @return
+   */
+  public static @NotNull CompletableResponse<Object> equal(@Nullable final CompletableResponse<?>... responseArray) {
+    return equalImplementation(null, toObjectArray(responseArray));
+  }
 
-    collect(responseArray).ifPresentAsync(resultCollection -> { //Execute if present.
-        if (resultCollection.results.length == 0) { //Return if empty
+  /**
+   * @param responseCollection
+   * @return
+   */
+  public static @NotNull CompletableResponse<Object> equal(@Nullable final Collection<CompletableResponse<?>> responseCollection) {
+    return equal(null, responseCollection);
+
+  }
+
+  /**
+   * @param equalFunction
+   * @param responseArray
+   * @return
+   */
+  public static @NotNull CompletableResponse<Object> equal(@Nullable EqualFunction equalFunction,
+                                                           @Nullable final CompletableResponse<?>... responseArray) {
+    return equalImplementation(equalFunction, toObjectArray(responseArray));
+  }
+
+  /**
+   * @param equalFunction
+   * @param responseCollection
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public static @NotNull CompletableResponse<Object> equal(@Nullable EqualFunction equalFunction,
+                                                           @Nullable final Collection<CompletableResponse<?>> responseCollection) {
+    return equalImplementation(equalFunction, SpaceObjects.throwIfNull(responseCollection) //Check if collection is present.
+      .toArray(new CompletableResponse[0]));
+  }
+
+  /**
+   * @param responseArray
+   * @param <TYPE>
+   * @return
+   */
+  @SafeVarargs
+  public static @NotNull <TYPE> CompletableResponse<TYPE> equalType(@Nullable final CompletableResponse<TYPE>... responseArray) {
+    return equalType(null, responseArray);
+  }
+
+  /**
+   * @param responseCollection
+   * @param <TYPE>
+   * @return
+   */
+  public static @NotNull <TYPE> CompletableResponse<TYPE> equalType(@Nullable final Collection<CompletableResponse<TYPE>> responseCollection) {
+    return equalType(null, responseCollection);
+
+  }
+
+  /**
+   * @param equalFunction
+   * @param responseArray
+   * @param <TYPE>
+   * @return
+   */
+  @SafeVarargs
+  public static @NotNull <TYPE> CompletableResponse<TYPE> equalType(@Nullable EqualFunction equalFunction,
+                                                                    @Nullable final CompletableResponse<TYPE>... responseArray) {
+    return equalImplementation(equalFunction, responseArray);
+  }
+
+  /**
+   * @param equalFunction
+   * @param responseCollection
+   * @param <TYPE>
+   * @return
+   */
+  public static @NotNull <TYPE> CompletableResponse<TYPE> equalType(@Nullable EqualFunction equalFunction,
+                                                                    @Nullable final Collection<CompletableResponse<TYPE>> responseCollection) {
+    return equalImplementation(equalFunction, collectionToArray(responseCollection));
+  }
+
+  /**
+   * @param equalFunction
+   * @param responseArray
+   * @param <TYPE>
+   * @return
+   */
+  @SafeVarargs
+  private static @NotNull <TYPE> CompletableResponse<TYPE> equalImplementation(@Nullable EqualFunction equalFunction,
+                                                                               @Nullable final CompletableResponse<TYPE>... responseArray) {
+    final EqualFunction finalFunction = equalFunction == null ? EqualFunction.EQUALS : equalFunction; //Define function to compare objects.
+    final CompletableResponse<TYPE> completableResponse = new CompletableResponse<>(); //Return value of method
+
+    collectImplementation(responseArray)
+      .ifPresentAsync(results -> { //Execute if present.
+        if (results.length == 0) { //Return if empty
           completableResponse.completeExceptionally(new NullPointerException("No response."));
           return;
         }
 
-        final Object latest = resultCollection.results[0].type; //Get first object to compare with next
+        final TYPE compareInstance = results[0].type; //Get first object to compare with next
 
-        for (int i = 1; i < resultCollection.results.length; i++) {
-          if (!finalFunction.equals(latest, resultCollection.results[i].type)) {
+        for (int i = 1; i < results.length; i++) {
+          if (!finalFunction.equals(compareInstance, results[i].type)) {
             completableResponse.completeExceptionally(new MismatchException());
             return;
           }
         }
 
-        completableResponse.complete(latest);
+        completableResponse.complete(compareInstance);
       })
       .ifAbsent(() -> //Complete response with NullPointerException -> No collected response present.
         completableResponse.completeExceptionally(new NullPointerException("Response results are empty.")))
@@ -887,24 +969,61 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return completableResponse;
   }
 
-  public static @NotNull CompletableResponse<?> equal(@Nullable final CompletableResponse<?>... responseArray) {
-    return equal(null, responseArray);
-  }
-
   /**
    * @param responseArray to race each others.
    * @return
    * @throws NullPointerException if responses is null.
    */
   public static @NotNull CompletableResponse<?> first(@Nullable final CompletableResponse<?>... responseArray) {
+    return firstImplementation(toObjectArray(responseArray)); //Convert to array for thread safe.
+  }
+
+  /**
+   * Use answer which is available first.
+   *
+   * @param responseCollection
+   * @return
+   * @throws NullPointerException if collection is null.
+   */
+  public static @NotNull CompletableResponse<?> first(@Nullable final Collection<CompletableResponse<?>> responseCollection) {
+    return first(SpaceObjects.throwIfNull(responseCollection) //Check if collection is present.
+      .toArray(new CompletableResponse[0])); //Convert to array for thread safe.
+  }
+
+  /**
+   * @param responseArray
+   * @param <TYPE>
+   * @return
+   */
+  @SafeVarargs
+  public static @NotNull <TYPE> CompletableResponse<TYPE> firstType(@Nullable final CompletableResponse<TYPE>... responseArray) {
+    return firstImplementation(responseArray);
+  }
+
+  /**
+   * @param responseCollection
+   * @param <TYPE>
+   * @return
+   */
+  public static @NotNull <TYPE> CompletableResponse<TYPE> firstType(@Nullable final Collection<CompletableResponse<TYPE>> responseCollection) {
+    return firstImplementation(collectionToArray(responseCollection));
+  }
+
+  /**
+   * @param responseArray
+   * @param <TYPE>
+   * @return
+   */
+  @SafeVarargs
+  private static @NotNull <TYPE> CompletableResponse<TYPE> firstImplementation(@Nullable final CompletableResponse<TYPE>... responseArray) {
     SpaceObjects.throwIfNull(responseArray, "Given array is null."); //Throw error if responses is null.
 
-    final CompletableResponse<Object> completableResponse = new CompletableResponse<>(); //Create new response -> return value of this method.
+    final CompletableResponse<TYPE> completableResponse = new CompletableResponse<>(); //Create new response -> return value of this method.
 
     completableResponse.execute(() -> {
-      final AtomicInteger atomicInteger = new AtomicInteger(); //Count completed requests.
+      final AtomicInteger atomicInteger = new AtomicInteger(0); //Count completed requests.
 
-      for (final CompletableResponse<?> response : responseArray) { //Loop trough every component of list.
+      for (final CompletableResponse<TYPE> response : responseArray) { //Loop trough every component of list.
         if (response == null) { //Ignore response if null.
           atomicInteger.incrementAndGet(); //Null responses also count as response done.
           continue;
@@ -927,14 +1046,34 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return completableResponse;
   }
 
+  /*
+   * --------------------------- Private methods for static methods of this class --------------------------------
+   */
   /**
-   * Use answer which is available first.
+   * Convert an array of different response types to {@link CompletableResponse} with object as type.
    *
-   * @param responseCollection
+   * @param responseArray to convert.
+   * @return new array instance with object instances.
+   * @throws NullPointerException if responseArray is null.
+   */
+  @SuppressWarnings("unchecked")
+  private static CompletableResponse<Object>[] toObjectArray(@Nullable final CompletableResponse<?>... responseArray) {
+    final CompletableResponse<Object>[] objectArray = (CompletableResponse<Object>[])
+      new CompletableResponse[SpaceObjects.throwIfNull(responseArray) /*Check if responseArray is present and not null*/.length]; //Create new array with object responses.
+    for (int i = 0; i < responseArray.length; i++) { //Loop trough every index of responseArray
+      objectArray[i] = (CompletableResponse<Object>) responseArray[i]; //Add every response from responseArray to new created array.
+    }
+    return objectArray;
+  }
+
+  /**
+   * @param <TYPE>
    * @return
    * @throws NullPointerException if collection is null.
    */
-  public static @NotNull CompletableResponse<?> first(@Nullable final Collection<CompletableResponse<?>> responseCollection) {
-    return first(SpaceObjects.throwIfNull(responseCollection).toArray(new CompletableResponse[0])); //Convert to array for thread safe.
+  @SuppressWarnings("unchecked")
+  private static @NotNull <TYPE> CompletableResponse<TYPE>[] collectionToArray(@Nullable final Collection<CompletableResponse<TYPE>> collection) {
+    return SpaceObjects.throwIfNull(collection) //Check if collection is present.
+      .toArray((CompletableResponse<TYPE>[]) new CompletableResponse[0]);
   }
 }
