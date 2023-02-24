@@ -17,6 +17,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused") //Some methods are meant to be for the library -> Suppress idea warnings.
 public final class CompletableResponse<TYPE> implements Response<TYPE> {
   private final @NotNull ExecutorService executorService;
   private volatile @NotNull State state;
@@ -57,7 +58,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    */
   @Override
   public @NotNull CompletableResponse<TYPE> newUncompleted() {
-    return new CompletableResponse<TYPE>();
+    return new CompletableResponse<>();
   }
 
   /**
@@ -379,6 +380,12 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * Implementation to map response to another. {@link Function} will be executed if response was completed with value.
+   * Otherwise, given function will be ignored.
+   *
+   * <br>
+   * Condition: {@link CompletableResponse#state}: {@link State#COMPLETED_NULL}
+   * <br>
    * <dl>
    *   <dt>Execute in main thread:</dt>
    *   <dd>{@link CompletableResponse#map(Function)}</dd>
@@ -386,21 +393,23 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *   <dd>{@link CompletableResponse#mapAsync(Function)}</dd>
    * </dl>
    *
-   * @param function
-   * @param async
-   * @param <MAP>
-   * @return
+   * @param function to use to map response with.
+   * @param async    true, if the runnable is to be executed asynchronously.
+   * @param <MAP>    type of object to map response to.
+   * @return new instance of {@link CompletableResponse} with mapped response of current instance.
    */
   private <MAP> CompletableResponse<MAP> mapImplementation(@Nullable final Function<TYPE, MAP> function,
                                                            final boolean async) {
     final CompletableResponse<MAP> completableResponse = new CompletableResponse<>();
-    this.implementExecutor(new ResponseFunctionExecutor<>(() -> this.response != null && this.state == State.COMPLETED_DEFAULT, () -> {
-      try {
-        completableResponse.complete(SpaceObjects.throwIfNull(function).apply(this.response));
-      } catch (final Throwable throwable) {
-        completableResponse.completeExceptionally(throwable);
-      }
-    }, async));
+    this.implementExecutor(new ResponseFunctionExecutor<>(
+      () -> this.response != null && this.state == State.COMPLETED_DEFAULT,
+      () -> {
+        try {
+          completableResponse.complete(SpaceObjects.throwIfNull(function).apply(this.response));
+        } catch (final Throwable throwable) {
+          completableResponse.completeExceptionally(throwable);
+        }
+      }, async));
     return completableResponse;
   }
 
@@ -420,6 +429,23 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return this.filterImplementation(typePredicate, true);
   }
 
+  /**
+   * Filter response and create new {@link CompletableResponse} with filtered response.
+   *
+   * <br>
+   * Condition: {@link CompletableResponse#state}: {@link State#COMPLETED_DEFAULT} and {@link CompletableResponse#response} is present.
+   * <br>
+   * <dl>
+   *   <dt>Execute in main thread:</dt>
+   *   <dd>{@link CompletableResponse#filter(Predicate)}</dd>
+   *   <dt>Execute in a new thread:</dt>
+   *   <dd>{@link CompletableResponse#filterAsync(Predicate)}</dd>
+   * </dl>
+   *
+   * @param typePredicate to filter response if present.
+   * @param async         true, if the runnable is to be executed asynchronously.
+   * @return new instance of {@link CompletableResponse} with filtered response of current instance.
+   */
   private @NotNull CompletableResponse<TYPE> filterImplementation(@Nullable final Predicate<TYPE> typePredicate,
                                                                   final boolean async) {
     final CompletableResponse<TYPE> completableResponse = new CompletableResponse<>();
@@ -455,6 +481,11 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * Implementation to execute {@link Runnable} if response completed with null.
+   *
+   * <br>
+   * Condition: {@link CompletableResponse#state}: {@link State#COMPLETED_NULL}
+   * <br>
    * <dl>
    *   <dt>Execute in main thread:</dt>
    *   <dd>{@link CompletableResponse#ifAbsent(Runnable)}</dd>
@@ -462,25 +493,31 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *   <dd>{@link CompletableResponse#ifAbsentAsync(Runnable)}</dd>
    * </dl>
    *
-   * @param runnable
-   * @param async
+   * @param runnable to run if response completed without an error and {@link CompletableResponse#response} null.
+   * @param async    true, if the runnable is to be executed asynchronously.
    */
   private void ifAbsentImplementation(@Nullable final Runnable runnable,
                                       final boolean async) {
-    if (runnable == null) {
+    if (runnable == null) {//If no runnable given, nothing left to do here.
       return;
     }
 
-    this.implementExecutor(new ResponseFunctionExecutor<>(() -> this.state == State.COMPLETED_NULL, () -> {
-      try {
-        runnable.run();
-      } catch (final Throwable throwable) {
-        throwable.printStackTrace();
-      }
-    }, async));
+    this.implementExecutor(new ResponseFunctionExecutor<>(
+      () -> this.state == State.COMPLETED_NULL,
+      () -> {
+        try {
+          runnable.run();
+        } catch (final Throwable throwable) {
+          throwable.printStackTrace();
+        }
+      }, async));
   }
 
   /**
+   * <br>
+   * Condition for supplier: {@link CompletableResponse#state}: {@link State#COMPLETED_NULL}
+   * <br>
+   *
    * @see Response#useIfAbsent(Supplier)
    */
   @Override
@@ -489,6 +526,10 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * <br>
+   * Condition for supplier: {@link CompletableResponse#state}: {@link State#COMPLETED_NULL}
+   * <br>
+   *
    * @see Response#useIfAbsentAsync(Supplier)
    */
   @Override
@@ -497,6 +538,10 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * <br>
+   * Condition for supplier: {@link CompletableResponse#state}: {@link State#COMPLETED_EXCEPTIONALLY}
+   * <br>
+   *
    * @see Response#useIfExceptionally(Supplier)
    */
   @Override
@@ -505,6 +550,10 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * <br>
+   * Condition for supplier: {@link CompletableResponse#state}: {@link State#COMPLETED_EXCEPTIONALLY}
+   * <br>
+   *
    * @see Response#useIfExceptionallyAsync(Supplier)
    */
   @Override
@@ -513,6 +562,10 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * <br>
+   * Condition for supplier: {@link CompletableResponse#state}: {@link State#COMPLETED_NULL} or {@link State#COMPLETED_EXCEPTIONALLY}
+   * <br>
+   *
    * @see Response#elseUse(Supplier)
    */
   @Override
@@ -524,6 +577,10 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * <br>
+   * Condition for supplier: {@link CompletableResponse#state}: {@link State#COMPLETED_NULL} or {@link State#COMPLETED_EXCEPTIONALLY}
+   * <br>
+   *
    * @see Response#elseUseAsync(Supplier)
    */
   @Override
@@ -535,6 +592,9 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * <br>
+   * Condition: Different conditions -> more information from caller.
+   * <br>
    * <dl>
    *   <dt>Execute in main thread:</dt>
    *   <dd>{@link CompletableResponse#useIfAbsent(Supplier)}</dd>
@@ -546,10 +606,10 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *   <dd>{@link CompletableResponse#elseUseAsync(Supplier)}</dd>
    * </dl>
    *
-   * @param typeSupplier
-   * @param checkIfExecutable
-   * @param async
-   * @return
+   * @param typeSupplier      to get alternative response from.
+   * @param checkIfExecutable condition to run alternative get.
+   * @param async             true, if the runnable is to be executed asynchronously.
+   * @return new instance of {@link CompletableResponse} with alternative response of current instance.
    */
   private @NotNull CompletableResponse<TYPE> useImplementation(@Nullable final Supplier<TYPE> typeSupplier,
                                                                @NotNull final Supplier<Boolean> checkIfExecutable,
@@ -590,6 +650,11 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * Implementation for exceptionally consumers. Given {@link Consumer} accept the given throwable of this response.
+   * Value of {@link CompletableResponse#throwable} could also be null.
+   * <br>
+   * Condition: {@link CompletableResponse#state}: {@link State#COMPLETED_EXCEPTIONALLY}
+   * <br>
    * <dl>
    *   <dt>Execute in main thread:</dt>
    *   <dd>{@link CompletableResponse#ifExceptionally(Consumer)}</dd>
@@ -597,10 +662,10 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *   <dd>{@link CompletableResponse#ifExceptionallyAsync(Consumer)}</dd>
    * </dl>
    *
-   * @param consumer
-   * @param async
+   * @param consumer to accept the throwable of the response.
+   * @param async    true, if the runnable is to be executed asynchronously.
    */
-  private void ifExceptionallyImplementation(@Nullable final Consumer<Throwable> consumer,
+  private void ifExceptionallyImplementation(@Nullable final Consumer<@Nullable Throwable> consumer,
                                              final boolean async) {
     if (consumer == null) { //Return and ignore consumer if null.
       return;
@@ -775,14 +840,20 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @param responseArray of which the responses are to be collected.
    * @return a new {@link CompletableResponse} instance with {@link ResultCollection} which collects the responses.
+   * @see CompletableResponse#collectImplementation(CompletableResponse[])
    */
   public static @NotNull CompletableResponse<Result<Object>[]> collect(@Nullable final CompletableResponse<?>... responseArray) {
     return collectImplementation(toObjectArray(responseArray));
   }
 
   /**
-   * @param responseCollection
-   * @return
+   * Collect all responses of the specified {@link CompletableResponse} instances.
+   * If an answer is null, a null pointer is given as an answer at that position.
+   * The type of each instance does not matter in this method.
+   *
+   * @param responseCollection of which the responses are to be collected.
+   * @return a new {@link CompletableResponse} instance with {@link ResultCollection} which collects the responses.
+   * @see CompletableResponse#collectImplementation(CompletableResponse[])
    */
   @SuppressWarnings("unchecked")
   public static @NotNull CompletableResponse<Result<Object>[]> collect(@Nullable final Collection<CompletableResponse<?>> responseCollection) {
@@ -791,9 +862,17 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @param responseArray
-   * @param <TYPE>
-   * @return
+   * Collect all responses of the specified {@link CompletableResponse} instances.
+   * If an answer is null, a null pointer is given as an answer at that position.
+   * The type of each instance does not matter in this method.
+   * <br>
+   * In this variant, all {@link CompletableResponse} must have the same type.
+   * The advantage is that the answer then also has a uniform type.
+   *
+   * @param responseArray of which the responses are to be collected.
+   * @param <TYPE>        type of all {@link CompletableResponse} given and return value.
+   * @return a new {@link CompletableResponse} instance with {@link ResultCollection} which collects the responses.
+   * @see CompletableResponse#collectImplementation(CompletableResponse[])
    */
   @SafeVarargs
   public static @NotNull <TYPE> CompletableResponse<Result<TYPE>[]> collectType(@Nullable final CompletableResponse<TYPE>... responseArray) {
@@ -801,9 +880,17 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @param responseCollection
-   * @param <TYPE>
-   * @return
+   * Collect all responses of the specified {@link CompletableResponse} instances.
+   * If an answer is null, a null pointer is given as an answer at that position.
+   * The type of each instance does not matter in this method.
+   * <br>
+   * In this variant, all {@link CompletableResponse} must have the same type.
+   * The advantage is that the answer then also has a uniform type.
+   *
+   * @param responseCollection of which the responses are to be collected.
+   * @param <TYPE>             type of all {@link CompletableResponse} given and return value.
+   * @return a new {@link CompletableResponse} instance with {@link ResultCollection} which collects the responses.
+   * @see CompletableResponse#collectImplementation(CompletableResponse[])
    */
   public static @NotNull <TYPE> CompletableResponse<Result<TYPE>[]> collectType(@Nullable final Collection<CompletableResponse<TYPE>> responseCollection) {
     return collectImplementation(collectionToArray(responseCollection));
@@ -851,16 +938,28 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @param responseArray
-   * @return
+   * All given {@link CompletableResponse} must be completed with the same value.
+   * If this is the case, the returning {@link CompletableResponse} is completed with the equal value.
+   * <br>
+   * If a value is not present or an error is processed, the response is a {@link MismatchException}.
+   *
+   * @param responseArray compare elements with each-other.
+   * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
+   * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
   public static @NotNull CompletableResponse<Object> equal(@Nullable final CompletableResponse<?>... responseArray) {
     return equalImplementation(null, toObjectArray(responseArray));
   }
 
   /**
-   * @param responseCollection
-   * @return
+   * All given {@link CompletableResponse} must be completed with the same value.
+   * If this is the case, the returning {@link CompletableResponse} is completed with the equal value.
+   * <br>
+   * If a value is not present or an error is processed, the response is a {@link MismatchException}.
+   *
+   * @param responseCollection compare elements with each-other.
+   * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
+   * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
   public static @NotNull CompletableResponse<Object> equal(@Nullable final Collection<CompletableResponse<?>> responseCollection) {
     return equal(null, responseCollection);
@@ -868,9 +967,15 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @param equalFunction
-   * @param responseArray
-   * @return
+   * All given {@link CompletableResponse} must be completed with the same value.
+   * If this is the case, the returning {@link CompletableResponse} is completed with the equal value.
+   * <br>
+   * If a value is not present or an error is processed, the response is a {@link MismatchException}.
+   *
+   * @param equalFunction function to compare components of responseArray.
+   * @param responseArray compare elements with each-other.
+   * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
+   * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
   public static @NotNull CompletableResponse<Object> equal(@Nullable EqualFunction equalFunction,
                                                            @Nullable final CompletableResponse<?>... responseArray) {
@@ -878,9 +983,10 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @param equalFunction
-   * @param responseCollection
-   * @return
+   * @param equalFunction      function to compare components of responseCollection.
+   * @param responseCollection compare elements with each-other.
+   * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
+   * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
   @SuppressWarnings("unchecked")
   public static @NotNull CompletableResponse<Object> equal(@Nullable EqualFunction equalFunction,
@@ -890,9 +996,18 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @param responseArray
-   * @param <TYPE>
-   * @return
+   * All given {@link CompletableResponse} must be completed with the same value.
+   * If this is the case, the returning {@link CompletableResponse} is completed with the equal value.
+   * <br>
+   * If a value is not present or an error is processed, the response is a {@link MismatchException}.
+   * <br>
+   * In this variant, all {@link CompletableResponse} must have the same type.
+   * The advantage is that the answer then also has a uniform type.
+   *
+   * @param responseArray compare elements with each-other.
+   * @param <TYPE>        type of all {@link CompletableResponse} given and return value.
+   * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
+   * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
   @SafeVarargs
   public static @NotNull <TYPE> CompletableResponse<TYPE> equalType(@Nullable final CompletableResponse<TYPE>... responseArray) {
@@ -900,9 +1015,18 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @param responseCollection
-   * @param <TYPE>
-   * @return
+   * All given {@link CompletableResponse} must be completed with the same value.
+   * If this is the case, the returning {@link CompletableResponse} is completed with the equal value.
+   * <br>
+   * If a value is not present or an error is processed, the response is a {@link MismatchException}.
+   * <br>
+   * In this variant, all {@link CompletableResponse} must have the same type.
+   * The advantage is that the answer then also has a uniform type.
+   *
+   * @param responseCollection compare elements with each-other.
+   * @param <TYPE>             type of all {@link CompletableResponse} given and return value.
+   * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
+   * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
   public static @NotNull <TYPE> CompletableResponse<TYPE> equalType(@Nullable final Collection<CompletableResponse<TYPE>> responseCollection) {
     return equalType(null, responseCollection);
@@ -910,10 +1034,19 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @param equalFunction
-   * @param responseArray
-   * @param <TYPE>
-   * @return
+   * All given {@link CompletableResponse} must be completed with the same value.
+   * If this is the case, the returning {@link CompletableResponse} is completed with the equal value.
+   * <br>
+   * If a value is not present or an error is processed, the response is a {@link MismatchException}.
+   * <br>
+   * In this variant, all {@link CompletableResponse} must have the same type.
+   * The advantage is that the answer then also has a uniform type.
+   *
+   * @param equalFunction function to compare components of responseArray.
+   * @param responseArray compare elements with each-other.
+   * @param <TYPE>        type of all {@link CompletableResponse} given and return value.
+   * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
+   * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
   @SafeVarargs
   public static @NotNull <TYPE> CompletableResponse<TYPE> equalType(@Nullable EqualFunction equalFunction,
@@ -922,10 +1055,19 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @param equalFunction
-   * @param responseCollection
-   * @param <TYPE>
-   * @return
+   * All given {@link CompletableResponse} must be completed with the same value.
+   * If this is the case, the returning {@link CompletableResponse} is completed with the equal value.
+   * <br>
+   * If a value is not present or an error is processed, the response is a {@link MismatchException}.
+   * <br>
+   * In this variant, all {@link CompletableResponse} must have the same type.
+   * The advantage is that the answer then also has a uniform type.
+   *
+   * @param equalFunction      function to compare components of responseCollection.
+   * @param responseCollection compare elements with each-other.
+   * @param <TYPE>             type of all {@link CompletableResponse} given and return value.
+   * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
+   * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
   public static @NotNull <TYPE> CompletableResponse<TYPE> equalType(@Nullable EqualFunction equalFunction,
                                                                     @Nullable final Collection<CompletableResponse<TYPE>> responseCollection) {
@@ -944,11 +1086,13 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *   <li>{@link CompletableResponse#equalType(EqualFunction, CompletableResponse[])}</li>
    *   <li>{@link CompletableResponse#equalType(EqualFunction, Collection)}</li>
    * </ul>
+   * <p>
+   * If equalFunction is null -> {@link EqualFunction#EQUALS} will be used as default.
    *
-   * @param equalFunction
-   * @param responseArray
-   * @param <TYPE>
-   * @return
+   * @param equalFunction function to compare components of responseArray.
+   * @param responseArray to compare responses from.
+   * @param <TYPE>        type of result to process.
+   * @return new instance with processed value. If all responses are the same -> value will be the response of return {@link CompletableResponse}.
    */
   @SafeVarargs
   private static @NotNull <TYPE> CompletableResponse<TYPE> equalImplementation(@Nullable EqualFunction equalFunction,
@@ -959,7 +1103,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     collectImplementation(responseArray)
       .ifPresentAsync(results -> { //Execute if present.
         if (results.length == 0) { //Return if empty
-          completableResponse.completeExceptionally(new NullPointerException("No response."));
+          completableResponse.completeExceptionally(new MismatchException("No response."));
           return;
         }
 
@@ -975,27 +1119,35 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
         completableResponse.complete(compareInstance);
       })
       .ifAbsent(() -> //Complete response with NullPointerException -> No collected response present.
-        completableResponse.completeExceptionally(new NullPointerException("Response results are empty.")))
+        completableResponse.completeExceptionally(new MismatchException("Response results are empty.")))
       .ifExceptionally(completableResponse::completeExceptionally /*Complete with error.*/);
 
     return completableResponse;
   }
 
   /**
-   * @param responseArray to race each others.
-   * @return
+   * The first valid response will be used. ({@link CompletableResponse#response} is present.)
+   * <br>
+   * Thrown error messages are posted to the console.
+   *
+   * @param responseArray to race each others for the fastest response.
+   * @return new instance of {@link CompletableResponse} with that will be completed with the fastest value.
    * @throws NullPointerException if responses is null.
+   * @see CompletableResponse#firstImplementation(CompletableResponse[])
    */
   public static @NotNull CompletableResponse<?> first(@Nullable final CompletableResponse<?>... responseArray) {
     return firstImplementation(toObjectArray(responseArray)); //Convert to array for thread safe.
   }
 
   /**
-   * Use answer which is available first.
+   * The first valid response will be used. ({@link CompletableResponse#response} is present.)
+   * <br>
+   * Thrown error messages are posted to the console.
    *
-   * @param responseCollection
-   * @return
+   * @param responseCollection to race each others for the fastest response.
+   * @return new instance of {@link CompletableResponse} with that will be completed with the fastest value.
    * @throws NullPointerException if collection is null.
+   * @see CompletableResponse#firstImplementation(CompletableResponse[])
    */
   public static @NotNull CompletableResponse<?> first(@Nullable final Collection<CompletableResponse<?>> responseCollection) {
     return first(SpaceObjects.throwIfNull(responseCollection) //Check if collection is present.
@@ -1003,9 +1155,17 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @param responseArray
-   * @param <TYPE>
-   * @return
+   * The first valid response will be used. ({@link CompletableResponse#response} is present.)
+   * <br>
+   * Thrown error messages are posted to the console.
+   * <br>
+   * In this variant, all {@link CompletableResponse} must have the same type.
+   * The advantage is that the answer then also has a uniform type.
+   *
+   * @param responseArray to race each others for the fastest response.
+   * @param <TYPE>        type of the object of every response.
+   * @return new instance of {@link CompletableResponse} with that will be completed with the fastest value.
+   * @see CompletableResponse#firstImplementation(CompletableResponse[])
    */
   @SafeVarargs
   public static @NotNull <TYPE> CompletableResponse<TYPE> firstType(@Nullable final CompletableResponse<TYPE>... responseArray) {
@@ -1013,9 +1173,17 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @param responseCollection
-   * @param <TYPE>
-   * @return
+   * The first valid response will be used. ({@link CompletableResponse#response} is present.)
+   * <br>
+   * Thrown error messages are posted to the console.
+   * <br>
+   * In this variant, all {@link CompletableResponse} must have the same type.
+   * The advantage is that the answer then also has a uniform type.
+   *
+   * @param responseCollection to race each others for the fastest response.
+   * @param <TYPE>             type of the object of every response.
+   * @return new instance of {@link CompletableResponse} with that will be completed with the fastest value.
+   * @see CompletableResponse#firstImplementation(CompletableResponse[])
    */
   public static @NotNull <TYPE> CompletableResponse<TYPE> firstType(@Nullable final Collection<CompletableResponse<TYPE>> responseCollection) {
     return firstImplementation(collectionToArray(responseCollection));
@@ -1030,9 +1198,9 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *   <li>{@link CompletableResponse#firstType(Collection)} </li>
    * </ul>
    *
-   * @param responseArray
-   * @param <TYPE>
-   * @return
+   * @param responseArray to race each others for the fastest response.
+   * @param <TYPE>        type of the object of every response.
+   * @return new instance of {@link CompletableResponse} with that will be completed with the fastest value or an error if no response can find a value.
    */
   @SafeVarargs
   private static @NotNull <TYPE> CompletableResponse<TYPE> firstImplementation(@Nullable final CompletableResponse<TYPE>... responseArray) {

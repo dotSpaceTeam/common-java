@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
  *
  * @param <TYPE> type of response. (Also the same type as the Response)
  */
+@SuppressWarnings("unused") //Some methods are meant to be for the library -> Suppress idea warnings.
 @FunctionalInterface
 public interface ResponseFunction<TYPE> {
   /**

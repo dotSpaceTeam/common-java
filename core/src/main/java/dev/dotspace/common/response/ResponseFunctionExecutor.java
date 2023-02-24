@@ -1,6 +1,5 @@
 package dev.dotspace.common.response;
 
-import dev.dotspace.common.SpaceObjects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +47,7 @@ final class ResponseFunctionExecutor<TYPE> implements ResponseFunction<TYPE> {
    */
   @Override
   public void run(@Nullable final ExecutorService executorService) {
-    if (this.checkIfExecutable != null && !this.checkIfExecutable.get()) { //Do not execute if checkIfExecutable is present an result is true.
+    if (this.checkIfExecutable != null && !this.checkIfExecutable.get()) { //Do not execute if checkIfExecutable is present a result is true.
       return;
     }
     if (this.async && executorService != null) { //If async is true and executorService is present, run with executorService.
