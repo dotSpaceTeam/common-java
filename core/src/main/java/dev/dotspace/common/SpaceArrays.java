@@ -1,6 +1,6 @@
 package dev.dotspace.common;
 
-import dev.dotspace.annotation.SpaceApi;
+import dev.dotspace.annotation.LibraryInformation;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.common.exception.EmptyArrayException;
 import lombok.AccessLevel;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+@LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
 public final class SpaceArrays {
   /**
    * Get a random element of array of any type.
@@ -20,6 +20,7 @@ public final class SpaceArrays {
    * @param <TYPE> generic type of element to get random.
    * @return random drawn element or null if array is null or empty.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static <TYPE> @Nullable TYPE random(@Nullable final TYPE[] array) {
     if (SpaceObjects.throwIfNull(array).length == 0) {
       throw new EmptyArrayException("Given object array is null.");
@@ -27,6 +28,12 @@ public final class SpaceArrays {
     return array[LibraryCommonUtils.calculateRandomIndex(array.length)];
   }
 
+  /**
+   * @param array
+   * @param <TYPE>
+   * @return
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static <TYPE> @NotNull CompletableResponse<TYPE> randomAsync(@Nullable final TYPE[] array) {
     return new CompletableResponse<TYPE>().completeAsync(() -> SpaceArrays.random(array)); //Complete the future in a separate thread
   }
@@ -37,6 +44,7 @@ public final class SpaceArrays {
    * @throws NullPointerException if bytes is null.
    * @throws EmptyArrayException  if bytes is empty.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static byte random(final byte[] bytes) {
     if (SpaceObjects.throwIfNull(bytes).length == 0) {
       throw new EmptyArrayException("Given byte array is empty.");
@@ -44,6 +52,11 @@ public final class SpaceArrays {
     return bytes[LibraryCommonUtils.calculateRandomIndex(bytes.length)];
   }
 
+  /**
+   * @param bytes
+   * @return
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull CompletableResponse<Byte> randomAsync(final byte[] bytes) {
     return new CompletableResponse<Byte>().completeAsync(() -> SpaceArrays.random(bytes));
   }
@@ -54,6 +67,7 @@ public final class SpaceArrays {
    * @throws NullPointerException if shorts is null.
    * @throws EmptyArrayException  if shorts is empty.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static short random(final short[] shorts) {
     if (SpaceObjects.throwIfNull(shorts).length == 0) {
       throw new EmptyArrayException("Given short array is empty.");
@@ -61,6 +75,12 @@ public final class SpaceArrays {
     return shorts[LibraryCommonUtils.calculateRandomIndex(shorts.length)];
   }
 
+  /**
+   *
+   * @param shorts
+   * @return
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull CompletableResponse<Short> randomAsync(final short[] shorts) {
     return new CompletableResponse<Short>().completeAsync(() -> SpaceArrays.random(shorts));
   }
@@ -71,6 +91,7 @@ public final class SpaceArrays {
    * @throws NullPointerException if chars is null.
    * @throws EmptyArrayException  if chars is empty.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static char random(final char[] chars) {
     if (SpaceObjects.throwIfNull(chars).length == 0) {
       throw new EmptyArrayException("Given char array is empty.");
@@ -78,6 +99,12 @@ public final class SpaceArrays {
     return chars[LibraryCommonUtils.calculateRandomIndex(chars.length)];
   }
 
+  /**
+   *
+   * @param chars
+   * @return
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull CompletableResponse<Character> randomAsync(final char[] chars) {
     return new CompletableResponse<Character>().completeAsync(() -> SpaceArrays.random(chars));
   }
@@ -88,6 +115,7 @@ public final class SpaceArrays {
    * @throws NullPointerException if ints is null.
    * @throws EmptyArrayException  if ints is empty.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static int random(final int[] ints) {
     if (SpaceObjects.throwIfNull(ints).length == 0) {
       throw new EmptyArrayException("Given int array is empty.");
@@ -95,6 +123,12 @@ public final class SpaceArrays {
     return ints[LibraryCommonUtils.calculateRandomIndex(ints.length)];
   }
 
+  /**
+   *
+   * @param ints
+   * @return
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull CompletableResponse<Integer> randomAsync(final int[] ints) {
     return new CompletableResponse<Integer>().completeAsync(() -> SpaceArrays.random(ints));
   }
@@ -105,6 +139,7 @@ public final class SpaceArrays {
    * @throws NullPointerException if longs is null.
    * @throws EmptyArrayException  if longs is empty.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static long random(final long[] longs) {
     if (SpaceObjects.throwIfNull(longs).length == 0) {
       throw new EmptyArrayException("Given long array is empty.");
@@ -112,6 +147,12 @@ public final class SpaceArrays {
     return longs[LibraryCommonUtils.calculateRandomIndex(longs.length)];
   }
 
+  /**
+   *
+   * @param longs
+   * @return
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull CompletableResponse<Long> randomAsync(final long[] longs) {
     return new CompletableResponse<Long>().completeAsync(() -> SpaceArrays.random(longs));
   }
@@ -129,6 +170,12 @@ public final class SpaceArrays {
     return floats[LibraryCommonUtils.calculateRandomIndex(floats.length)];
   }
 
+  /**
+   *
+   * @param floats
+   * @return
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull CompletableResponse<Float> randomAsync(final float[] floats) {
     return new CompletableResponse<Float>().completeAsync(() -> SpaceArrays.random(floats));
   }
@@ -139,6 +186,7 @@ public final class SpaceArrays {
    * @throws NullPointerException if doubles is null.
    * @throws EmptyArrayException  if doubles is empty.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static double random(final double[] doubles) {
     if (SpaceObjects.throwIfNull(doubles).length == 0) {
       throw new EmptyArrayException("Given double array is empty.");
@@ -146,10 +194,24 @@ public final class SpaceArrays {
     return doubles[LibraryCommonUtils.calculateRandomIndex(doubles.length)];
   }
 
+  /**
+   *
+   * @param doubles
+   * @return
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull CompletableResponse<Double> randomAsync(final double[] doubles) {
     return new CompletableResponse<Double>().completeAsync(() -> SpaceArrays.random(doubles));
   }
 
+  /**
+   *
+   * @param typeArray
+   * @param typesToAppend
+   * @return
+   * @param <TYPE>
+   */
+  @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.6")
   @SafeVarargs
   public static <TYPE> @NotNull TYPE[] append(@Nullable final TYPE[] typeArray,
                                               @Nullable final TYPE... typesToAppend) {

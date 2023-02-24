@@ -1,5 +1,6 @@
 package dev.dotspace.common.exception;
 
+import dev.dotspace.annotation.LibraryInformation;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
  *   <li>Process an array with no values but methods needs a response.</li>
  * </ul>
  */
+@LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
 public class EmptyArrayException extends RuntimeException {
   /**
    * Creates an instance with message.

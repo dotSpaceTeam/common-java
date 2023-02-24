@@ -1,7 +1,5 @@
 package dev.dotspace.common.storage.container;
 
-import dev.dotspace.common.wrapper.instance.Wrapper;
-import dev.dotspace.common.wrapper.instance.WrapperType;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.ElementType;
@@ -31,7 +29,7 @@ public @interface StorageData {
    * Range of priority os byte range (-128...127).
    * -> 127 will go first.
    *
-   * @return priority of {@link Wrapper}.
+   * @return priority of {@link Storage}.
    */
   byte priority() default 0;
 }

@@ -1,6 +1,6 @@
 package dev.dotspace.common;
 
-import dev.dotspace.annotation.SpaceApi;
+import dev.dotspace.annotation.LibraryInformation;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  * Class with time and duration operations
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+@LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
 public final class SpaceTime {
   /**
    * Get the current system time in other time format
@@ -65,7 +65,7 @@ public final class SpaceTime {
    *
    * @param timestamp used as reference for the stamp in ns.
    */
-  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.6")
   public record Timestamp(long timestamp) {
     /**
      * Get the pastTime since the {@link Timestamp} was created and now

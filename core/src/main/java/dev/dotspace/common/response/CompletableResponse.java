@@ -2,7 +2,7 @@ package dev.dotspace.common.response;
 
 import dev.dotspace.common.SpaceObjects;
 import dev.dotspace.common.SpaceThrowable;
-import dev.dotspace.annotation.SpaceApi;
+import dev.dotspace.annotation.LibraryInformation;
 import dev.dotspace.common.exception.MismatchException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused") //Some methods are meant to be for the library -> Suppress idea warnings.
-@SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+@LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, since = "1.0.6")
 public final class CompletableResponse<TYPE> implements Response<TYPE> {
   private final @NotNull ExecutorService executorService;
   private volatile @NotNull State state;
@@ -40,6 +40,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @param typeClass defines the TYPE of the instance.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public CompletableResponse(@Nullable final Class<TYPE> typeClass) {
     this();
   }
@@ -49,6 +50,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @param state to set as start {@link State}.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   private CompletableResponse(@NotNull final State state) {
     this.executorService = Executors.newCachedThreadPool();
     this.state = state;
@@ -58,7 +60,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#newUncompleted()
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> newUncompleted() {
     return new CompletableResponse<>();
@@ -67,7 +69,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#get()
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @Nullable TYPE get() throws InterruptedException {
     return this.getImplementation(-1);
@@ -76,7 +78,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#get(long)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @Nullable TYPE get(long nanos) throws InterruptedException {
     return this.getImplementation(nanos);
@@ -85,7 +87,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#get(long, TimeUnit)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @Nullable TYPE get(long duration, @Nullable TimeUnit timeUnit) throws InterruptedException {
     return this.getImplementation(SpaceObjects.throwIfNull(timeUnit).toNanos(duration));
@@ -99,7 +101,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return returns the completed value of this answer.
    * @throws InterruptedException if the process was interrupted in time. (timestamp of nanoTimeout reached).
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private @Nullable TYPE getImplementation(final long nanoTimeout) throws InterruptedException {
     final boolean unlimited = nanoTimeout < 0; //True if there is no limit.
     final long interruptTime = unlimited ? Long.MAX_VALUE : System.nanoTime() + (nanoTimeout == 0 ? 1 /*Smallest value.*/ : nanoTimeout);
@@ -118,7 +120,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#getNow(Supplier)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public synchronized @Nullable TYPE getNow(@Nullable Supplier<TYPE> alternativeValue) {
     if (this.response != null) { //Response is completed.
@@ -141,7 +143,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#cancel()
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public synchronized boolean cancel() {
     if (this.state.done()) {
@@ -155,7 +157,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#complete(Object)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> complete(@Nullable TYPE type) {
     this.completeImplementation(type);
@@ -165,7 +167,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#completeAsync(Supplier)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> completeAsync(@Nullable Supplier<TYPE> typeSupplier) {
     this.executorService.execute(() -> {
@@ -181,7 +183,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#completeExceptionally(Throwable)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> completeExceptionally(@Nullable Throwable throwable) {
     this.completeExceptionallyImplementation(throwable);
@@ -191,7 +193,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#completeExceptionallyAsync(Supplier)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> completeExceptionallyAsync(@Nullable Supplier<Throwable> throwableSupplier) {
     this.executorService.execute(() -> {
@@ -204,7 +206,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return this;
   }
 
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private synchronized void completeImplementation(@Nullable final TYPE completeResponse) {
     if (this.state.done()) {
       return; //Return if done.
@@ -213,7 +215,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     this.markAsCompleted(completeResponse != null ? State.COMPLETED_DEFAULT : State.COMPLETED_NULL);
   }
 
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private synchronized <ERROR extends Throwable> @Nullable ERROR completeExceptionallyImplementation(@Nullable final ERROR throwable) {
     if (!this.state.done()) {
       this.throwable = throwable;
@@ -222,7 +224,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     return throwable;
   }
 
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   private void markAsCompleted(@NotNull final State state) {
     this.state = state;
 
@@ -234,7 +236,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#sniff(ResponseConsumer)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> sniff(@Nullable ResponseConsumer<TYPE> responseConsumer) {
     this.sniffImplementation(responseConsumer, false);
@@ -244,7 +246,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#sniffAsync(ResponseConsumer)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> sniffAsync(@Nullable ResponseConsumer<TYPE> responseConsumer) {
     this.sniffImplementation(responseConsumer, true);
@@ -265,7 +267,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param async            true, if the runnable is to be executed asynchronously.
    * @see ResponseConsumer
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private void sniffImplementation(@Nullable final ResponseConsumer<TYPE> responseConsumer,
                                    final boolean async) {
     if (responseConsumer == null) {
@@ -285,7 +287,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#run(Runnable)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull Response<TYPE> run(@Nullable Runnable runnable) {
     this.runImplementation(runnable, false); //Run implementation.
@@ -295,7 +297,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#runAsync(Runnable)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull Response<TYPE> runAsync(@Nullable Runnable runnable) {
     this.runImplementation(runnable, true); //Run implementation.
@@ -316,7 +318,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param runnable to be executed if {@link Response} is completed.
    * @param async    true, if the runnable is to be executed asynchronously.
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private void runImplementation(@Nullable final Runnable runnable,
                                  final boolean async) {
     if (runnable == null) {
@@ -336,7 +338,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#ifPresent(Consumer)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> ifPresent(@Nullable Consumer<@NotNull TYPE> consumer) {
     this.ifPresentImplementation(consumer, false); //Run implementation.
@@ -346,7 +348,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#ifPresentAsync(Consumer)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> ifPresentAsync(@Nullable Consumer<@NotNull TYPE> consumer) {
     this.ifPresentImplementation(consumer, true); //Run implementation.
@@ -366,7 +368,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param consumer to inform if response is completed {@link State#COMPLETED_DEFAULT} with present object.
    * @param async    true, if the runnable is to be executed asynchronously.
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private void ifPresentImplementation(@Nullable final Consumer<@NotNull TYPE> consumer,
                                        final boolean async) {
     if (consumer == null) { //If no consumer given, nothing left to do here.
@@ -391,7 +393,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#map(Function)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull <MAP> CompletableResponse<MAP> map(@Nullable Function<TYPE, MAP> function) {
     return this.mapImplementation(function, false);
@@ -400,7 +402,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#mapAsync(Function)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull <MAP> CompletableResponse<MAP> mapAsync(@Nullable Function<TYPE, MAP> function) {
     return this.mapImplementation(function, true);
@@ -425,7 +427,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param <MAP>    type of object to map response to.
    * @return new instance of {@link CompletableResponse} with mapped response of current instance.
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private <MAP> CompletableResponse<MAP> mapImplementation(@Nullable final Function<TYPE, MAP> function,
                                                            final boolean async) {
     final CompletableResponse<MAP> completableResponse = new CompletableResponse<>();
@@ -444,7 +446,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#filter(Predicate)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull Response<TYPE> filter(@Nullable Predicate<TYPE> typePredicate) {
     return this.filterImplementation(typePredicate, false);
@@ -453,7 +455,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#filterAsync(Predicate)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull Response<TYPE> filterAsync(@Nullable Predicate<TYPE> typePredicate) {
     return this.filterImplementation(typePredicate, true);
@@ -476,7 +478,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param async         true, if the runnable is to be executed asynchronously.
    * @return new instance of {@link CompletableResponse} with filtered response of current instance.
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private @NotNull CompletableResponse<TYPE> filterImplementation(@Nullable final Predicate<TYPE> typePredicate,
                                                                   final boolean async) {
     final CompletableResponse<TYPE> completableResponse = new CompletableResponse<>();
@@ -496,7 +498,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#ifAbsent(Runnable)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> ifAbsent(@Nullable Runnable runnable) {
     this.ifAbsentImplementation(runnable, false);
@@ -506,7 +508,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#ifAbsentAsync(Runnable)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> ifAbsentAsync(@Nullable Runnable runnable) {
     this.ifAbsentImplementation(runnable, true);
@@ -529,7 +531,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param runnable to run if response completed without an error and {@link CompletableResponse#response} null.
    * @param async    true, if the runnable is to be executed asynchronously.
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private void ifAbsentImplementation(@Nullable final Runnable runnable,
                                       final boolean async) {
     if (runnable == null) {//If no runnable given, nothing left to do here.
@@ -554,7 +556,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @see Response#useIfAbsent(Supplier)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> useIfAbsent(@Nullable Supplier<TYPE> typeSupplier) {
     return this.useImplementation(typeSupplier, () -> this.state == State.COMPLETED_NULL, false);
@@ -567,7 +569,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @see Response#useIfAbsentAsync(Supplier)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> useIfAbsentAsync(@Nullable Supplier<TYPE> typeSupplier) {
     return this.useImplementation(typeSupplier, () -> this.state == State.COMPLETED_NULL, true);
@@ -580,7 +582,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @see Response#useIfExceptionally(Supplier)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> useIfExceptionally(@Nullable Supplier<TYPE> typeSupplier) {
     return this.useImplementation(typeSupplier, () -> this.state == State.COMPLETED_EXCEPTIONALLY, false);
@@ -593,7 +595,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @see Response#useIfExceptionallyAsync(Supplier)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> useIfExceptionallyAsync(@Nullable Supplier<TYPE> typeSupplier) {
     return this.useImplementation(typeSupplier, () -> this.state == State.COMPLETED_EXCEPTIONALLY, true);
@@ -606,7 +608,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @see Response#elseUse(Supplier)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> elseUse(@Nullable Supplier<TYPE> typeSupplier) {
     return this.useImplementation(
@@ -622,7 +624,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @see Response#elseUseAsync(Supplier)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> elseUseAsync(@Nullable Supplier<TYPE> typeSupplier) {
     return this.useImplementation(
@@ -651,7 +653,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param async             true, if the runnable is to be executed asynchronously.
    * @return new instance of {@link CompletableResponse} with alternative response of current instance.
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private @NotNull CompletableResponse<TYPE> useImplementation(@Nullable final Supplier<TYPE> typeSupplier,
                                                                @NotNull final Supplier<Boolean> checkIfExecutable,
                                                                final boolean async) {
@@ -675,7 +677,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#ifExceptionally(Consumer)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> ifExceptionally(@Nullable Consumer<@Nullable Throwable> consumer) {
     this.ifExceptionallyImplementation(consumer, false);
@@ -685,7 +687,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#ifExceptionallyAsync(Consumer)
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @NotNull CompletableResponse<TYPE> ifExceptionallyAsync(@Nullable Consumer<@Nullable Throwable> consumer) {
     this.ifExceptionallyImplementation(consumer, true);
@@ -708,7 +710,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param consumer to accept the throwable of the response.
    * @param async    true, if the runnable is to be executed asynchronously.
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private void ifExceptionallyImplementation(@Nullable final Consumer<@Nullable Throwable> consumer,
                                              final boolean async) {
     if (consumer == null) { //Return and ignore consumer if null.
@@ -729,7 +731,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#done()
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public boolean done() {
     return this.state.done();
@@ -738,7 +740,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#canceled()
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public boolean canceled() {
     return this.state == State.CANCELLED;
@@ -747,7 +749,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * @see Response#exceptionally()
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public boolean exceptionally() {
     return this.state == State.COMPLETED_EXCEPTIONALLY;
@@ -758,7 +760,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @param responseFunction to add to array.
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private synchronized void implementExecutor(@NotNull final ResponseFunction<?> responseFunction) {
     if (this.done()) { //Directly run executor if already finished.
       responseFunction.run(this.executorService);
@@ -773,7 +775,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @param runnable to execute.
    */
-  @SpaceApi(state = SpaceApi.State.STABLE, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private void execute(@NotNull final Runnable runnable) {
     this.executorService.execute(runnable);
   }
@@ -790,7 +792,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param throwable if response was completed exceptionally, present. Null if no error given.
    * @param <TYPE>
    */
-  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public record Result<TYPE>(@NotNull State state,
                              @Nullable TYPE type,
                              @Nullable Throwable throwable) {
@@ -801,7 +803,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @param <TYPE>
    */
-  @SpaceApi(state = SpaceApi.State.STABLE, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private static class ResultCollection<TYPE> {
     /**
      * Array to hold results.
@@ -847,7 +849,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    *
    */
-  @SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @FunctionalInterface
   public interface EqualFunction {
     /**
@@ -881,7 +883,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param <TYPE>    type of response.
    * @return created {@link CompletableResponse} instance with completed throwable.
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull <TYPE> CompletableResponse<TYPE> exceptionally(@Nullable final Throwable throwable) {
     return new CompletableResponse<TYPE>().completeExceptionally(throwable);
   }
@@ -895,7 +897,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return a new {@link CompletableResponse} instance with {@link ResultCollection} which collects the responses.
    * @see CompletableResponse#collectImplementation(CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull CompletableResponse<Result<Object>[]> collect(@Nullable final CompletableResponse<?>... responseArray) {
     return collectImplementation(toObjectArray(responseArray));
   }
@@ -909,7 +911,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return a new {@link CompletableResponse} instance with {@link ResultCollection} which collects the responses.
    * @see CompletableResponse#collectImplementation(CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @SuppressWarnings("unchecked")
   public static @NotNull CompletableResponse<Result<Object>[]> collect(@Nullable final Collection<CompletableResponse<?>> responseCollection) {
     return collectImplementation(SpaceObjects.throwIfNull(responseCollection) //Check if collection is present.
@@ -929,7 +931,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return a new {@link CompletableResponse} instance with {@link ResultCollection} which collects the responses.
    * @see CompletableResponse#collectImplementation(CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @SafeVarargs
   public static @NotNull <TYPE> CompletableResponse<Result<TYPE>[]> collectType(@Nullable final CompletableResponse<TYPE>... responseArray) {
     return collectImplementation(responseArray);
@@ -948,7 +950,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return a new {@link CompletableResponse} instance with {@link ResultCollection} which collects the responses.
    * @see CompletableResponse#collectImplementation(CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull <TYPE> CompletableResponse<Result<TYPE>[]> collectType(@Nullable final Collection<CompletableResponse<TYPE>> responseCollection) {
     return collectImplementation(collectionToArray(responseCollection));
   }
@@ -966,7 +968,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param <TYPE>        type of result to process.
    * @return new instance of {@link CompletableResponse} that will be completed with the {@link ResultCollection} once finished.
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private static @NotNull <TYPE> CompletableResponse<Result<TYPE>[]> collectImplementation(@Nullable final CompletableResponse<TYPE>[] responseArray) {
     SpaceObjects.throwIfNull(responseArray); //Throw error if responseArray is null.
 
@@ -1005,7 +1007,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
    * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull CompletableResponse<Object> equal(@Nullable final CompletableResponse<?>... responseArray) {
     return equalImplementation(null, toObjectArray(responseArray));
   }
@@ -1020,7 +1022,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
    * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull CompletableResponse<Object> equal(@Nullable final Collection<CompletableResponse<?>> responseCollection) {
     return equal(null, responseCollection);
 
@@ -1037,7 +1039,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
    * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull CompletableResponse<Object> equal(@Nullable EqualFunction equalFunction,
                                                            @Nullable final CompletableResponse<?>... responseArray) {
     return equalImplementation(equalFunction, toObjectArray(responseArray));
@@ -1049,7 +1051,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
    * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @SuppressWarnings("unchecked")
   public static @NotNull CompletableResponse<Object> equal(@Nullable EqualFunction equalFunction,
                                                            @Nullable final Collection<CompletableResponse<?>> responseCollection) {
@@ -1071,7 +1073,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
    * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @SafeVarargs
   public static @NotNull <TYPE> CompletableResponse<TYPE> equalType(@Nullable final CompletableResponse<TYPE>... responseArray) {
     return equalType(null, responseArray);
@@ -1091,7 +1093,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
    * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull <TYPE> CompletableResponse<TYPE> equalType(@Nullable final Collection<CompletableResponse<TYPE>> responseCollection) {
     return equalType(null, responseCollection);
 
@@ -1112,7 +1114,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
    * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @SafeVarargs
   public static @NotNull <TYPE> CompletableResponse<TYPE> equalType(@Nullable EqualFunction equalFunction,
                                                                     @Nullable final CompletableResponse<TYPE>... responseArray) {
@@ -1134,7 +1136,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return response which holds the equal value, or an {@link Throwable}. The given response is never completed with null.
    * @see CompletableResponse#equalImplementation(EqualFunction, CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull <TYPE> CompletableResponse<TYPE> equalType(@Nullable EqualFunction equalFunction,
                                                                     @Nullable final Collection<CompletableResponse<TYPE>> responseCollection) {
     return equalImplementation(equalFunction, collectionToArray(responseCollection));
@@ -1160,7 +1162,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param <TYPE>        type of result to process.
    * @return new instance with processed value. If all responses are the same -> value will be the response of return {@link CompletableResponse}.
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   @SafeVarargs
   private static @NotNull <TYPE> CompletableResponse<TYPE> equalImplementation(@Nullable EqualFunction equalFunction,
                                                                                @Nullable final CompletableResponse<TYPE>... responseArray) {
@@ -1202,7 +1204,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @throws NullPointerException if responses is null.
    * @see CompletableResponse#firstImplementation(CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull CompletableResponse<?> first(@Nullable final CompletableResponse<?>... responseArray) {
     return firstImplementation(toObjectArray(responseArray)); //Convert to array for thread safe.
   }
@@ -1217,7 +1219,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @throws NullPointerException if collection is null.
    * @see CompletableResponse#firstImplementation(CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull CompletableResponse<?> first(@Nullable final Collection<CompletableResponse<?>> responseCollection) {
     return first(SpaceObjects.throwIfNull(responseCollection) //Check if collection is present.
       .toArray(new CompletableResponse[0])); //Convert to array for thread safe.
@@ -1236,7 +1238,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return new instance of {@link CompletableResponse} with that will be completed with the fastest value.
    * @see CompletableResponse#firstImplementation(CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @SafeVarargs
   public static @NotNull <TYPE> CompletableResponse<TYPE> firstType(@Nullable final CompletableResponse<TYPE>... responseArray) {
     return firstImplementation(responseArray);
@@ -1255,7 +1257,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return new instance of {@link CompletableResponse} with that will be completed with the fastest value.
    * @see CompletableResponse#firstImplementation(CompletableResponse[])
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull <TYPE> CompletableResponse<TYPE> firstType(@Nullable final Collection<CompletableResponse<TYPE>> responseCollection) {
     return firstImplementation(collectionToArray(responseCollection));
   }
@@ -1273,7 +1275,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param <TYPE>        type of the object of every response.
    * @return new instance of {@link CompletableResponse} with that will be completed with the fastest value or an error if no response can find a value.
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   @SafeVarargs
   private static @NotNull <TYPE> CompletableResponse<TYPE> firstImplementation(@Nullable final CompletableResponse<TYPE>... responseArray) {
     SpaceObjects.throwIfNull(responseArray, "Given array is null."); //Throw error if responses is null.
@@ -1317,7 +1319,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return new array instance with object instances.
    * @throws NullPointerException if responseArray is null.
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   @SuppressWarnings("unchecked")
   private static CompletableResponse<Object>[] toObjectArray(@Nullable final CompletableResponse<?>... responseArray) {
     final CompletableResponse<Object>[] objectArray = (CompletableResponse<Object>[])
@@ -1335,7 +1337,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @return array with elements of collection.
    * @throws NullPointerException if collection is null.
    */
-  @SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   @SuppressWarnings("unchecked")
   private static @NotNull <TYPE> CompletableResponse<TYPE>[] collectionToArray(@Nullable final Collection<CompletableResponse<TYPE>> collection) {
     return SpaceObjects.throwIfNull(collection) //Check if collection is present.

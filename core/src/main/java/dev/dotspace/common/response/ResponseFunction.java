@@ -1,6 +1,6 @@
 package dev.dotspace.common.response;
 
-import dev.dotspace.annotation.SpaceApi;
+import dev.dotspace.annotation.LibraryInformation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ExecutorService;
@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutorService;
  * @param <TYPE> type of response. (Also the same type as the Response)
  */
 @SuppressWarnings("unused") //Some methods are meant to be for the library -> Suppress idea warnings.
-@SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
+@LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
 @FunctionalInterface
 public interface ResponseFunction<TYPE> {
   /**
@@ -19,11 +19,13 @@ public interface ResponseFunction<TYPE> {
    *
    * @param executorService when a thread service is needed.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   void run(@Nullable final ExecutorService executorService);
 
   /**
    * Execute without service, only synchronized operations are possible.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   default void run() {
     this.run(null /*No service for run process.*/);
   }

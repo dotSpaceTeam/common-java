@@ -1,5 +1,6 @@
 package dev.dotspace.common.response;
 
+import dev.dotspace.annotation.LibraryInformation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <TYPE> defines the type of {@link Response} type.
  */
+@LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
 @FunctionalInterface
 public interface ResponseConsumer<TYPE> {
   /**
@@ -21,6 +23,7 @@ public interface ResponseConsumer<TYPE> {
    * @param throwable keeps the completed error message if available. Otherwise, null.
    *                  (Can only be present if state equals {@link State#COMPLETED_EXCEPTIONALLY})
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   void accept(@NotNull final State state,
               @Nullable final TYPE type,
               @Nullable final Throwable throwable);

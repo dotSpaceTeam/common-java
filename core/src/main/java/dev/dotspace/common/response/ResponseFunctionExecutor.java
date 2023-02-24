@@ -1,6 +1,6 @@
 package dev.dotspace.common.response;
 
-import dev.dotspace.annotation.SpaceApi;
+import dev.dotspace.annotation.LibraryInformation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  *
  * @see ResponseFunction
  */
-@SpaceApi(state = SpaceApi.State.STABLE, access = SpaceApi.Access.INTERNAL, since = "1.0.6", updated = "1.0.6")
+@LibraryInformation(state = LibraryInformation.State.STABLE, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
 final class ResponseFunctionExecutor<TYPE> implements ResponseFunction<TYPE> {
   private final @Nullable Supplier<Boolean> checkIfExecutable;
   private final @NotNull Runnable runnable;
@@ -25,6 +25,7 @@ final class ResponseFunctionExecutor<TYPE> implements ResponseFunction<TYPE> {
    * @param runnable          to run.
    * @param async             true, if {@link Runnable} should be executed asynchronous.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   ResponseFunctionExecutor(@Nullable final Supplier<Boolean> checkIfExecutable,
                            @NotNull Runnable runnable,
                            final boolean async) {
@@ -39,6 +40,7 @@ final class ResponseFunctionExecutor<TYPE> implements ResponseFunction<TYPE> {
    * @param runnable to run.
    * @param async    true, if {@link Runnable} should be executed asynchronous.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   ResponseFunctionExecutor(@NotNull Runnable runnable,
                            final boolean async) {
     this(null, runnable, async);
@@ -47,6 +49,7 @@ final class ResponseFunctionExecutor<TYPE> implements ResponseFunction<TYPE> {
   /**
    * @see ResponseFunction#run(ExecutorService)
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   @Override
   public void run(@Nullable final ExecutorService executorService) {
     if (this.checkIfExecutable != null && !this.checkIfExecutable.get()) { //Do not execute if checkIfExecutable is present a result is true.

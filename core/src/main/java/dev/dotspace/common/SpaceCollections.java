@@ -1,6 +1,6 @@
 package dev.dotspace.common;
 
-import dev.dotspace.annotation.SpaceApi;
+import dev.dotspace.annotation.LibraryInformation;
 import dev.dotspace.common.response.CompletableResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -12,13 +12,14 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 //TODO: Docs
+
 /**
  * Methods for simplifying collections and arrays.
  * <p>
  * Class with {@link Collection} operations.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE) //Block class construction.
-@SpaceApi(state = SpaceApi.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+@LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
 public final class SpaceCollections {
   /**
    * Get a random object of collection.
@@ -29,6 +30,7 @@ public final class SpaceCollections {
    * -> Optional is empty if {@link Collection} is null or empty.
    */
   @SuppressWarnings("unchecked")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static <TYPE> @Nullable TYPE random(@Nullable final Collection<TYPE> collection) {
     if (SpaceObjects.throwIfNull(collection).isEmpty()) {
       return null; //Return null to safe performance.
@@ -45,6 +47,7 @@ public final class SpaceCollections {
    * @return completableFuture with will be filled with the random object. Object could be null if collection is null.
    * or empty or if the given object is null in list.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static <TYPE> @NotNull CompletableResponse<TYPE> randomAsync(@Nullable final Collection<TYPE> collection) {
     return new CompletableResponse<TYPE>().completeAsync(() -> SpaceCollections.random(collection)); //Complete the future in a separate thread
   }
@@ -56,6 +59,7 @@ public final class SpaceCollections {
    * @throws NullPointerException if collection is null.
    */
   @SuppressWarnings("unchecked")
+  @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.6")
   public static <TYPE> @NotNull TYPE[] toArray(@Nullable final Collection<TYPE> collection) {
     return (TYPE[]) SpaceObjects.throwIfNull(collection).toArray();
   }

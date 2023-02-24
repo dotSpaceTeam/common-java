@@ -1,11 +1,11 @@
 package dev.dotspace.common.response;
 
-import dev.dotspace.annotation.SpaceApi;
+import dev.dotspace.annotation.LibraryInformation;
 
 /**
  * This enum can be used to express the status of a {@link Response}.
  */
-@SpaceApi(state = SpaceApi.State.STABLE, since = "1.0.6", updated = "1.0.6")
+@LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
 public enum State {
   /**
    * Used when the response has not yet been processed. (Default value)
@@ -33,6 +33,7 @@ public enum State {
    *
    * @return true, if state is not UNCOMPLETED.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public boolean done() {
     return this != UNCOMPLETED;
   }
