@@ -11,4 +11,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface AvailableTests {
+  /*
+   * Nothing to see here :D
+   */
 }
