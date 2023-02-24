@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, since = "1.0.6", updated = "1.0.6")
+@LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
 public final class SpaceStrings {
   /**
    * Plain string with no characters
@@ -24,6 +24,7 @@ public final class SpaceStrings {
    *
    * @return plain String ''
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull String plain() {
     return PLAIN;
   }
@@ -34,6 +35,7 @@ public final class SpaceStrings {
    * @param string to check if null or blank
    * @return true, if string is null or blank
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static boolean isNullOrBlank(@Nullable final String string) {
     return string == null || string.isBlank();
   }
@@ -44,6 +46,7 @@ public final class SpaceStrings {
    * @param string to check if null or empty
    * @return true, if string is null or empty
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static boolean isNullOrEmpty(@Nullable final String string) {
     return string == null || string.isEmpty();
   }
