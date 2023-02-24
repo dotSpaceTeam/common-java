@@ -1049,6 +1049,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /*
    * --------------------------- Private methods for static methods of this class --------------------------------
    */
+
   /**
    * Convert an array of different response types to {@link CompletableResponse} with object as type.
    *
@@ -1067,8 +1068,10 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @param <TYPE>
-   * @return
+   * Convert an {@link java.util.Collection} with a given TYPE to an array of that exact TYPE.
+   *
+   * @param <TYPE> type of the collection.
+   * @return array with elements of collection.
    * @throws NullPointerException if collection is null.
    */
   @SuppressWarnings("unchecked")
