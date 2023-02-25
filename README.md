@@ -1,9 +1,23 @@
-# Common Java Library
+<h1 align="center">Common Java Library</h1> <br>
+
+<div align="center">
+
+![Java Version](https://img.shields.io/badge/Java-17-important?style=for-the-badge&logo=java)
+![GitHub](https://img.shields.io/github/license/dotSpaceTeam/common-java?style=for-the-badge)
+[![Support Server](https://img.shields.io/discord/678733739504697375.svg?color=7289da&label=dotSpace%20Dev&logo=discord&style=for-the-badge)](https://discord.gg/mFfDMAEFWE)
+![Stars](https://img.shields.io/github/stars/dotSpaceTeam/common-java?style=for-the-badge)
+</div>
+
+
 
 A library which is the core of our projects and can be used for other cool projects as well.
-
 ---
-## Integration into own projects
+### Building your own copy
+
+- To build and execute the jar **Java 17** is recommended.
+- Execute ``gradlew build`` to run test and build.
+
+### Integration into own projects
 
 Include the library in your own project via [maven](https://maven.apache.org/) or [gradle](https://gradle.org/).
 Completed builds can be imported via our [repository](https://repo.dotspace.dev/repository/space-public/).
