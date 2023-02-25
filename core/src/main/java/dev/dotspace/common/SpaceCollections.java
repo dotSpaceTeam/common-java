@@ -1,6 +1,6 @@
 package dev.dotspace.common;
 
-import dev.dotspace.annotation.LibraryInformation;
+import dev.dotspace.common.annotation.LibraryInformation;
 import dev.dotspace.common.response.CompletableResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -32,7 +32,7 @@ public final class SpaceCollections {
   @SuppressWarnings("unchecked")
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static <TYPE> @Nullable TYPE random(@Nullable final Collection<TYPE> collection) {
-    if (SpaceObjects.throwIfNull(collection).isEmpty()) {
+    if (collection == null || collection.isEmpty()) {
       return null; //Return null to safe performance.
     }
     return (TYPE) collection.toArray()[LibraryCommonUtils.calculateRandomIndex(collection.size())];
@@ -50,17 +50,5 @@ public final class SpaceCollections {
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static <TYPE> @NotNull CompletableResponse<TYPE> randomAsync(@Nullable final Collection<TYPE> collection) {
     return new CompletableResponse<TYPE>().completeAsync(() -> SpaceCollections.random(collection)); //Complete the future in a separate thread
-  }
-
-  /**
-   * @param collection
-   * @param <TYPE>
-   * @return
-   * @throws NullPointerException if collection is null.
-   */
-  @SuppressWarnings("unchecked")
-  @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.6")
-  public static <TYPE> @NotNull TYPE[] toArray(@Nullable final Collection<TYPE> collection) {
-    return (TYPE[]) SpaceObjects.throwIfNull(collection).toArray();
   }
 }
