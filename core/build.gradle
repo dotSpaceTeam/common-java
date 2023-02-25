@@ -7,10 +7,12 @@ repositories {
 }
 
 dependencies {
-  implementation project(":base")
-
   implementation 'org.slf4j:slf4j-log4j12:2.0.5'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
+}
+
+java {
+  withSourcesJar()
 }
 
 test {
