@@ -1,6 +1,6 @@
 package dev.dotspace.common;
 
-import dev.dotspace.annotation.LibraryInformation;
+import dev.dotspace.common.annotation.LibraryInformation;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.common.exception.EmptyArrayException;
 import lombok.AccessLevel;
