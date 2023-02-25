@@ -1,4 +1,4 @@
-package dev.dotspace.annotation;
+package dev.dotspace.common.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
