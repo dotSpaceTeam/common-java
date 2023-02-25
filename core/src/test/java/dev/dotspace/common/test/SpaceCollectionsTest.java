@@ -42,7 +42,7 @@ public class SpaceCollectionsTest {
    */
   @Test
   public void testRandomNull() {
-    Assertions.assertNull(SpaceCollections.random((Collection<Object>) null));
+    Assertions.assertNull(SpaceCollections.random(null));
   }
 
 
