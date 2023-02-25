@@ -6,11 +6,11 @@
 ![GitHub](https://img.shields.io/github/license/dotSpaceTeam/common-java?style=for-the-badge)
 [![Support Server](https://img.shields.io/discord/678733739504697375.svg?color=7289da&label=dotSpace%20Dev&logo=discord&style=for-the-badge)](https://discord.gg/mFfDMAEFWE)
 ![Stars](https://img.shields.io/github/stars/dotSpaceTeam/common-java?style=for-the-badge)
-</div>
-
-
 
 A library which is the core of our projects and can be used for other cool projects as well.
+
+</div>
+
 ---
 ### Building your own copy
 
