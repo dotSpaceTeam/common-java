@@ -2,7 +2,7 @@ package dev.dotspace.common.response;
 
 import dev.dotspace.common.SpaceObjects;
 import dev.dotspace.common.SpaceThrowable;
-import dev.dotspace.annotation.LibraryInformation;
+import dev.dotspace.common.annotation.LibraryInformation;
 import dev.dotspace.common.exception.MismatchException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
