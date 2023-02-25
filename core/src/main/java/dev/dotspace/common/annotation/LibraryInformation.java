@@ -1,4 +1,4 @@
-package dev.dotspace.annotation;
+package dev.dotspace.common.annotation;
 
 import org.jetbrains.annotations.NotNull;
 
