@@ -1,5 +1,5 @@
 plugins {
-  id 'java'
+  id 'java-library'
 }
 
 repositories {
@@ -9,6 +9,11 @@ repositories {
 dependencies {
   testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
 }
+
+java {
+  withSourcesJar()
+}
+
 
 test {
   useJUnitPlatform()

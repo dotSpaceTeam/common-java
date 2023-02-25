@@ -1,6 +1,7 @@
 package dev.dotspace.common;
 
-import dev.dotspace.common.concurrent.FutureResponse;
+import dev.dotspace.common.annotation.LibraryInformation;
+import dev.dotspace.common.response.CompletableResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -9,28 +10,32 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ThreadLocalRandom;
+
+//TODO: Docs
 
 /**
+ * Methods for simplifying collections and arrays.
+ * <p>
  * Class with {@link Collection} operations.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE) //Block class construction.
+@LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
 public final class SpaceCollections {
   /**
-   * Get a random object of collection. Object wrapped in {@link Optional}.
+   * Get a random object of collection.
    *
    * @param collection to get random object from.
-   * @param <T>        generic type of {@link Collection}.
+   * @param <TYPE>     generic type of {@link Collection}.
    * @return random object of collection wrapped in {@link Optional}.
    * -> Optional is empty if {@link Collection} is null or empty.
    */
   @SuppressWarnings("unchecked")
-  public static <T> @NotNull Optional<@NotNull T> random(@Nullable final Collection<T> collection) {
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  public static <TYPE> @Nullable TYPE random(@Nullable final Collection<TYPE> collection) {
     if (collection == null || collection.isEmpty()) {
-      return Optional.empty(); //Return empty Optional to safe performance.
+      return null; //Return null to safe performance.
     }
-    final int index = collection.size() > 1 ? (int) (ThreadLocalRandom.current().nextDouble() * collection.size()) : 0; //Calculate random index to get from collection
-    return (Optional<T>) Optional.ofNullable(collection.toArray()[index]); //Return random object of list.
+    return (TYPE) collection.toArray()[LibraryCommonUtils.calculateRandomIndex(collection.size())];
   }
 
   /**
@@ -38,11 +43,12 @@ public final class SpaceCollections {
    * The completion of the {@link CompletableFuture} holds the random number.
    *
    * @param collection to get random object from.
-   * @param <T>        generic type of {@link Collection}.
+   * @param <TYPE>     generic type of {@link Collection}.
    * @return completableFuture with will be filled with the random object. Object could be null if collection is null.
    * or empty or if the given object is null in list.
    */
-  public static <T> @NotNull FutureResponse<T> randomAsync(@Nullable final Collection<T> collection) {
-    return new FutureResponse<T>().completeAsync(() -> SpaceCollections.random(collection).orElse(null)); //Complete the future in a separate thread
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  public static <TYPE> @NotNull CompletableResponse<TYPE> randomAsync(@Nullable final Collection<TYPE> collection) {
+    return new CompletableResponse<TYPE>().completeAsync(() -> SpaceCollections.random(collection)); //Complete the future in a separate thread
   }
 }

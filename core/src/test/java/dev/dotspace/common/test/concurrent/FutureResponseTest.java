@@ -1,13 +1,11 @@
 package dev.dotspace.common.test.concurrent;
 
 import dev.dotspace.common.concurrent.FutureResponse;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 
 public class FutureResponseTest {
-
   private final static int INTEGER_TO_COMPLETE = 5;
 
   /**

@@ -13,10 +13,11 @@ import org.jetbrains.annotations.NotNull;
 public record ObjectLabel<LABEL, OBJECT>(@NotNull LABEL label,
                                          @NotNull OBJECT object) {
   /**
+   * Use hashcode of object.
    * See: {@link Object#hashCode()}.
    */
   @Override
   public int hashCode() {
-    return this.object().hashCode();
+    return this.object.hashCode();
   }
 }
