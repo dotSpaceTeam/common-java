@@ -1,6 +1,6 @@
 package dev.dotspace.common;
 
-import dev.dotspace.common.annotation.AvailableTests;
+import dev.dotspace.common.annotation.JUnitVerification;
 import dev.dotspace.common.annotation.LibraryInformation;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,7 @@ public final class SpaceObjects {
    * @throws NullPointerException if object is null.
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @AvailableTests
+  @JUnitVerification
   public static <TYPE> @NotNull TYPE throwIfNull(@Nullable final TYPE object,
                                                  @Nullable final String message) throws NullPointerException {
     if (object != null) { //Return object if present.
@@ -46,7 +46,7 @@ public final class SpaceObjects {
    * @throws NullPointerException if object is null.
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @AvailableTests
+  @JUnitVerification
   public static <TYPE> @NotNull TYPE throwIfNull(@Nullable final TYPE object) throws NullPointerException {
     return throwIfNull(object, (String) null);
   }
@@ -63,7 +63,7 @@ public final class SpaceObjects {
    * @throws THROWABLE            if object is null and error supplier is present.
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @AvailableTests
+  @JUnitVerification
   public static <TYPE, THROWABLE extends Throwable> @NotNull TYPE throwIfNull(@Nullable final TYPE object,
                                                                               @Nullable final Supplier<@Nullable THROWABLE> throwableSupplier) throws THROWABLE {
     if (object != null) { //Return object if not null
@@ -85,7 +85,7 @@ public final class SpaceObjects {
    * @throws NullPointerException when object or absentSupplier(also the supplied object) is null.
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @AvailableTests
+  @JUnitVerification
   public static <TYPE> @NotNull TYPE ifAbsentUse(@Nullable final TYPE object,
                                                  @Nullable final Supplier<@Nullable TYPE> absentSupplier) {
     return object != null ? object :
@@ -101,7 +101,7 @@ public final class SpaceObjects {
    * @param <TYPE>   generic type of object.
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @AvailableTests
+  @JUnitVerification
   public static <TYPE> void ifPresent(@Nullable final TYPE object,
                                       @Nullable final Consumer<@NotNull TYPE> consumer) {
     if (object != null && consumer != null) { //Consume if object and consumer is not null.
