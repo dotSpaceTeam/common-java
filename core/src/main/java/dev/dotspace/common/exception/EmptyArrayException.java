@@ -1,6 +1,6 @@
 package dev.dotspace.common.exception;
 
-import dev.dotspace.annotation.LibraryInformation;
+import dev.dotspace.common.annotation.LibraryInformation;
 import org.jetbrains.annotations.Nullable;
 
 /**
