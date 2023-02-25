@@ -17,6 +17,7 @@ A library which is the core of our projects and can be used for other cool proje
 - To build and execute the jar **Java 17** is recommended.
 - Execute ``gradlew build`` to run test and build.
 
+---
 ### Integration into own projects
 
 Include the library in your own project via [maven](https://maven.apache.org/) or [gradle](https://gradle.org/).
