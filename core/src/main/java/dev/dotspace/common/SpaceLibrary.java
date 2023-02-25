@@ -1,6 +1,6 @@
 package dev.dotspace.common;
 
-import dev.dotspace.annotation.LibraryInformation;
+import dev.dotspace.common.annotation.LibraryInformation;
 import dev.dotspace.common.response.CompletableResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -16,6 +16,7 @@ import java.util.function.Supplier;
  *   <dd>Similar to {@link java.util.concurrent.CompletableFuture} but implemented our way.</dd>
  * </dl>
  */
+@SuppressWarnings("unused")
 @NoArgsConstructor(access = AccessLevel.PRIVATE) //Block default constructor.
 public final class SpaceLibrary {
   /**
