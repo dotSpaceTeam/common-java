@@ -14,17 +14,8 @@ public class SpaceTimeTest {
 
   @Test
   public void testTime() {
-    final long systemCurrentMills = System.currentTimeMillis();
-    final long timeAsSeconds = SpaceTime.currentTimeAs(TimeUnit.SECONDS);
-    //  Assertions.assertEquals(systemCurrentMills / 1000, timeAsSeconds);
-  }
-
-  @Test
-  public void testWrongTime() {
-    final long systemCurrentMills = System.currentTimeMillis();
-    final long timeAsSeconds = SpaceTime.currentTimeAs(TimeUnit.SECONDS);
-
-    //  Assertions.assertNotEquals((systemCurrentMills / 1000) - 1, timeAsSeconds);
+    Assertions.assertEquals(System.currentTimeMillis() / 1000, SpaceTime.currentTimeAs(TimeUnit.SECONDS));
+    Assertions.assertNotEquals((System.currentTimeMillis() / 1000) - 1, SpaceTime.currentTimeAs(TimeUnit.SECONDS));
   }
 
   @Test
@@ -32,10 +23,10 @@ public class SpaceTimeTest {
   public void testTimeStamp() {
     final SpaceTime.Timestamp timestamp = SpaceTime.timestampNow();
 
-    //Assertions.assertEquals(0L, timestamp.pastTime());
+    Assertions.assertTrue( timestamp.pastTime() < 1000000); //Time in nanoseconds.
     Thread.sleep(2000L);
-    //Assertions.assertNotEquals(0L, timestamp.pastTime());
-    //Assertions.assertTrue(timestamp.pastTime() > 1000);
-    //Assertions.assertTrue(timestamp.pastTimeFormatted(TimeUnit.SECONDS) > 1);
+    Assertions.assertNotEquals(0L, timestamp.pastTime());
+    Assertions.assertTrue(timestamp.pastTime() > 1000);
+    Assertions.assertTrue(timestamp.pastTimeFormatted(TimeUnit.SECONDS) > 1);
   }
 }
