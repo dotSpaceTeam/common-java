@@ -1,6 +1,6 @@
 package dev.dotspace.common.response;
 
-import dev.dotspace.annotation.LibraryInformation;
+import dev.dotspace.common.annotation.LibraryInformation;
 
 /**
  * This enum can be used to express the status of a {@link Response}.
