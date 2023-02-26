@@ -23,31 +23,31 @@ A library which is the core of our projects and can be used for other cool proje
 Include the library in your own project via [maven](https://maven.apache.org/) or [gradle](https://gradle.org/).
 Completed builds can be imported via our [repository](https://repo.dotspace.dev/repository/space-public/).
 
-### Repository (Gradle): 
+### Gradle: 
 ```
+//Repository
 maven {
   name 'dotSpace'
   url 'https://repo.dotspace.dev/repository/space-public/'
 }
+
+//Dependency
+implementation 'dev.dotspace:common:1.0.6'
 ```
-### Repository (Maven):
+### Maven:
 ```
+//Repository
 <repository>
   <id>dotSpace</id>
   <name>dotSpace Public Repo</name>
   <url>https://repo.dotspace.dev/repository/space-public/</url>
 </repository>
-```
-### Dependency (Gradle):
-```
-implementation 'dev.dotspace:common:1.0.6'
-```
-### Dependency (Maven):
-```
+
+//Dependency
 <dependency>
   <groupId>dev.dotspace</groupId>
   <artifactId>common</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
 </dependency>
 ```
 ---
