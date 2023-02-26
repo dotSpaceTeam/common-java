@@ -44,8 +44,10 @@ public final class SpaceArrays {
   }
 
   /**
+   * Get a random element from the given array.
+   *
    * @param bytes to get random element of.
-   * @return
+   * @return random byte of given array.
    * @throws NullPointerException if bytes is null.
    * @throws EmptyArrayException  if bytes is empty.
    */
@@ -58,8 +60,11 @@ public final class SpaceArrays {
   }
 
   /**
+   * If the array is null, the {@link CompletableResponse} is completed with {@link NullPointerException}. If the
+   * array is empty, the answer is completed with {@link EmptyArrayException}.
+   *
    * @param bytes to get random element of.
-   * @return
+   * @return instance of {@link CompletableResponse} with the random element.
    * @see CompletableResponse
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
@@ -68,8 +73,10 @@ public final class SpaceArrays {
   }
 
   /**
+   * Get a random element from the given array.
+   *
    * @param shorts to get random element of.
-   * @return
+   * @return random short of given array.
    * @throws NullPointerException if shorts is null.
    * @throws EmptyArrayException  if shorts is empty.
    */
@@ -82,8 +89,11 @@ public final class SpaceArrays {
   }
 
   /**
+   * If the array is null, the {@link CompletableResponse} is completed with {@link NullPointerException}. If the
+   * array is empty, the answer is completed with {@link EmptyArrayException}.
+   *
    * @param shorts to get random element of.
-   * @return
+   * @return instance of {@link CompletableResponse} with the random element.
    * @see CompletableResponse
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
@@ -92,8 +102,10 @@ public final class SpaceArrays {
   }
 
   /**
+   * Get a random element from the given array.
+   *
    * @param chars to get random element of.
-   * @return
+   * @return random chars of given array.
    * @throws NullPointerException if chars is null.
    * @throws EmptyArrayException  if chars is empty.
    */
@@ -106,8 +118,11 @@ public final class SpaceArrays {
   }
 
   /**
+   * If the array is null, the {@link CompletableResponse} is completed with {@link NullPointerException}. If the
+   * array is empty, the answer is completed with {@link EmptyArrayException}.
+   *
    * @param chars to get random element of.
-   * @return
+   * @return instance of {@link CompletableResponse} with the random element.
    * @see CompletableResponse
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
@@ -116,8 +131,10 @@ public final class SpaceArrays {
   }
 
   /**
+   * Get a random element from the given array.
+   *
    * @param ints to get random element of.
-   * @return
+   * @return random int of given array.
    * @throws NullPointerException if ints is null.
    * @throws EmptyArrayException  if ints is empty.
    */
@@ -130,8 +147,11 @@ public final class SpaceArrays {
   }
 
   /**
+   * If the array is null, the {@link CompletableResponse} is completed with {@link NullPointerException}. If the
+   * array is empty, the answer is completed with {@link EmptyArrayException}.
+   *
    * @param ints to get random element of.
-   * @return
+   * @return instance of {@link CompletableResponse} with the random element.
    * @see CompletableResponse
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
@@ -140,8 +160,10 @@ public final class SpaceArrays {
   }
 
   /**
+   * Get a random element from the given array.
+   *
    * @param longs to get random element of.
-   * @return
+   * @return random long of given array.
    * @throws NullPointerException if longs is null.
    * @throws EmptyArrayException  if longs is empty.
    */
@@ -154,8 +176,11 @@ public final class SpaceArrays {
   }
 
   /**
+   * If the array is null, the {@link CompletableResponse} is completed with {@link NullPointerException}. If the
+   * array is empty, the answer is completed with {@link EmptyArrayException}.
+   *
    * @param longs to get random element of.
-   * @return
+   * @return instance of {@link CompletableResponse} with the random element.
    * @see CompletableResponse
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
@@ -164,8 +189,10 @@ public final class SpaceArrays {
   }
 
   /**
+   * Get a random element from the given array.
+   *
    * @param floats to get random element of.
-   * @return
+   * @return random float of given array.
    * @throws NullPointerException if floats is null.
    * @throws EmptyArrayException  if floats is empty.
    */
@@ -177,8 +204,11 @@ public final class SpaceArrays {
   }
 
   /**
+   * If the array is null, the {@link CompletableResponse} is completed with {@link NullPointerException}. If the
+   * array is empty, the answer is completed with {@link EmptyArrayException}.
+   *
    * @param floats to get random element of.
-   * @return
+   * @return instance of {@link CompletableResponse} with the random element.
    * @see CompletableResponse
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
@@ -187,8 +217,10 @@ public final class SpaceArrays {
   }
 
   /**
+   * Get a random element from the given array.
+   *
    * @param doubles to get random element of.
-   * @return
+   * @return random double of given array.
    * @throws NullPointerException if doubles is null.
    * @throws EmptyArrayException  if doubles is empty.
    */
@@ -201,8 +233,11 @@ public final class SpaceArrays {
   }
 
   /**
+   * If the array is null, the {@link CompletableResponse} is completed with {@link NullPointerException}. If the
+   * array is empty, the answer is completed with {@link EmptyArrayException}.
+   *
    * @param doubles to get random element of.
-   * @return
+   * @return instance of {@link CompletableResponse} with the random element.
    * @see CompletableResponse
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
@@ -211,17 +246,20 @@ public final class SpaceArrays {
   }
 
   /**
-   * @param typeArray
-   * @param typesToAppend
-   * @param <TYPE>
-   * @return
+   * Append elements to array.
+   *
+   * @param typeArray     to append content to.
+   * @param typesToAppend to append to typeArray elements -> Creates new array.
+   * @param <TYPE>        type of both array elements.
+   * @return new array instance with combined elements.
+   * @throws NullPointerException if typeArray or typesToAppend is null.
    */
   @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.6")
   @SafeVarargs
   public static <TYPE> @NotNull TYPE[] append(@Nullable final TYPE[] typeArray,
                                               @Nullable final TYPE... typesToAppend) {
     if (typeArray == null || typesToAppend == null) {
-      throw new NullPointerException("");
+      throw new NullPointerException();
     }
 
     final TYPE[] newArray = Arrays.copyOf(typeArray, typeArray.length + typesToAppend.length);
