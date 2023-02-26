@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 
 /**
- * TODO docs
+ * Methods with which arrays are handled. The individual methods are directly commented.
  */
 @SuppressWarnings("unused")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
