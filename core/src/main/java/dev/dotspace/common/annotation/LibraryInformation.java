@@ -28,12 +28,12 @@ public @interface LibraryInformation {
   @NotNull String updated() default "_NA_";
 
   /**
-   * @return
+   * @return set {@link Access} of annotation.
    */
   @NotNull Access access() default Access.PUBLIC;
 
   /**
-   * @return
+   * @return set {@link State} of annotation.
    */
   @NotNull State state() default State.DEPRECATED;
 
@@ -51,11 +51,25 @@ public @interface LibraryInformation {
     PUBLIC;
   }
 
+  /**
+   * Indicates the status.
+   */
   enum State {
+    /**
+     * Stands for the current development of the implementation.
+     */
     WORK_IN_PROGRESS,
+    /**
+     * If the implementation has been completed, but it has not been extensively tested.
+     */
     EXPERIMENTAL,
+    /**
+     * Tests have been performed and the implementation is suitable for use.
+     */
     STABLE,
+    /**
+     * Similar to {@link Deprecated}. Code is no longer maintained.
+     */
     DEPRECATED
-
   }
 }
