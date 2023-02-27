@@ -29,3 +29,28 @@ allprojects {
     useJUnitPlatform()
   }
 }
+
+/**
+ * Update dependency version in README.md.
+ */
+tasks.register("updateDependencyInReadMe") {
+  println("Updating dependency version in README.md...")
+// Update maven Version
+  ant.replaceregexp(match: '<version>([0-9\\.]+)</version>',
+    replace: "<version>${version}</version>",
+    flags: 'g',
+    byline: true) {
+    fileset(dir: '.', includes: 'README.md')
+    println("Updated mavem dependency verison.")
+  }
+
+  // Update gradle version
+  ant.replaceregexp(
+    match: 'dev\\.dotspace\\:common\\:([0-9\\.]+)',
+    replace: "dev.dotspace:common:${version}",
+    flags: 'g',
+    byline: true) {
+    fileset(dir: '.', includes: 'README.md')
+    println("Updated gradle dependency verison.")
+  }
+}
