@@ -10,10 +10,11 @@ dependencies {
   testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
 }
 
-java {
-  withSourcesJar()
-}
 
+tasks.register('copyReport', Copy) {
+  from layout.buildDirectory.file("reports/my-report.pdf")
+  into layout.buildDirectory.dir("toArchive")
+}
 
 test {
   useJUnitPlatform()
