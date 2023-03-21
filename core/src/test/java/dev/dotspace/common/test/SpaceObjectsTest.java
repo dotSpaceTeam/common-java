@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -64,4 +65,20 @@ public final class SpaceObjectsTest {
     Assertions.assertEquals(SpaceObjects.ifAbsentUse(null, () -> TEST_STRING), TEST_STRING);
   }
 
+  /**
+   * Test {@link SpaceObjects#filterIfPresent(Object, Predicate)}.
+   */
+  @Test
+  public void filterIfPresentTest() {
+    //Positive tests.
+    Assertions.assertTrue(SpaceObjects.filterIfPresent("Test", s -> s.startsWith("T")));
+    Assertions.assertTrue(SpaceObjects.filterIfPresent(5, integer -> integer > 2));
+
+    //Negative tests.
+    Assertions.assertFalse(SpaceObjects.filterIfPresent(null, o -> true));
+
+    //Exception tests.
+    Assertions.assertDoesNotThrow(() -> SpaceObjects.filterIfPresent(null, null));
+    Assertions.assertThrows(NullPointerException.class, () -> SpaceObjects.filterIfPresent("Test", null));
+  }
 }
