@@ -3,8 +3,7 @@ package dev.dotspace.common;
 import dev.dotspace.common.annotation.LibraryInformation;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.common.exception.EmptyArrayException;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,9 +13,15 @@ import java.util.Arrays;
  * Methods with which arrays are handled. The individual methods are directly commented.
  */
 @SuppressWarnings("unused")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
 public final class SpaceArrays {
+  /**
+   * Block default constructor.
+   */
+  private SpaceArrays() {
+    //Nothing to see here.
+  }
+
   /**
    * Get a random element of array of any type.
    *
