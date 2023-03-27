@@ -23,7 +23,7 @@ A library which is the core of our projects and can be used for other cool proje
 Include the library in your own project via [maven](https://maven.apache.org/) or [gradle](https://gradle.org/).
 Completed builds can be imported via our [repository](https://repo.dotspace.dev/repository/space-public/).
 
-### Gradle: 
+### Gradle:
 ```
 //Repository
 maven {
@@ -32,7 +32,7 @@ maven {
 }
 
 //Dependency
-implementation 'dev.dotspace:common:dev_1.0.7_1'
+implementation 'dev.dotspace:common:dev_1.0.7_2'
 ```
 ### Maven:
 ```
@@ -47,7 +47,7 @@ implementation 'dev.dotspace:common:dev_1.0.7_1'
 <dependency>
   <groupId>dev.dotspace</groupId>
   <artifactId>common</artifactId>
-  <version>dev_1.0.7_1</version>
+  <version>dev_1.0.7_2</version>
 </dependency>
 ```
 ---
