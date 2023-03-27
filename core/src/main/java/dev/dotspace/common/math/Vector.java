@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.text.Position;
 
 /**
  * Keep error due to conversion in mind!
