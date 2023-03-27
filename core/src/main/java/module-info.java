@@ -1,6 +1,6 @@
 module dev.dotspace.common {
-  requires org.jetbrains.annotations;
-  requires lombok;
+  requires static lombok;
+  requires static org.jetbrains.annotations;
 
   //Base Library
   exports dev.dotspace.common;
