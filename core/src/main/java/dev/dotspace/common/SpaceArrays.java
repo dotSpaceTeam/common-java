@@ -261,8 +261,8 @@ public final class SpaceArrays {
    */
   @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.6")
   @SafeVarargs
-  public static <TYPE> @NotNull TYPE[] append(@Nullable final TYPE[] typeArray,
-                                              @Nullable final TYPE... typesToAppend) {
+  public static <TYPE> @NotNull TYPE[] push(final TYPE @Nullable [] typeArray,
+                                            final TYPE @Nullable ... typesToAppend) {
     if (typeArray == null || typesToAppend == null) {
       throw new NullPointerException();
     }
@@ -271,4 +271,58 @@ public final class SpaceArrays {
     System.arraycopy(typesToAppend, 0, newArray, typeArray.length, typesToAppend.length);
     return newArray;
   }
+
+  /**
+   * Append element to array.
+   *
+   * @param typeArray  to append element typeToAppend.
+   * @param typeToPush element to push at the end of typeArray.
+   * @param <TYPE>     generic type of elements in array.
+   * @return new array with new size and content of typeArray plus typeToAppend.
+   * @throws NullPointerException if typeArray is null.
+   */
+  @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.7")
+  public static <TYPE> @NotNull TYPE[] push(final TYPE @Nullable [] typeArray,
+                                            @Nullable final TYPE typeToPush) {
+    return SpaceArrays.pushImplementation(SpaceObjects.throwIfNull(typeArray), typeToPush);
+  }
+
+  /**
+   * Append element to array. Implementation.
+   *
+   * @param typeArray  to append element.
+   * @param typeToPush to append to typeArray.
+   * @param <TYPE>     generic type of typeArray and typeToAppend
+   * @return
+   */
+  @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.7")
+  private static <TYPE> @NotNull TYPE[] pushImplementation(final TYPE @NotNull [] typeArray,
+                                                           @Nullable final TYPE typeToPush) {
+    final TYPE[] newArray = Arrays.copyOf(typeArray, typeArray.length + 1); //Create new array with one more position.
+    newArray[newArray.length - 1] = typeToPush; //Set typeToAppend as last index of new array.
+    return newArray;
+  }
+
+  /**
+   * Remove elements with null reference from array.
+   *
+   * @param typeArray
+   * @param <TYPE>
+   * @return
+   * @throws NullPointerException if typeArray is null.
+   */
+  @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.7")
+  public static <TYPE> @NotNull TYPE[] dropNull(final TYPE @Nullable [] typeArray) {
+    SpaceObjects.throwIfNull(typeArray); //Throw error if array is null.
+    TYPE[] array = (TYPE[]) new Object[0];
+
+    for (TYPE type : typeArray) { //Loop trough present array.
+      if (type == null) {
+        continue;
+      }
+      array = SpaceArrays.pushImplementation(array, type); //Append present element to copy of array
+    }
+    return array;
+  }
+
 }
