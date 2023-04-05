@@ -7,6 +7,10 @@ group 'dev.dotspace'
 version 'dev_1.0.7_3'
 
 allprojects {
+  ext {
+    junitVersion = "5.9.0";
+  }
+
   apply plugin: 'java-library'
   apply plugin: 'io.freefair.lombok'
 
@@ -21,8 +25,10 @@ allprojects {
   }
 
   dependencies {
-    api 'org.jetbrains:annotations:23.0.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
+    api ("org.jetbrains:annotations:23.0.0")
+
+    testImplementation ("org.junit.jupiter:junit-jupiter:${junitVersion}")
+    testRuntimeOnly ("org.junit.jupiter:junit-jupiter:${junitVersion}")
   }
 
   test {

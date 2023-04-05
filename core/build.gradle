@@ -6,11 +6,6 @@ repositories {
   mavenCentral()
 }
 
-dependencies {
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
-}
-
-
 tasks.register('copyReport', Copy) {
   from layout.buildDirectory.file("reports/my-report.pdf")
   into layout.buildDirectory.dir("toArchive")
