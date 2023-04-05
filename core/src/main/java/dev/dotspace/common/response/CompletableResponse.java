@@ -1,5 +1,6 @@
 package dev.dotspace.common.response;
 
+import dev.dotspace.common.SpaceArrays;
 import dev.dotspace.common.SpaceObjects;
 import dev.dotspace.common.SpaceThrowable;
 import dev.dotspace.common.annotation.LibraryInformation;
@@ -22,6 +23,9 @@ import java.util.function.Supplier;
 @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, since = "1.0.6")
 public final class CompletableResponse<TYPE> implements Response<TYPE> {
   private final @NotNull ExecutorService executorService;
+  /**
+   * State of this instance.
+   */
   private volatile @NotNull State state;
   private volatile @Nullable TYPE response;
   private volatile @Nullable Throwable throwable;
@@ -174,7 +178,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
       try {
         this.completeImplementation(SpaceObjects.throwIfNull(typeSupplier).get());
       } catch (final Throwable throwable) {
-        this.completeExceptionallyImplementation(throwable);
+        this.completeExceptionallyImplementation(throwable); //Error was thrown in typeSupplier or the given type supplier is null.
       }
     });
     return this;
@@ -765,8 +769,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     if (this.done()) { //Directly run executor if already finished.
       responseFunction.run(this.executorService);
     } else { //Add to run later if response is completed.
-      this.responseFunctions = Arrays.copyOf(this.responseFunctions, this.responseFunctions.length + 1);
-      this.responseFunctions[this.responseFunctions.length - 1] = responseFunction;
+      this.responseFunctions = SpaceArrays.push(this.responseFunctions, responseFunction);
     }
   }
 
