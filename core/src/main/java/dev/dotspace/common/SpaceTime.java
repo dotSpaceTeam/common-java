@@ -1,8 +1,6 @@
 package dev.dotspace.common;
 
 import dev.dotspace.common.annotation.LibraryInformation;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,9 +11,17 @@ import java.util.concurrent.TimeUnit;
 /**
  * Class with time and duration operations
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
 public final class SpaceTime {
+
+  /**
+   * Block default constructor.
+   */
+  private SpaceTime() {
+    //Nothing to see here.
+  }
+
+
   /**
    * Get the current system time in other time format
    *

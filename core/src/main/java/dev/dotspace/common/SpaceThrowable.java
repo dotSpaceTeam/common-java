@@ -1,13 +1,18 @@
 package dev.dotspace.common;
 
 import dev.dotspace.common.annotation.LibraryInformation;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
 public final class SpaceThrowable {
+
+  /**
+   * Block default constructor.
+   */
+  private SpaceThrowable() {
+    //Nothing to see here.
+  }
+
   /**
    * Print stacktrace of {@link Throwable} if present.
    * Method checks if {@link Throwable} is not null, if so {@link Throwable#printStackTrace()}.
