@@ -292,8 +292,8 @@ public final class SpaceArrays {
    *
    * @param typeArray  to append element.
    * @param typeToPush to append to typeArray.
-   * @param <TYPE>     generic type of typeArray and typeToAppend
-   * @return
+   * @param <TYPE>     generic type of typeArray and typeToAppend.
+   * @return new array instance with pushed object.
    */
   @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.7")
   private static <TYPE> @NotNull TYPE[] pushImplementation(final TYPE @NotNull [] typeArray,
@@ -306,9 +306,9 @@ public final class SpaceArrays {
   /**
    * Remove elements with null reference from array.
    *
-   * @param typeArray
-   * @param <TYPE>
-   * @return
+   * @param typeArray to drop null elements from.
+   * @param <TYPE>    generic type of typeArray and typeToAppend.
+   * @return new array instance with removed null elements.
    * @throws NullPointerException if typeArray is null.
    */
   @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.7")
