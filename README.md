@@ -32,7 +32,7 @@ maven {
 }
 
 //Dependency
-implementation 'dev.dotspace:common:dev_1.0.7_3'
+implementation 'dev.dotspace:common:1.0.7'
 ```
 ### Maven:
 ```
@@ -47,7 +47,7 @@ implementation 'dev.dotspace:common:dev_1.0.7_3'
 <dependency>
   <groupId>dev.dotspace</groupId>
   <artifactId>common</artifactId>
-  <version>dev_1.0.7_3</version>
+  <version>1.0.7</version>
 </dependency>
 ```
 ---
