@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -107,5 +108,29 @@ public final class SpaceObjects {
     if (object != null && consumer != null) { //Consume if object and consumer is not null.
       consumer.accept(object);
     }
+  }
+
+  /**
+   * Check if given reference is not ann and filter if present.
+   * <br>
+   * Example:
+   * <pre><code>
+   * final String testString = "This is a test.";
+   * if (SpaceObjects.filterIfPresent(testString, s -> s.contains("test"))) {
+   *   //Sentence has the word test in it.
+   * }
+   * </code></pre>
+   * @param object to check if not null.
+   * @param typePredicate to test the object if present.
+   * @param <TYPE> type of the object for the {@link Predicate}.
+   * @return true, if object is not null and {@link Predicate#test(Object)} returns true.
+   * @throws NullPointerException if typePredicate is null.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.7")
+  @JUnitVerification
+  public static <TYPE> boolean filterIfPresent(@Nullable final TYPE object,
+                                               @Nullable final Predicate<TYPE> typePredicate) {
+    return object != null /*False if object is null.*/ &&
+      throwIfNull(/*Throw error if typePredicate is null.*/typePredicate).test(object) /*test object.*/;
   }
 }

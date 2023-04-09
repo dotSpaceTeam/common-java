@@ -3,20 +3,25 @@ package dev.dotspace.common;
 import dev.dotspace.common.annotation.LibraryInformation;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.common.exception.EmptyArrayException;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
 /**
- * TODO docs
+ * Methods with which arrays are handled. The individual methods are directly commented.
  */
 @SuppressWarnings("unused")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
 public final class SpaceArrays {
+  /**
+   * Block default constructor.
+   */
+  private SpaceArrays() {
+    //Nothing to see here.
+  }
+
   /**
    * Get a random element of array of any type.
    *
@@ -44,8 +49,10 @@ public final class SpaceArrays {
   }
 
   /**
+   * Get a random element from the given array.
+   *
    * @param bytes to get random element of.
-   * @return
+   * @return random byte of given array.
    * @throws NullPointerException if bytes is null.
    * @throws EmptyArrayException  if bytes is empty.
    */
@@ -58,8 +65,11 @@ public final class SpaceArrays {
   }
 
   /**
+   * If the array is null, the {@link CompletableResponse} is completed with {@link NullPointerException}. If the
+   * array is empty, the answer is completed with {@link EmptyArrayException}.
+   *
    * @param bytes to get random element of.
-   * @return
+   * @return instance of {@link CompletableResponse} with the random element.
    * @see CompletableResponse
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
@@ -68,8 +78,10 @@ public final class SpaceArrays {
   }
 
   /**
+   * Get a random element from the given array.
+   *
    * @param shorts to get random element of.
-   * @return
+   * @return random short of given array.
    * @throws NullPointerException if shorts is null.
    * @throws EmptyArrayException  if shorts is empty.
    */
@@ -82,8 +94,11 @@ public final class SpaceArrays {
   }
 
   /**
+   * If the array is null, the {@link CompletableResponse} is completed with {@link NullPointerException}. If the
+   * array is empty, the answer is completed with {@link EmptyArrayException}.
+   *
    * @param shorts to get random element of.
-   * @return
+   * @return instance of {@link CompletableResponse} with the random element.
    * @see CompletableResponse
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
@@ -92,8 +107,10 @@ public final class SpaceArrays {
   }
 
   /**
+   * Get a random element from the given array.
+   *
    * @param chars to get random element of.
-   * @return
+   * @return random chars of given array.
    * @throws NullPointerException if chars is null.
    * @throws EmptyArrayException  if chars is empty.
    */
@@ -106,8 +123,11 @@ public final class SpaceArrays {
   }
 
   /**
+   * If the array is null, the {@link CompletableResponse} is completed with {@link NullPointerException}. If the
+   * array is empty, the answer is completed with {@link EmptyArrayException}.
+   *
    * @param chars to get random element of.
-   * @return
+   * @return instance of {@link CompletableResponse} with the random element.
    * @see CompletableResponse
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
@@ -116,8 +136,10 @@ public final class SpaceArrays {
   }
 
   /**
+   * Get a random element from the given array.
+   *
    * @param ints to get random element of.
-   * @return
+   * @return random int of given array.
    * @throws NullPointerException if ints is null.
    * @throws EmptyArrayException  if ints is empty.
    */
@@ -130,8 +152,11 @@ public final class SpaceArrays {
   }
 
   /**
+   * If the array is null, the {@link CompletableResponse} is completed with {@link NullPointerException}. If the
+   * array is empty, the answer is completed with {@link EmptyArrayException}.
+   *
    * @param ints to get random element of.
-   * @return
+   * @return instance of {@link CompletableResponse} with the random element.
    * @see CompletableResponse
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
@@ -140,8 +165,10 @@ public final class SpaceArrays {
   }
 
   /**
+   * Get a random element from the given array.
+   *
    * @param longs to get random element of.
-   * @return
+   * @return random long of given array.
    * @throws NullPointerException if longs is null.
    * @throws EmptyArrayException  if longs is empty.
    */
@@ -154,8 +181,11 @@ public final class SpaceArrays {
   }
 
   /**
+   * If the array is null, the {@link CompletableResponse} is completed with {@link NullPointerException}. If the
+   * array is empty, the answer is completed with {@link EmptyArrayException}.
+   *
    * @param longs to get random element of.
-   * @return
+   * @return instance of {@link CompletableResponse} with the random element.
    * @see CompletableResponse
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
@@ -164,8 +194,10 @@ public final class SpaceArrays {
   }
 
   /**
+   * Get a random element from the given array.
+   *
    * @param floats to get random element of.
-   * @return
+   * @return random float of given array.
    * @throws NullPointerException if floats is null.
    * @throws EmptyArrayException  if floats is empty.
    */
@@ -177,8 +209,11 @@ public final class SpaceArrays {
   }
 
   /**
+   * If the array is null, the {@link CompletableResponse} is completed with {@link NullPointerException}. If the
+   * array is empty, the answer is completed with {@link EmptyArrayException}.
+   *
    * @param floats to get random element of.
-   * @return
+   * @return instance of {@link CompletableResponse} with the random element.
    * @see CompletableResponse
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
@@ -187,8 +222,10 @@ public final class SpaceArrays {
   }
 
   /**
+   * Get a random element from the given array.
+   *
    * @param doubles to get random element of.
-   * @return
+   * @return random double of given array.
    * @throws NullPointerException if doubles is null.
    * @throws EmptyArrayException  if doubles is empty.
    */
@@ -201,8 +238,11 @@ public final class SpaceArrays {
   }
 
   /**
+   * If the array is null, the {@link CompletableResponse} is completed with {@link NullPointerException}. If the
+   * array is empty, the answer is completed with {@link EmptyArrayException}.
+   *
    * @param doubles to get random element of.
-   * @return
+   * @return instance of {@link CompletableResponse} with the random element.
    * @see CompletableResponse
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
@@ -211,21 +251,78 @@ public final class SpaceArrays {
   }
 
   /**
-   * @param typeArray
-   * @param typesToAppend
-   * @param <TYPE>
-   * @return
+   * Append elements to array.
+   *
+   * @param typeArray     to append content to.
+   * @param typesToAppend to append to typeArray elements -> Creates new array.
+   * @param <TYPE>        type of both array elements.
+   * @return new array instance with combined elements.
+   * @throws NullPointerException if typeArray or typesToAppend is null.
    */
   @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.6")
   @SafeVarargs
-  public static <TYPE> @NotNull TYPE[] append(@Nullable final TYPE[] typeArray,
-                                              @Nullable final TYPE... typesToAppend) {
+  public static <TYPE> @NotNull TYPE[] push(final TYPE @Nullable [] typeArray,
+                                            final TYPE @Nullable ... typesToAppend) {
     if (typeArray == null || typesToAppend == null) {
-      throw new NullPointerException("");
+      throw new NullPointerException();
     }
 
     final TYPE[] newArray = Arrays.copyOf(typeArray, typeArray.length + typesToAppend.length);
     System.arraycopy(typesToAppend, 0, newArray, typeArray.length, typesToAppend.length);
     return newArray;
   }
+
+  /**
+   * Append element to array.
+   *
+   * @param typeArray  to append element typeToAppend.
+   * @param typeToPush element to push at the end of typeArray.
+   * @param <TYPE>     generic type of elements in array.
+   * @return new array with new size and content of typeArray plus typeToAppend.
+   * @throws NullPointerException if typeArray is null.
+   */
+  @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.7")
+  public static <TYPE> @NotNull TYPE[] push(final TYPE @Nullable [] typeArray,
+                                            @Nullable final TYPE typeToPush) {
+    return SpaceArrays.pushImplementation(SpaceObjects.throwIfNull(typeArray), typeToPush);
+  }
+
+  /**
+   * Append element to array. Implementation.
+   *
+   * @param typeArray  to append element.
+   * @param typeToPush to append to typeArray.
+   * @param <TYPE>     generic type of typeArray and typeToAppend.
+   * @return new array instance with pushed object.
+   */
+  @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.7")
+  private static <TYPE> @NotNull TYPE[] pushImplementation(final TYPE @NotNull [] typeArray,
+                                                           @Nullable final TYPE typeToPush) {
+    final TYPE[] newArray = Arrays.copyOf(typeArray, typeArray.length + 1); //Create new array with one more position.
+    newArray[newArray.length - 1] = typeToPush; //Set typeToAppend as last index of new array.
+    return newArray;
+  }
+
+  /**
+   * Remove elements with null reference from array.
+   *
+   * @param typeArray to drop null elements from.
+   * @param <TYPE>    generic type of typeArray and typeToAppend.
+   * @return new array instance with removed null elements.
+   * @throws NullPointerException if typeArray is null.
+   */
+  @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.7")
+  public static <TYPE> @NotNull TYPE[] dropNull(final TYPE @Nullable [] typeArray) {
+    SpaceObjects.throwIfNull(typeArray); //Throw error if array is null.
+    TYPE[] array = (TYPE[]) new Object[0];
+
+    for (TYPE type : typeArray) { //Loop trough present array.
+      if (type == null) {
+        continue;
+      }
+      array = SpaceArrays.pushImplementation(array, type); //Append present element to copy of array
+    }
+    return array;
+  }
+
 }
