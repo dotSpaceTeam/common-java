@@ -1,6 +1,7 @@
 package dev.dotspace.common.math;
 
 
+import dev.dotspace.common.annotation.LibraryInformation;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
@@ -56,7 +57,20 @@ public class Vector {
    * @return new Vector instance.
    */
   public @NotNull Vector add(@NotNull final Vector vector) {
-    return new Vector(this.x + vector.x(), this.y + vector.y(), this.z + vector.z());
+    return this.add(vector.x(), vector.y(), vector.z());
+  }
+
+  /**
+   * Add another {@link Vector} from this instance.
+   *
+   * @param x coordinate to add
+   * @param y coordinate to add
+   * @param z coordinate to add
+   * @return new Vector instance.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
+  public @NotNull Vector add(final double x, final double y, final double z) {
+    return new Vector(this.x + x, this.y + y, this.z + z);
   }
 
   /**
@@ -66,7 +80,20 @@ public class Vector {
    * @return new Vector instance.
    */
   public @NotNull Vector subtract(@NotNull final Vector vector) {
-    return new Vector(this.x - vector.x(), this.y - vector.y(), this.z - vector.z());
+    return this.subtract(vector.x(), vector.y(), vector.z());
+  }
+
+  /**
+   * Subtract another {@link Vector} to this instance.
+   *
+   * @param x coordinate to subtract
+   * @param y coordinate to subtract
+   * @param z coordinate to subtract
+   * @return new Vector instance.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
+  public @NotNull Vector subtract(final double x, final double y, final double z) {
+    return new Vector(this.x - x, this.y - y, this.z - z);
   }
 
   /**
@@ -110,6 +137,32 @@ public class Vector {
   }
 
   /**
+   * Performs scalar multiplication with this {@link Vector}.
+   *
+   * @param vector to perform multiplication.
+   * @return computed scalar product.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
+  public double scalarProduct(final Vector vector) {
+    return (this.x * vector.x) + (this.y * vector.y) + (this.z * vector.z);
+  }
+
+  /**
+   * Calculates the cross product of this {@link Vector}.
+   *
+   * @param vector to perform calculation with.
+   * @return new Vector instance, perpendicular to both input {@link Vector}s.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
+  public Vector crossProduct(final Vector vector) {
+    return new Vector(
+      this.y * vector.z - this.z * vector.y,
+      this.z * vector.x - this.x * vector.z,
+      this.x * vector.y - this.y * vector.x
+    );
+  }
+
+  /**
    * Compare value with instance.
    *
    * @param object to compare with this object.
@@ -126,9 +179,9 @@ public class Vector {
   }
 
   /**
-   * Calculates the length. [{@link Math#sqrt(double)} applied]
+   * Calculates the length/magnitude.
    *
-   * @return value as double.
+   * @return the value as double.
    */
   public double length() {
     return Math.sqrt(lengthSquared());
@@ -143,6 +196,17 @@ public class Vector {
     return (this.x * this.x) + (this.y * this.y) + (this.z * this.z);
   }
 
+  /**
+   * Checks orthogonality of this {@link Vector}.
+   *
+   * @param vector to check with.
+   * @return true, if both {@link Vector}s are right-angled towards each other.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
+  public boolean isOrthogonalTo(final Vector vector) {
+    return scalarProduct(vector) == 0;
+  }
+
   public final int xInt() {
     return (int) this.x();
   }
@@ -153,6 +217,15 @@ public class Vector {
 
   public final int zInt() {
     return (int) this.z();
+  }
+
+  @Override
+  public String toString() {
+    return "Vector[" +
+      "x=" + this.x +
+      "; y=" + this.y +
+      "; z=" + this.z +
+      ']';
   }
 
   //static
