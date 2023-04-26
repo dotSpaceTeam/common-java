@@ -1,6 +1,7 @@
 package dev.dotspace.common.math;
 
 
+import dev.dotspace.common.annotation.JUnitVerification;
 import dev.dotspace.common.annotation.LibraryInformation;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -56,6 +57,7 @@ public class Vector {
    * @param vector to add.
    * @return new Vector instance.
    */
+  @JUnitVerification
   public @NotNull Vector add(@NotNull final Vector vector) {
     return this.add(vector.x(), vector.y(), vector.z());
   }
@@ -79,6 +81,7 @@ public class Vector {
    * @param vector to subtract.
    * @return new Vector instance.
    */
+  @JUnitVerification
   public @NotNull Vector subtract(@NotNull final Vector vector) {
     return this.subtract(vector.x(), vector.y(), vector.z());
   }
@@ -112,6 +115,7 @@ public class Vector {
    * @param vector to divide.
    * @return new Vector instance.
    */
+  @JUnitVerification
   public @NotNull Vector divide(@NotNull final Vector vector) {
     return new Vector(this.x / vector.x(), this.y / vector.y(), this.z / vector.z());
   }
@@ -122,6 +126,7 @@ public class Vector {
    * @param multiply double value to multiply this vector with.
    * @return new Vector instance with changed multiplier.
    */
+  @JUnitVerification
   public @NotNull Vector multiply(final double multiply) {
     return new Vector(this.x * multiply, this.y * multiply, this.z * multiply);
   }
@@ -132,6 +137,7 @@ public class Vector {
    * @param multiply int value to multiply this vector with.
    * @return new Vector instance with changed multiplier.
    */
+  @JUnitVerification
   public @NotNull Vector multiply(final int multiply) {
     return this.multiply((double) multiply);
   }
@@ -142,6 +148,7 @@ public class Vector {
    * @param vector to perform multiplication.
    * @return computed scalar product.
    */
+  @JUnitVerification
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
   public double scalarProduct(final Vector vector) {
     return (this.x * vector.x) + (this.y * vector.y) + (this.z * vector.z);
@@ -153,6 +160,7 @@ public class Vector {
    * @param vector to perform calculation with.
    * @return new Vector instance, perpendicular to both input {@link Vector}s.
    */
+  @JUnitVerification
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
   public Vector crossProduct(final Vector vector) {
     return new Vector(
@@ -183,6 +191,7 @@ public class Vector {
    *
    * @return the value as double.
    */
+  @JUnitVerification
   public double length() {
     return Math.sqrt(lengthSquared());
   }
@@ -202,6 +211,7 @@ public class Vector {
    * @param vector to check with.
    * @return true, if both {@link Vector}s are right-angled towards each other.
    */
+  @JUnitVerification
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
   public boolean isOrthogonalTo(final Vector vector) {
     return scalarProduct(vector) == 0;
