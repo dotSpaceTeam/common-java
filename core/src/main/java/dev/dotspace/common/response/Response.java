@@ -37,6 +37,22 @@ public interface Response<TYPE> extends Future<TYPE> {
   @Nullable TYPE get() throws InterruptedException;
 
   /**
+   * Waits for the response. Interrupts the thread in which this method is executed until the response or an error.
+   *
+   * @return if available the response otherwise null. (Similar to {@link Response#get()})
+   * @throws Throwable this exception could also be the InterruptedException from the {@link Response#get()}.
+   */
+  @Nullable TYPE block() throws Throwable;
+
+  /**
+   * Waits for the response. Interrupts the thread in which this method is executed until the response or an error.
+   *
+   * @return if available the response otherwise null. Wrapped in {@link Optional}.
+   * @throws Throwable this exception could also be the InterruptedException from the {@link Response#get()}.
+   */
+  @NotNull Optional<TYPE> blockOptional() throws Throwable;
+
+  /**
    * Get content of method {@link Response#get()} as {@link Optional} object.
    * Similar to {@link Response#get()}.
    *

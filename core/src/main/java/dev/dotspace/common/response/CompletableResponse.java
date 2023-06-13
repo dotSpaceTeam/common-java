@@ -117,6 +117,35 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * See {@link Response#block()}.
+   */
+  @Override
+  public @Nullable TYPE block() throws Throwable {
+    /*
+     * Get content and hold thread until content.
+     */
+    @Nullable final TYPE content = this.get();
+    final Throwable throwable = this.throwable;
+
+    /*
+     * Throw exception.
+     */
+    if (throwable != null) {
+      throw throwable;
+    }
+
+    return content;
+  }
+
+  /**
+   * See {@link Response#blockOptional()}.
+   */
+  @Override
+  public @NotNull Optional<TYPE> blockOptional() throws Throwable {
+    return Optional.ofNullable(this.block());
+  }
+
+  /**
    * @see Response#getOptional()
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
