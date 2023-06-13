@@ -4,6 +4,8 @@ import dev.dotspace.common.annotation.LibraryInformation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -16,7 +18,7 @@ import java.util.function.Supplier;
  * @param <TYPE> type to be processed by the response.
  */
 @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-public interface Response<TYPE> {
+public interface Response<TYPE> extends Future<TYPE> {
   /**
    * Creates a new uncompleted {@link Response} with the same type.
    *
@@ -33,6 +35,16 @@ public interface Response<TYPE> {
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Nullable TYPE get() throws InterruptedException;
+
+  /**
+   * Get content of method {@link Response#get()} as {@link Optional} object.
+   * Similar to {@link Response#get()}.
+   *
+   * @return if available the response otherwise null.
+   * @throws InterruptedException if the process is interrupted.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
+  @NotNull Optional<TYPE> getOptional() throws InterruptedException;
 
   /**
    * Wait a specified time for a response. Suspends the thread in which this method is executed until the response,

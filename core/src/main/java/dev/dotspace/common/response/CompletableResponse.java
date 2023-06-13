@@ -10,8 +10,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -71,12 +73,56 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
+   * Cancel a response, implementation for {@link Future#cancel(boolean)}.
+   *
+   * @param mayInterruptIfRunning no function within this implementation.
+   * @return response of {@link Response#cancel()}.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
+  @Override
+  public boolean cancel(boolean mayInterruptIfRunning) {
+    return this.cancel();
+  }
+
+
+  /**
+   * implementation for {@link Future#isCancelled()}.
+   *
+   * @return value of {@link Response#canceled()}.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
+  @Override
+  public boolean isCancelled() {
+    return this.canceled();
+  }
+
+  /**
+   * Implementation for {@link Future#isDone()}.
+   *
+   * @return value of {@link Response#done()}
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
+  @Override
+  public boolean isDone() {
+    return this.done();
+  }
+
+  /**
    * @see Response#get()
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Override
   public @Nullable TYPE get() throws InterruptedException {
     return this.getImplementation(-1);
+  }
+
+  /**
+   * @see Response#getOptional()
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
+  @Override
+  public @NotNull Optional<TYPE> getOptional() throws InterruptedException {
+    return Optional.ofNullable(this.get());
   }
 
   /**
