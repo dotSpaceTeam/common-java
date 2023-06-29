@@ -5,6 +5,7 @@ import dev.dotspace.common.SpaceObjects;
 import dev.dotspace.common.SpaceThrowable;
 import dev.dotspace.common.annotation.LibraryInformation;
 import dev.dotspace.common.exception.MismatchException;
+import dev.dotspace.common.function.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -197,11 +198,11 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @see Response#getNow(Supplier)
+   * @see Response#getNow(dev.dotspace.common.function.ThrowableSupplier)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public synchronized @Nullable TYPE getNow(@Nullable Supplier<TYPE> alternativeValue) {
+  public synchronized @Nullable TYPE getNow(@Nullable ThrowableSupplier<TYPE> alternativeValue) throws Throwable {
     if (this.response != null) { //Response is completed.
       return this.response; //Response.
     }
@@ -244,11 +245,11 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @see Response#completeAsync(Supplier)
+   * @see Response#completeAsync(ThrowableSupplier)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull CompletableResponse<TYPE> completeAsync(@Nullable Supplier<TYPE> typeSupplier) {
+  public @NotNull CompletableResponse<TYPE> completeAsync(@Nullable ThrowableSupplier<TYPE> typeSupplier) {
     this.executorService.execute(() -> {
       try {
         this.completeImplementation(SpaceObjects.throwIfNull(typeSupplier).get());
@@ -270,16 +271,16 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @see Response#completeExceptionallyAsync(Supplier)
+   * @see Response#completeExceptionallyAsync(ThrowableSupplier)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull CompletableResponse<TYPE> completeExceptionallyAsync(@Nullable Supplier<Throwable> throwableSupplier) {
+  public @NotNull CompletableResponse<TYPE> completeExceptionallyAsync(@Nullable ThrowableSupplier<Throwable> throwableSupplier) {
     this.executorService.execute(() -> {
       try {
         this.completeExceptionallyImplementation(SpaceObjects.throwIfNull(throwableSupplier).get());
-      } catch (final NullPointerException nullPointerException) {
-        this.completeExceptionally(nullPointerException);
+      } catch (final Throwable throwable) {
+        this.completeExceptionally(throwable);
       }
     });
     return this;
@@ -364,41 +365,41 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @see Response#run(Runnable)
+   * @see Response#run(dev.dotspace.common.function.ThrowableRunnable)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull Response<TYPE> run(@Nullable Runnable runnable) {
+  public @NotNull Response<TYPE> run(@Nullable ThrowableRunnable runnable) {
     this.runImplementation(runnable, false); //Run implementation.
     return this;
   }
 
   /**
-   * @see Response#runAsync(Runnable)
+   * @see Response#runAsync(ThrowableRunnable)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull Response<TYPE> runAsync(@Nullable Runnable runnable) {
+  public @NotNull Response<TYPE> runAsync(@Nullable ThrowableRunnable runnable) {
     this.runImplementation(runnable, true); //Run implementation.
     return this;
   }
 
   /**
-   * Implementation to execute {@link Runnable} if completed.
+   * Implementation to execute {@link ThrowableRunnable} if completed.
    * <br>
    * Implementation used by:
    * <dl>
    *   <dt>Execute in main thread:</dt>
-   *   <dd>{@link CompletableResponse#run(Runnable)}</dd>
+   *   <dd>{@link CompletableResponse#run(ThrowableRunnable)}</dd>
    *   <dt>Execute in a new thread:</dt>
-   *   <dd>{@link CompletableResponse#runAsync(Runnable)}</dd>
+   *   <dd>{@link CompletableResponse#runAsync(ThrowableRunnable)}</dd>
    * </dl>
    *
    * @param runnable to be executed if {@link Response} is completed.
    * @param async    true, if the runnable is to be executed asynchronously.
    */
-  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
-  private void runImplementation(@Nullable final Runnable runnable,
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6", updated = "1.0.8")
+  private void runImplementation(@Nullable final ThrowableRunnable runnable,
                                  final boolean async) {
     if (runnable == null) {
       return; //Return, runnable is null means there is no function to run.
@@ -415,21 +416,21 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @see Response#ifPresent(Consumer)
+   * @see Response#ifPresent(dev.dotspace.common.function.ThrowableConsumer)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull CompletableResponse<TYPE> ifPresent(@Nullable Consumer<@NotNull TYPE> consumer) {
+  public @NotNull CompletableResponse<TYPE> ifPresent(@Nullable ThrowableConsumer<@NotNull TYPE> consumer) {
     this.ifPresentImplementation(consumer, false); //Run implementation.
     return this;
   }
 
   /**
-   * @see Response#ifPresentAsync(Consumer)
+   * @see Response#ifPresentAsync(ThrowableConsumer)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull CompletableResponse<TYPE> ifPresentAsync(@Nullable Consumer<@NotNull TYPE> consumer) {
+  public @NotNull CompletableResponse<TYPE> ifPresentAsync(@Nullable ThrowableConsumer<@NotNull TYPE> consumer) {
     this.ifPresentImplementation(consumer, true); //Run implementation.
     return this;
   }
@@ -439,16 +440,16 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * <dl>
    *   <dt>Execute in main thread:</dt>
-   *   <dd>{@link CompletableResponse#ifPresent(Consumer)}</dd>
+   *   <dd>{@link CompletableResponse#ifPresent(ThrowableConsumer)}</dd>
    *   <dt>Execute in a new thread:</dt>
-   *   <dd>{@link CompletableResponse#ifPresentAsync(Consumer)}</dd>
+   *   <dd>{@link CompletableResponse#ifPresentAsync(ThrowableConsumer)}</dd>
    * </dl>
    *
    * @param consumer to inform if response is completed {@link State#COMPLETED_DEFAULT} with present object.
    * @param async    true, if the runnable is to be executed asynchronously.
    */
-  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
-  private void ifPresentImplementation(@Nullable final Consumer<@NotNull TYPE> consumer,
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6", updated = "1.0.8")
+  private void ifPresentImplementation(@Nullable final ThrowableConsumer<@NotNull TYPE> consumer,
                                        final boolean async) {
     if (consumer == null) { //If no consumer given, nothing left to do here.
       return;
@@ -470,25 +471,25 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @see Response#map(Function)
+   * @see Response#map(ThrowableFunction)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull <MAP> CompletableResponse<MAP> map(@Nullable Function<TYPE, MAP> function) {
+  public @NotNull <MAP> CompletableResponse<MAP> map(@Nullable ThrowableFunction<TYPE, MAP> function) {
     return this.mapImplementation(function, false);
   }
 
   /**
-   * @see Response#mapAsync(Function)
+   * @see Response#mapAsync(ThrowableFunction)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull <MAP> CompletableResponse<MAP> mapAsync(@Nullable Function<TYPE, MAP> function) {
+  public @NotNull <MAP> CompletableResponse<MAP> mapAsync(@Nullable ThrowableFunction<TYPE, MAP> function) {
     return this.mapImplementation(function, true);
   }
 
   /**
-   * Implementation to map response to another. {@link Function} will be executed if response was completed with value.
+   * Implementation to map response to another. {@link ThrowableFunction} will be executed if response was completed with value.
    * Otherwise, given function will be ignored.
    *
    * <br>
@@ -496,9 +497,9 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * <br>
    * <dl>
    *   <dt>Execute in main thread:</dt>
-   *   <dd>{@link CompletableResponse#map(Function)}</dd>
+   *   <dd>{@link CompletableResponse#map(ThrowableFunction)}</dd>
    *   <dt>Execute in a new thread:</dt>
-   *   <dd>{@link CompletableResponse#mapAsync(Function)}</dd>
+   *   <dd>{@link CompletableResponse#mapAsync(ThrowableFunction)}</dd>
    * </dl>
    *
    * @param function to use to map response with.
@@ -506,8 +507,8 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param <MAP>    type of object to map response to.
    * @return new instance of {@link CompletableResponse} with mapped response of current instance.
    */
-  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
-  private <MAP> CompletableResponse<MAP> mapImplementation(@Nullable final Function<TYPE, MAP> function,
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6", updated = "1.0.8")
+  private <MAP> CompletableResponse<MAP> mapImplementation(@Nullable final ThrowableFunction<TYPE, MAP> function,
                                                            final boolean async) {
     final CompletableResponse<MAP> completableResponse = new CompletableResponse<>();
     this.implementExecutor(new ResponseFunctionExecutor<>(
@@ -523,20 +524,20 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @see Response#filter(Predicate)
+   * @see Response#filter(ThrowablePredicate)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull Response<TYPE> filter(@Nullable Predicate<TYPE> typePredicate) {
+  public @NotNull Response<TYPE> filter(@Nullable ThrowablePredicate<TYPE> typePredicate) {
     return this.filterImplementation(typePredicate, false);
   }
 
   /**
-   * @see Response#filterAsync(Predicate)
+   * @see Response#filterAsync(ThrowablePredicate)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull Response<TYPE> filterAsync(@Nullable Predicate<TYPE> typePredicate) {
+  public @NotNull Response<TYPE> filterAsync(@Nullable ThrowablePredicate<TYPE> typePredicate) {
     return this.filterImplementation(typePredicate, true);
   }
 
@@ -548,17 +549,17 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * <br>
    * <dl>
    *   <dt>Execute in main thread:</dt>
-   *   <dd>{@link CompletableResponse#filter(Predicate)}</dd>
+   *   <dd>{@link CompletableResponse#filter(ThrowablePredicate)}</dd>
    *   <dt>Execute in a new thread:</dt>
-   *   <dd>{@link CompletableResponse#filterAsync(Predicate)}</dd>
+   *   <dd>{@link CompletableResponse#filterAsync(ThrowablePredicate)}</dd>
    * </dl>
    *
    * @param typePredicate to filter response if present.
    * @param async         true, if the runnable is to be executed asynchronously.
    * @return new instance of {@link CompletableResponse} with filtered response of current instance.
    */
-  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
-  private @NotNull CompletableResponse<TYPE> filterImplementation(@Nullable final Predicate<TYPE> typePredicate,
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6", updated = "1.0.8")
+  private @NotNull CompletableResponse<TYPE> filterImplementation(@Nullable final ThrowablePredicate<TYPE> typePredicate,
                                                                   final boolean async) {
     final CompletableResponse<TYPE> completableResponse = new CompletableResponse<>();
     this.implementExecutor(new ResponseFunctionExecutor<>(
@@ -575,43 +576,43 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @see Response#ifAbsent(Runnable)
+   * @see Response#ifAbsent(ThrowableRunnable)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull CompletableResponse<TYPE> ifAbsent(@Nullable Runnable runnable) {
+  public @NotNull CompletableResponse<TYPE> ifAbsent(@Nullable ThrowableRunnable runnable) {
     this.ifAbsentImplementation(runnable, false);
     return this;
   }
 
   /**
-   * @see Response#ifAbsentAsync(Runnable)
+   * @see Response#ifAbsentAsync(ThrowableRunnable)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull CompletableResponse<TYPE> ifAbsentAsync(@Nullable Runnable runnable) {
+  public @NotNull CompletableResponse<TYPE> ifAbsentAsync(@Nullable ThrowableRunnable runnable) {
     this.ifAbsentImplementation(runnable, true);
     return this;
   }
 
   /**
-   * Implementation to execute {@link Runnable} if response completed with null.
+   * Implementation to execute {@link ThrowableRunnable} if response completed with null.
    *
    * <br>
    * Condition: {@link CompletableResponse#state}: {@link State#COMPLETED_NULL}
    * <br>
    * <dl>
    *   <dt>Execute in main thread:</dt>
-   *   <dd>{@link CompletableResponse#ifAbsent(Runnable)}</dd>
+   *   <dd>{@link CompletableResponse#ifAbsent(ThrowableRunnable)}</dd>
    *   <dt>Execute in a new thread:</dt>
-   *   <dd>{@link CompletableResponse#ifAbsentAsync(Runnable)}</dd>
+   *   <dd>{@link CompletableResponse#ifAbsentAsync(ThrowableRunnable)}</dd>
    * </dl>
    *
    * @param runnable to run if response completed without an error and {@link CompletableResponse#response} null.
    * @param async    true, if the runnable is to be executed asynchronously.
    */
-  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
-  private void ifAbsentImplementation(@Nullable final Runnable runnable,
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6", updated = "1.0.8")
+  private void ifAbsentImplementation(@Nullable final ThrowableRunnable runnable,
                                       final boolean async) {
     if (runnable == null) {//If no runnable given, nothing left to do here.
       return;
@@ -633,11 +634,11 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * Condition for supplier: {@link CompletableResponse#state}: {@link State#COMPLETED_NULL}
    * <br>
    *
-   * @see Response#useIfAbsent(Supplier)
+   * @see Response#useIfAbsent(ThrowableSupplier)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull CompletableResponse<TYPE> useIfAbsent(@Nullable Supplier<TYPE> typeSupplier) {
+  public @NotNull CompletableResponse<TYPE> useIfAbsent(@Nullable ThrowableSupplier<TYPE> typeSupplier) {
     return this.useImplementation(typeSupplier, () -> this.state == State.COMPLETED_NULL, false);
   }
 
@@ -646,11 +647,11 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * Condition for supplier: {@link CompletableResponse#state}: {@link State#COMPLETED_NULL}
    * <br>
    *
-   * @see Response#useIfAbsentAsync(Supplier)
+   * @see Response#useIfAbsentAsync(ThrowableSupplier)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull CompletableResponse<TYPE> useIfAbsentAsync(@Nullable Supplier<TYPE> typeSupplier) {
+  public @NotNull CompletableResponse<TYPE> useIfAbsentAsync(@Nullable ThrowableSupplier<TYPE> typeSupplier) {
     return this.useImplementation(typeSupplier, () -> this.state == State.COMPLETED_NULL, true);
   }
 
@@ -659,11 +660,11 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * Condition for supplier: {@link CompletableResponse#state}: {@link State#COMPLETED_EXCEPTIONALLY}
    * <br>
    *
-   * @see Response#useIfExceptionally(Supplier)
+   * @see Response#useIfExceptionally(ThrowableSupplier)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull CompletableResponse<TYPE> useIfExceptionally(@Nullable Supplier<TYPE> typeSupplier) {
+  public @NotNull CompletableResponse<TYPE> useIfExceptionally(@Nullable ThrowableSupplier<TYPE> typeSupplier) {
     return this.useImplementation(typeSupplier, () -> this.state == State.COMPLETED_EXCEPTIONALLY, false);
   }
 
@@ -672,11 +673,11 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * Condition for supplier: {@link CompletableResponse#state}: {@link State#COMPLETED_EXCEPTIONALLY}
    * <br>
    *
-   * @see Response#useIfExceptionallyAsync(Supplier)
+   * @see Response#useIfExceptionallyAsync(ThrowableSupplier)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull CompletableResponse<TYPE> useIfExceptionallyAsync(@Nullable Supplier<TYPE> typeSupplier) {
+  public @NotNull CompletableResponse<TYPE> useIfExceptionallyAsync(@Nullable ThrowableSupplier<TYPE> typeSupplier) {
     return this.useImplementation(typeSupplier, () -> this.state == State.COMPLETED_EXCEPTIONALLY, true);
   }
 
@@ -685,11 +686,11 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * Condition for supplier: {@link CompletableResponse#state}: {@link State#COMPLETED_NULL} or {@link State#COMPLETED_EXCEPTIONALLY}
    * <br>
    *
-   * @see Response#elseUse(Supplier)
+   * @see Response#elseUse(ThrowableSupplier)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull CompletableResponse<TYPE> elseUse(@Nullable Supplier<TYPE> typeSupplier) {
+  public @NotNull CompletableResponse<TYPE> elseUse(@Nullable ThrowableSupplier<TYPE> typeSupplier) {
     return this.useImplementation(
       typeSupplier,
       () -> this.state == State.COMPLETED_NULL || this.state == State.COMPLETED_EXCEPTIONALLY,
@@ -701,11 +702,11 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * Condition for supplier: {@link CompletableResponse#state}: {@link State#COMPLETED_NULL} or {@link State#COMPLETED_EXCEPTIONALLY}
    * <br>
    *
-   * @see Response#elseUseAsync(Supplier)
+   * @see Response#elseUseAsync(ThrowableSupplier)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull CompletableResponse<TYPE> elseUseAsync(@Nullable Supplier<TYPE> typeSupplier) {
+  public @NotNull CompletableResponse<TYPE> elseUseAsync(@Nullable ThrowableSupplier<TYPE> typeSupplier) {
     return this.useImplementation(
       typeSupplier,
       () -> this.state == State.COMPLETED_NULL || this.state == State.COMPLETED_EXCEPTIONALLY,
@@ -718,13 +719,13 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * <br>
    * <dl>
    *   <dt>Execute in main thread:</dt>
-   *   <dd>{@link CompletableResponse#useIfAbsent(Supplier)}</dd>
-   *   <dd>{@link CompletableResponse#useIfExceptionally(Supplier)}</dd>
-   *   <dd>{@link CompletableResponse#elseUse(Supplier)}</dd>
+   *   <dd>{@link CompletableResponse#useIfAbsent(ThrowableSupplier)}</dd>
+   *   <dd>{@link CompletableResponse#useIfExceptionally(ThrowableSupplier)}</dd>
+   *   <dd>{@link CompletableResponse#elseUse(ThrowableSupplier)}</dd>
    *   <dt>Execute in a new thread:</dt>
-   *   <dd>{@link CompletableResponse#useIfAbsentAsync(Supplier)}</dd>
-   *   <dd>{@link CompletableResponse#useIfExceptionallyAsync(Supplier)}</dd>
-   *   <dd>{@link CompletableResponse#elseUseAsync(Supplier)}</dd>
+   *   <dd>{@link CompletableResponse#useIfAbsentAsync(ThrowableSupplier)}</dd>
+   *   <dd>{@link CompletableResponse#useIfExceptionallyAsync(ThrowableSupplier)}</dd>
+   *   <dd>{@link CompletableResponse#elseUseAsync(ThrowableSupplier)}</dd>
    * </dl>
    *
    * @param typeSupplier      to get alternative response from.
@@ -732,8 +733,8 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    * @param async             true, if the runnable is to be executed asynchronously.
    * @return new instance of {@link CompletableResponse} with alternative response of current instance.
    */
-  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
-  private @NotNull CompletableResponse<TYPE> useImplementation(@Nullable final Supplier<TYPE> typeSupplier,
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6", updated = "1.0.8")
+  private @NotNull CompletableResponse<TYPE> useImplementation(@Nullable final ThrowableSupplier<TYPE> typeSupplier,
                                                                @NotNull final Supplier<Boolean> checkIfExecutable,
                                                                final boolean async) {
     final CompletableResponse<TYPE> completableResponse = new CompletableResponse<>();
@@ -754,43 +755,43 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   }
 
   /**
-   * @see Response#ifExceptionally(Consumer)
+   * @see Response#ifExceptionally(ThrowableConsumer)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull CompletableResponse<TYPE> ifExceptionally(@Nullable Consumer<@Nullable Throwable> consumer) {
+  public @NotNull CompletableResponse<TYPE> ifExceptionally(@Nullable ThrowableConsumer<@Nullable Throwable> consumer) {
     this.ifExceptionallyImplementation(consumer, false);
     return this;
   }
 
   /**
-   * @see Response#ifExceptionallyAsync(Consumer)
+   * @see Response#ifExceptionallyAsync(ThrowableConsumer)
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
-  public @NotNull CompletableResponse<TYPE> ifExceptionallyAsync(@Nullable Consumer<@Nullable Throwable> consumer) {
+  public @NotNull CompletableResponse<TYPE> ifExceptionallyAsync(@Nullable ThrowableConsumer<@Nullable Throwable> consumer) {
     this.ifExceptionallyImplementation(consumer, true);
     return this;
   }
 
   /**
-   * Implementation for exceptionally consumers. Given {@link Consumer} accept the given throwable of this response.
+   * Implementation for exceptionally consumers. Given {@link ThrowableConsumer} accept the given throwable of this response.
    * Value of {@link CompletableResponse#throwable} could also be null.
    * <br>
    * Condition: {@link CompletableResponse#state}: {@link State#COMPLETED_EXCEPTIONALLY}
    * <br>
    * <dl>
    *   <dt>Execute in main thread:</dt>
-   *   <dd>{@link CompletableResponse#ifExceptionally(Consumer)}</dd>
+   *   <dd>{@link CompletableResponse#ifExceptionally(ThrowableConsumer)}</dd>
    *   <dt>Execute in a new thread:</dt>
-   *   <dd>{@link CompletableResponse#ifExceptionallyAsync(Consumer)}</dd>
+   *   <dd>{@link CompletableResponse#ifExceptionallyAsync(ThrowableConsumer)}</dd>
    * </dl>
    *
    * @param consumer to accept the throwable of the response.
    * @param async    true, if the runnable is to be executed asynchronously.
    */
-  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
-  private void ifExceptionallyImplementation(@Nullable final Consumer<@Nullable Throwable> consumer,
+  @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6", updated = "1.0.8")
+  private void ifExceptionallyImplementation(@Nullable final ThrowableConsumer<@Nullable Throwable> consumer,
                                              final boolean async) {
     if (consumer == null) { //Return and ignore consumer if null.
       return;
@@ -964,6 +965,19 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   public static @NotNull <TYPE> CompletableResponse<TYPE> exceptionally(@Nullable final Throwable throwable) {
     return new CompletableResponse<TYPE>().completeExceptionally(throwable);
+  }
+
+  /**
+   * Create response and complete asynchronous.
+   *
+   * @param typeSupplier to complete asynchronous.
+   * @param <TYPE>       type to use for response.
+   * @return new instance of {@link CompletableResponse}.
+   * @throws NullPointerException if typeSupplier is null.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  public static <TYPE> @NotNull CompletableResponse<TYPE> completedAsync(@Nullable ThrowableSupplier<TYPE> typeSupplier) {
+    return new CompletableResponse<TYPE>().completeAsync(typeSupplier);
   }
 
   /**

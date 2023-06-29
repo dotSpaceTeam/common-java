@@ -17,6 +17,8 @@ module dev.dotspace.common {
   //Lists: Pagination
   exports dev.dotspace.common.list;
 
+  exports dev.dotspace.common.function;
+
   //Math
   exports dev.dotspace.common.math;
 
