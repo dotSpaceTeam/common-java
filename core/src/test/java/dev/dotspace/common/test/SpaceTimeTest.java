@@ -1,7 +1,6 @@
 package dev.dotspace.common.test;
 
 import dev.dotspace.common.SpaceTime;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -19,12 +18,14 @@ public class SpaceTimeTest {
   }
 
   @Test
-  @SneakyThrows
   public void testTimeStamp() {
     final SpaceTime.Timestamp timestamp = SpaceTime.timestampNow();
 
-    Assertions.assertTrue( timestamp.pastTime() < 1000000); //Time in nanoseconds.
-    Thread.sleep(2000L);
+    Assertions.assertTrue(timestamp.pastTime() < 1000000); //Time in nanoseconds.
+    try {
+      Thread.sleep(2000L);
+    } catch (final InterruptedException ignore) {
+    }
     Assertions.assertNotEquals(0L, timestamp.pastTime());
     Assertions.assertTrue(timestamp.pastTime() > 1000);
     Assertions.assertTrue(timestamp.pastTimeFormatted(TimeUnit.SECONDS) > 1);
