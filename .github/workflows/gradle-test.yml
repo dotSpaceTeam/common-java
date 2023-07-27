@@ -6,12 +6,9 @@ name: CI Build and Test
 on:
   push:
     branches-ignore: [ "main", "master" ]
- 
+
 jobs:
   build:
-
-    runs-on: self-hosted
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 17
