@@ -359,6 +359,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
         try { //Catch possible errors from runnable.
           responseConsumer.accept(this.state, this.response, this.throwable);
         } catch (final Throwable throwable) {
+          //Error while sniff
           throwable.printStackTrace(); //Print errors.
         }
       }, async));
