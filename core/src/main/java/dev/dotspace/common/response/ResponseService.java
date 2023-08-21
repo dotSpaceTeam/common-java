@@ -1,9 +1,9 @@
 package dev.dotspace.common.response;
 
-import dev.dotspace.common.SpaceObjects;
 import dev.dotspace.common.annotation.LibraryInformation;
 import dev.dotspace.common.function.ThrowableConsumer;
 import dev.dotspace.common.service.Service;
+import lombok.Builder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
  * Optional class to use and build unified response instances. Can be ideally used for unified error handling.
  */
 @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
+@Builder
 public final class ResponseService implements Service {
   /**
    *
@@ -38,28 +39,5 @@ public final class ResponseService implements Service {
     }
 
     return response;
-  }
-
-  //Static builder
-
-  /**
-   * Create service with no function handling.
-   *
-   * @return created instance of service.
-   */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
-  public static @NotNull ResponseService simple() {
-    return new ResponseService(null);
-  }
-
-  /**
-   * Create handeled service.
-   *
-   * @param exceptionConsumer set as {@link ResponseService#exceptionConsumer}.
-   * @return created instance of service.
-   */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
-  public static @NotNull ResponseService handled(@Nullable final ThrowableConsumer<Throwable> exceptionConsumer) {
-    return new ResponseService(exceptionConsumer);
   }
 }
