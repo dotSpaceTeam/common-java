@@ -252,8 +252,8 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   public @NotNull CompletableResponse<TYPE> completeAsync(@Nullable ThrowableSupplier<TYPE> typeSupplier) {
     this.executorService.execute(() -> {
       try {
-        this.completeImplementation(SpaceObjects.throwIfNull(typeSupplier).get());
-      } catch (final Throwable throwable) {
+        this.completeImplementation(SpaceObjects.throwIfNull(typeSupplier).get()); //Default completion without error.
+      } catch (final Throwable throwable) { //Otherwise handle error.
         this.completeExceptionallyImplementation(throwable); //Error was thrown in typeSupplier or the given type supplier is null.
       }
     });
