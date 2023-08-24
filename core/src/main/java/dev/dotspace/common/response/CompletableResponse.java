@@ -17,15 +17,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused") //Some methods are meant to be for the library -> Suppress idea warnings.
 @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, since = "1.0.6")
 public final class CompletableResponse<TYPE> implements Response<TYPE> {
-  private final @NotNull ExecutorService executorService;
+  /**
+   * ExecutorService for async response functions.
+   */
+  private final static @NotNull ExecutorService SERVICE = Executors.newCachedThreadPool();
   /**
    * State of this instance.
    */
@@ -59,7 +60,6 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   private CompletableResponse(@NotNull final State state) {
-    this.executorService = Executors.newCachedThreadPool();
     this.state = state;
     this.responseFunctions = new ResponseFunction[0];
   }
@@ -250,7 +250,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
   public @NotNull CompletableResponse<TYPE> completeAsync(@Nullable ThrowableSupplier<TYPE> typeSupplier) {
-    this.executorService.execute(() -> {
+    this.execute(() -> {
       try {
         this.completeImplementation(SpaceObjects.throwIfNull(typeSupplier).get()); //Default completion without error.
       } catch (final Throwable throwable) { //Otherwise handle error.
@@ -276,7 +276,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   @Override
   public @NotNull CompletableResponse<TYPE> completeExceptionallyAsync(@Nullable ThrowableSupplier<Throwable> throwableSupplier) {
-    this.executorService.execute(() -> {
+    this.execute(() -> {
       try {
         this.completeExceptionallyImplementation(SpaceObjects.throwIfNull(throwableSupplier).get());
       } catch (final Throwable throwable) {
@@ -309,7 +309,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
     this.state = state;
 
     for (final ResponseFunction<?> executor : this.responseFunctions) {
-      executor.run(this.executorService);
+      executor.run(this.service());
     }
   }
 
@@ -844,10 +844,20 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   @LibraryInformation(state = LibraryInformation.State.WORK_IN_PROGRESS, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private synchronized void implementExecutor(@NotNull final ResponseFunction<?> responseFunction) {
     if (this.done()) { //Directly run executor if already finished.
-      responseFunction.run(this.executorService);
+      responseFunction.run(this.service());
     } else { //Add to run later if response is completed.
       this.responseFunctions = SpaceArrays.push(this.responseFunctions, responseFunction);
     }
+  }
+
+  /**
+   * Get service of class.
+   *
+   * @return instance of service for this class.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, access = LibraryInformation.Access.INTERNAL, since = "1.0.8")
+  private @NotNull ExecutorService service() {
+    return SERVICE;
   }
 
   /**
@@ -857,7 +867,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
   private void execute(@NotNull final Runnable runnable) {
-    this.executorService.execute(runnable);
+    this.service().execute(runnable);
   }
 
   /*
@@ -1264,7 +1274,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
 
     collectImplementation(responseArray)
       .ifPresentAsync(results -> { //Execute if present.
-        if (results.length == 0) { //Return if empty
+        if (results == null || results.length == 0) { //Return if empty
           completableResponse.completeExceptionally(new MismatchException("No response."));
           return;
         }
