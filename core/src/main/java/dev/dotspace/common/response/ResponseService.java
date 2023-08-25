@@ -50,8 +50,26 @@ public final class ResponseService implements Service {
     this.exceptionConsumer = exceptionConsumer;
   }
 
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
+  /**
+   * Create without generic key.
+   *
+   * @param <TYPE> generic type of response. If not given -> {@link Object}.
+   * @return new instance of response.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.9")
   public <TYPE> @NotNull Response<TYPE> newInstance() {
+    return this.newInstance(null);
+  }
+
+  /**
+   * Create with generic key.
+   *
+   * @param typeClass class to create generic response from.
+   * @param <TYPE>    generic type of response. If null -> {@link Object}.
+   * @return new instance of response.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8", updated = "1.0.9")
+  public <TYPE> @NotNull Response<TYPE> newInstance(@Nullable final Class<TYPE> typeClass) {
     //Create new uncompleted response.
     final CompletableResponse<TYPE> response = new CompletableResponse<>(this.executorService);
 
@@ -71,7 +89,7 @@ public final class ResponseService implements Service {
     }
 
     //Check if local complete is present
-    if(localCompleteConsumer != null) {
+    if (localCompleteConsumer != null) {
       response.run(() -> localCompleteConsumer.accept(response));
     }
 
