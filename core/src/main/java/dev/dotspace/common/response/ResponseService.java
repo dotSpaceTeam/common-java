@@ -2,6 +2,7 @@ package dev.dotspace.common.response;
 
 import dev.dotspace.common.annotation.LibraryInformation;
 import dev.dotspace.common.function.ThrowableConsumer;
+import dev.dotspace.common.function.ThrowableSupplier;
 import dev.dotspace.common.service.Service;
 import lombok.Builder;
 import org.jetbrains.annotations.NotNull;
@@ -73,6 +74,30 @@ public final class ResponseService implements Service {
     //Create new uncompleted response.
     final CompletableResponse<TYPE> response = new CompletableResponse<>(this.executorService);
 
+    //Invoke service content.
+    this.invoke(response);
+
+    return response;
+  }
+
+  /**
+   * Create new instance and complete with supplier.
+   *
+   * @param supplier to complete async. See {@link Response#completeAsync(ThrowableSupplier)}.
+   * @param <TYPE>   generic type of response.
+   * @return response.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.9")
+  public <TYPE> @NotNull Response<TYPE> response(@Nullable final ThrowableSupplier<TYPE> supplier) {
+    final Response<TYPE> response = new CompletableResponse<>(this.executorService);
+
+    //Invoke service content.
+    this.invoke(response);
+
+    return response.completeAsync(supplier);
+  }
+
+  private <TYPE> void invoke(@NotNull final Response<TYPE> reference) {
     //Store in variable for thread safe operation.
     final ThrowableConsumer<Response<?>> localCreateConsumer = this.createConsumer;
     final ThrowableConsumer<Response<?>> localCompleteConsumer = this.completeConsumer;
@@ -82,7 +107,7 @@ public final class ResponseService implements Service {
     if (localCreateConsumer != null) {
       try {
         //Accept response.
-        localCreateConsumer.accept(response);
+        localCreateConsumer.accept(reference);
       } catch (final Throwable exception) {
         throw new RuntimeException("Error while handling response create. ", exception);
       }
@@ -90,14 +115,12 @@ public final class ResponseService implements Service {
 
     //Check if local complete is present
     if (localCompleteConsumer != null) {
-      response.run(() -> localCompleteConsumer.accept(response));
+      reference.run(() -> localCompleteConsumer.accept(reference));
     }
 
     //Check if local consumer is present
     if (localExceptionConsumer != null) {
-      response.ifExceptionally(localExceptionConsumer);
+      reference.ifExceptionally(localExceptionConsumer);
     }
-
-    return response;
   }
 }
