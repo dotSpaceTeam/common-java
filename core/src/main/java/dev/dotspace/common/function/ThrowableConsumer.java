@@ -16,8 +16,9 @@ public interface ThrowableConsumer<T> {
    * Performs this operation on the given argument.
    *
    * @param t the input argument
+   * @throws Throwable if something throws error while accept.
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
-  void accept(@Nullable final T t);
+  void accept(@Nullable final T t) throws Throwable;
 
 }

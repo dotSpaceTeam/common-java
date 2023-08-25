@@ -8,8 +8,15 @@ import java.util.function.Function;
 @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
 @FunctionalInterface
 public interface ThrowableFunction<T, R> {
+  /**
+   * Function with give and get value. Similar to {@link Function#apply(Object)}.
+   *
+   * @param t to give as start value.
+   * @return to get as end value.
+   * @throws Throwable if something throws error in function.
+   */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
-  @Nullable R apply(@Nullable final T t);
+  @Nullable R apply(@Nullable final T t) throws Throwable;
 
   /**
    * Returns a function that always returns its input argument.
