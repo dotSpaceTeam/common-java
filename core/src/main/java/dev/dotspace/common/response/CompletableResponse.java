@@ -26,20 +26,31 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
   /**
    * ExecutorService for async response functions.
    */
-  private final static @NotNull ExecutorService SERVICE = Executors.newCachedThreadPool();
-  /**
-   * State of this instance.
-   */
+  private final static @NotNull ExecutorService DEFAULT_SERVICE = Executors.newCachedThreadPool();
+
+  private final @NotNull ExecutorService service;
   private volatile @NotNull State state;
   private volatile @Nullable TYPE response;
   private volatile @Nullable Throwable throwable;
   private volatile @NotNull ResponseFunction<?>[] responseFunctions;
 
+
   /**
    * Public constructor to create instance.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
   public CompletableResponse() {
-    this(State.UNCOMPLETED);
+    this(State.UNCOMPLETED, DEFAULT_SERVICE);
+  }
+
+  /**
+   * Create instance if custom executor service. If service is null using {@link CompletableResponse#DEFAULT_SERVICE}.
+   *
+   * @param service to use for thread methods.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
+  public CompletableResponse(@Nullable final ExecutorService service) {
+    this(State.UNCOMPLETED, service == null ? DEFAULT_SERVICE : service); /* Use default service if given service is null.*/
   }
 
   /**
@@ -58,9 +69,11 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    *
    * @param state to set as start {@link State}.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  private CompletableResponse(@NotNull final State state) {
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  private CompletableResponse(@NotNull final State state,
+                              @NotNull final ExecutorService service) {
     this.state = state;
+    this.service = service;
     this.responseFunctions = new ResponseFunction[0];
   }
 
@@ -857,7 +870,7 @@ public final class CompletableResponse<TYPE> implements Response<TYPE> {
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, access = LibraryInformation.Access.INTERNAL, since = "1.0.8")
   private @NotNull ExecutorService service() {
-    return SERVICE;
+    return this.service;
   }
 
   /**
