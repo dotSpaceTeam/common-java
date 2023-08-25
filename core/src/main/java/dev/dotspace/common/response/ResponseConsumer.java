@@ -26,5 +26,5 @@ public interface ResponseConsumer<TYPE> {
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   void accept(@NotNull final State state,
               @Nullable final TYPE type,
-              @Nullable final Throwable throwable);
+              @Nullable final Throwable throwable) throws Throwable;
 }

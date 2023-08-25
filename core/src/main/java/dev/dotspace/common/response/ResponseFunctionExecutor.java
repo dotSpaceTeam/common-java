@@ -14,8 +14,17 @@ import java.util.function.Supplier;
  */
 @LibraryInformation(state = LibraryInformation.State.STABLE, access = LibraryInformation.Access.INTERNAL, since = "1.0.6")
 final class ResponseFunctionExecutor<TYPE> implements ResponseFunction<TYPE> {
+  /**
+   * Supplier with execution value, if true runnable will be executed.
+   */
   private final @Nullable Supplier<Boolean> checkIfExecutable;
+  /**
+   * Runnable to execute.
+   */
   private final @NotNull Runnable runnable;
+  /**
+   * If true runnable will be executed in another thread, not main one.
+   */
   private final boolean async;
 
   /**

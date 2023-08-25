@@ -1,6 +1,7 @@
 package dev.dotspace.common;
 
 import dev.dotspace.common.annotation.LibraryInformation;
+import dev.dotspace.common.function.ThrowableSupplier;
 import dev.dotspace.common.response.CompletableResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -63,7 +64,7 @@ public final class SpaceLibrary {
    * @throws NullPointerException if typeSupplier is null.
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  public static <TYPE> @NotNull CompletableResponse<TYPE> completeResponseAsync(@Nullable Supplier<TYPE> typeSupplier) {
+  public static <TYPE> @NotNull CompletableResponse<TYPE> completeResponseAsync(@Nullable ThrowableSupplier<TYPE> typeSupplier) {
     return new CompletableResponse<TYPE>().completeAsync(typeSupplier);
   }
 }

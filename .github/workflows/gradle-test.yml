@@ -6,11 +6,11 @@ name: CI Build and Test
 on:
   push:
     branches-ignore: [ "main", "master" ]
- 
+
 jobs:
   build:
 
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2

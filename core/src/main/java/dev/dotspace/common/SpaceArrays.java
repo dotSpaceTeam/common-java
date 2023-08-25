@@ -1,5 +1,6 @@
 package dev.dotspace.common;
 
+import dev.dotspace.common.annotation.JUnitVerification;
 import dev.dotspace.common.annotation.LibraryInformation;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.common.exception.EmptyArrayException;
@@ -282,6 +283,7 @@ public final class SpaceArrays {
    * @throws NullPointerException if typeArray is null.
    */
   @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.7")
+  @JUnitVerification
   public static <TYPE> @NotNull TYPE[] push(final TYPE @Nullable [] typeArray,
                                             @Nullable final TYPE typeToPush) {
     return SpaceArrays.pushImplementation(SpaceObjects.throwIfNull(typeArray), typeToPush);

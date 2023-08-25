@@ -25,6 +25,10 @@ public final class ResponseConsumerTest {
       Assertions.assertInstanceOf(RuntimeException.class, throwable);
     };
 
-    consumer.accept(State.COMPLETED_DEFAULT, COMPONENT, new RuntimeException());
+    try {
+      consumer.accept(State.COMPLETED_DEFAULT, COMPONENT, new RuntimeException());
+    } catch (Throwable e) {
+      throw new RuntimeException(e);
+    }
   }
 }

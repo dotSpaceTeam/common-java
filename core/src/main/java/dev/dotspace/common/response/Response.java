@@ -1,9 +1,12 @@
 package dev.dotspace.common.response;
 
 import dev.dotspace.common.annotation.LibraryInformation;
+import dev.dotspace.common.function.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -16,7 +19,7 @@ import java.util.function.Supplier;
  * @param <TYPE> type to be processed by the response.
  */
 @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-public interface Response<TYPE> {
+public interface Response<TYPE> extends Future<TYPE> {
   /**
    * Creates a new uncompleted {@link Response} with the same type.
    *
@@ -33,6 +36,32 @@ public interface Response<TYPE> {
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
   @Nullable TYPE get() throws InterruptedException;
+
+  /**
+   * Waits for the response. Interrupts the thread in which this method is executed until the response or an error.
+   *
+   * @return if available the response otherwise null. (Similar to {@link Response#get()})
+   * @throws Throwable this exception could also be the InterruptedException from the {@link Response#get()}.
+   */
+  @Nullable TYPE block() throws Throwable;
+
+  /**
+   * Waits for the response. Interrupts the thread in which this method is executed until the response or an error.
+   *
+   * @return if available the response otherwise null. Wrapped in {@link Optional}.
+   * @throws Throwable this exception could also be the InterruptedException from the {@link Response#get()}.
+   */
+  @NotNull Optional<TYPE> blockOptional() throws Throwable;
+
+  /**
+   * Get content of method {@link Response#get()} as {@link Optional} object.
+   * Similar to {@link Response#get()}.
+   *
+   * @return if available the response otherwise null.
+   * @throws InterruptedException if the process is interrupted.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
+  @NotNull Optional<TYPE> getOptional() throws InterruptedException;
 
   /**
    * Wait a specified time for a response. Suspends the thread in which this method is executed until the response,
@@ -67,8 +96,8 @@ public interface Response<TYPE> {
    * @param alternativeValue contains the alternative value.
    * @return if available the response otherwise zero or the response of the alternative.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @Nullable TYPE getNow(@Nullable Supplier<TYPE> alternativeValue);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @Nullable TYPE getNow(@Nullable ThrowableSupplier<TYPE> alternativeValue) throws Throwable;
 
   /**
    * Cancels the response and sets all values to zero.
@@ -94,8 +123,8 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> completeAsync(@Nullable final Supplier<TYPE> typeSupplier);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> completeAsync(@Nullable final ThrowableSupplier<TYPE> typeSupplier);
 
   /**
    * Completes the response with an error.
@@ -113,8 +142,8 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if throwableSupplier is null.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> completeExceptionallyAsync(@Nullable final Supplier<Throwable> throwableSupplier);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> completeExceptionallyAsync(@Nullable final ThrowableSupplier<Throwable> throwableSupplier);
 
   /**
    * With this method, information can be tapped.
@@ -146,8 +175,8 @@ public interface Response<TYPE> {
    * @param runnable which is to be executed.
    * @return instance of this response.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> run(@Nullable final Runnable runnable);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> run(@Nullable final ThrowableRunnable runnable);
 
   /**
    * Executes the {@link Runnable} asynchronously if the answer is completed in any way.
@@ -155,8 +184,8 @@ public interface Response<TYPE> {
    * @param runnable which is to be executed asynchronously.
    * @return instance of this response.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> runAsync(@Nullable final Runnable runnable);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> runAsync(@Nullable final ThrowableRunnable runnable);
 
   /**
    * Passes the response in the {@link Consumer} if it exists and is not null.
@@ -164,8 +193,8 @@ public interface Response<TYPE> {
    * @param consumer is filled with the response.
    * @return instance of this response.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> ifPresent(@Nullable final Consumer<@NotNull TYPE> consumer);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> ifPresent(@Nullable final ThrowableConsumer<@NotNull TYPE> consumer);
 
   /**
    * Passes the response asynchronously in the {@link Consumer} if it is present and not null.
@@ -173,8 +202,8 @@ public interface Response<TYPE> {
    * @param consumer is filled with the response.
    * @return instance of this response.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> ifPresentAsync(@Nullable final Consumer<@NotNull TYPE> consumer);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> ifPresentAsync(@Nullable final ThrowableConsumer<@NotNull TYPE> consumer);
 
   /**
    * <br>
@@ -186,8 +215,8 @@ public interface Response<TYPE> {
    * @param <MAP>    the type into which the response should be converted.
    * @return new instance created by the map method.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull <MAP> Response<MAP> map(@Nullable final Function<TYPE, MAP> function);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull <MAP> Response<MAP> map(@Nullable final ThrowableFunction<TYPE, MAP> function);
 
   /**
    * <br>
@@ -199,8 +228,8 @@ public interface Response<TYPE> {
    * @param <MAP>    the type into which the response should be converted.
    * @return new instance created by the map method.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull <MAP> Response<MAP> mapAsync(@Nullable final Function<TYPE, MAP> function);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull <MAP> Response<MAP> mapAsync(@Nullable final ThrowableFunction<TYPE, MAP> function);
 
   /**
    * Filter the {@link Response} if it is present and not null.
@@ -213,8 +242,8 @@ public interface Response<TYPE> {
    * @param typePredicate checks if the answer is kept ({@link Predicate#test(Object)} -> true).
    * @return new instance of {@link Response} created with the filtered value.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> filter(@Nullable final Predicate<TYPE> typePredicate);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> filter(@Nullable final ThrowablePredicate<TYPE> typePredicate);
 
   /**
    * Filter the {@link Response} asynchronously if it is present and not null.
@@ -227,8 +256,8 @@ public interface Response<TYPE> {
    * @param typePredicate checks if the answer is kept ({@link Predicate#test(Object)} -> true).
    * @return new instance of {@link Response} created with the filtered value.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> filterAsync(@Nullable final Predicate<TYPE> typePredicate);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> filterAsync(@Nullable final ThrowablePredicate<TYPE> typePredicate);
 
   /**
    * Executes the {@link Runnable} if the answer is completed with null.
@@ -236,8 +265,8 @@ public interface Response<TYPE> {
    * @param runnable which is to be executed.
    * @return instance of this response.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> ifAbsent(@Nullable final Runnable runnable);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> ifAbsent(@Nullable final ThrowableRunnable runnable);
 
   /**
    * Executes the {@link Runnable} asynchronously if the answer is completed with null.
@@ -245,8 +274,8 @@ public interface Response<TYPE> {
    * @param runnable which is to be executed.
    * @return instance of this response.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> ifAbsentAsync(@Nullable final Runnable runnable);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> ifAbsentAsync(@Nullable final ThrowableRunnable runnable);
 
   /**
    * Gives the {@link Throwable} that completed the answer. The {@link Throwable} can also be null.
@@ -254,8 +283,8 @@ public interface Response<TYPE> {
    * @param consumer will be completed with the error.
    * @return instance of this response.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> ifExceptionally(@Nullable final Consumer<@Nullable Throwable> consumer);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> ifExceptionally(@Nullable final ThrowableConsumer<@Nullable Throwable> consumer);
 
   /**
    * Returns the {@link Throwable} asynchronously that completed the answer. The {@link Throwable} can also be null.
@@ -263,8 +292,8 @@ public interface Response<TYPE> {
    * @param consumer will be completed with the error.
    * @return instance of this response.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> ifExceptionallyAsync(@Nullable final Consumer<@Nullable Throwable> consumer);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> ifExceptionallyAsync(@Nullable final ThrowableConsumer<@Nullable Throwable> consumer);
 
   /**
    * Use the {@link Supplier}'s object if the {@link Response} was completed with null.
@@ -277,8 +306,8 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> useIfAbsent(@Nullable final Supplier<TYPE> typeSupplier);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> useIfAbsent(@Nullable final ThrowableSupplier<TYPE> typeSupplier);
 
 
   /**
@@ -291,8 +320,8 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> useIfAbsentAsync(@Nullable final Supplier<TYPE> typeSupplier);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> useIfAbsentAsync(@Nullable final ThrowableSupplier<TYPE> typeSupplier);
 
   /**
    * <br>
@@ -304,8 +333,8 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> useIfExceptionally(@Nullable final Supplier<TYPE> typeSupplier);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> useIfExceptionally(@Nullable final ThrowableSupplier<TYPE> typeSupplier);
 
   /**
    * <br>
@@ -317,8 +346,8 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> useIfExceptionallyAsync(@Nullable final Supplier<TYPE> typeSupplier);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> useIfExceptionallyAsync(@Nullable final ThrowableSupplier<TYPE> typeSupplier);
 
   /**
    * <br>
@@ -330,8 +359,8 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> elseUse(@Nullable final Supplier<TYPE> typeSupplier);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> elseUse(@Nullable final ThrowableSupplier<TYPE> typeSupplier);
 
   /**
    * <br>
@@ -343,8 +372,8 @@ public interface Response<TYPE> {
    * @return instance of this response.
    * @throws NullPointerException if typeSupplier is null.
    */
-  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6")
-  @NotNull Response<TYPE> elseUseAsync(@Nullable final Supplier<TYPE> typeSupplier);
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.6", updated = "1.0.8")
+  @NotNull Response<TYPE> elseUseAsync(@Nullable final ThrowableSupplier<TYPE> typeSupplier);
 
   /**
    * Check if the {@link Response} has been completed in any way.
