@@ -4,7 +4,10 @@ plugins {
 }
 
 group 'dev.dotspace'
-version '1.0.8'
+version '1.0.8.3'
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 allprojects {
   ext {
