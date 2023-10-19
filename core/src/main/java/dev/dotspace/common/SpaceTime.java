@@ -93,9 +93,9 @@ public final class SpaceTime {
      * @throws NullPointerException if timeUnit is null.
      * @throws DateTimeException    if the difference is negative.
      */
-    @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.6")
+    @LibraryInformation(state = LibraryInformation.State.EXPERIMENTAL, since = "1.0.6", updated = "1.0.9")
     public long pastTimeFormatted(@Nullable final TimeUnit timeUnit) {
-      return SpaceObjects.throwIfNull(timeUnit).convert(Duration.ofMillis(this.pastTime()));
+      return SpaceObjects.throwIfNull(timeUnit).convert(Duration.ofNanos(this.pastTime()));
     }
   }
 }
