@@ -43,15 +43,8 @@ public interface Response<TYPE> extends Future<TYPE> {
    * @return if available the response otherwise null. (Similar to {@link Response#get()})
    * @throws Throwable this exception could also be the InterruptedException from the {@link Response#get()}.
    */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.9")
   @Nullable TYPE block() throws Throwable;
-
-  /**
-   * Waits for the response. Interrupts the thread in which this method is executed until the response or an error.
-   *
-   * @return if available the response otherwise null. Wrapped in {@link Optional}.
-   * @throws Throwable this exception could also be the InterruptedException from the {@link Response#get()}.
-   */
-  @NotNull Optional<TYPE> blockOptional() throws Throwable;
 
   /**
    * Get content of method {@link Response#get()} as {@link Optional} object.
@@ -62,6 +55,16 @@ public interface Response<TYPE> extends Future<TYPE> {
    */
   @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.8")
   @NotNull Optional<TYPE> getOptional() throws InterruptedException;
+
+
+  /**
+   * Waits for the response. Interrupts the thread in which this method is executed until the response or an error.
+   *
+   * @return if available the response otherwise null. Wrapped in {@link Optional}.
+   * @throws Throwable this exception could also be the InterruptedException from the {@link Response#get()}.
+   */
+  @LibraryInformation(state = LibraryInformation.State.STABLE, since = "1.0.9")
+  @NotNull Optional<TYPE> blockOptional() throws Throwable;
 
   /**
    * Wait a specified time for a response. Suspends the thread in which this method is executed until the response,
